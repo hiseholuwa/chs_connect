@@ -1,4 +1,4 @@
-package com.example.chs_connect
+package com.hiseholuwa.chsconnect
 
 import android.os.Bundle
 
