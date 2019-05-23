@@ -17,6 +17,8 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
+  shared_preferences: ^0.5.2+1
+  scoped_model: ^1.0.1
   flutter:
     sdk: flutter
 
@@ -70,3 +72,35 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.io/custom-fonts/#from-packages
+  assets:
+    - assets/images/logo/
+  fonts:
+    - family: Work Sans
+      fonts:
+        - asset: assets/fonts/worksans/WorkSans-Light.ttf
+        - asset: assets/fonts/worksans/WorkSans-Bold.ttf
+        - asset: assets/fonts/worksans/WorkSans-Regular.ttf
+        - asset: assets/fonts/worksans/WorkSans-Medium.ttf
+        - asset: assets/fonts/worksans/WorkSans-SemiBold.ttf
+
+    - family: Rochester
+      fonts:
+        - asset: assets/fonts/Rochester-Regular.ttf
+
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/montserrat/Montserrat-Regular.ttf
+        - asset: assets/fonts/montserrat/Montserrat-Medium.ttf
+          weight: 400
+        - asset: assets/fonts/montserrat/Montserrat-Italic.ttf
+          style: italic
+        - asset: assets/fonts/montserrat/Montserrat-Light.ttf
+          weight: 200
+        - asset: assets/fonts/montserrat/Montserrat-SemiBold.ttf
+          weight: 500
+        - asset: assets/fonts/montserrat/Montserrat-Bold.ttf
+          weight: 700
+
+    - family: Icons
+      fonts:
+        - asset: assets/fonts/icons.ttf
