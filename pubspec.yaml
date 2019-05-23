@@ -19,6 +19,18 @@ environment:
 dependencies:
   shared_preferences: ^0.5.2+1
   scoped_model: ^1.0.1
+  page_transition: ^1.1.0
+  firebase_auth: ^0.11.1
+  cloud_firestore: ^0.11.0+2
+  firebase_storage: ^3.0.0
+  firebase_messaging: ^5.0.1+1
+  firebase_analytics: ^3.0.1
+  firebase_crashlytics: ^0.0.4+3
+  rxdart: ^0.22.0
+  http: ^0.12.0+2
+  wave: ^0.0.8
+  flutter_spinkit: ^3.1.0
+  community_material_icon: ^3.5.95
   flutter:
     sdk: flutter
 
