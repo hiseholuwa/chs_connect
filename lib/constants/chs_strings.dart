@@ -2,6 +2,7 @@ class ChsStrings {
   ChsStrings._();
 
   static const appName = "CHS Connect";
+  static const me = "Hiseholuwa \u00a9";
 
   //auth strings
   static const enter_username_hint = "Username";
@@ -9,6 +10,8 @@ class ChsStrings {
   static const enter_email_hint = "Email Address";
   static const enter_password_hint = "Password";
   static const login = "Login to my Account";
+  static const login_email = "Sign In with Email";
+  static const login_google = "Sign In with Google";
   static const log_out = "Log Out";
   static const register = "Need a new Account?";
   static const create = "Create a new Account";

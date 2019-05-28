@@ -5,6 +5,5 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future main() async {
   SharedPreferences _prefs = await SharedPreferences.getInstance();
-  ChsStateModel model = ChsStateModel(_prefs);
-  runApp(App(model: model));
+  runApp(App());
 }
