@@ -1,18 +1,35 @@
+import 'package:chs_connect/app/auth/blocs/auth_provider.dart';
+import 'package:chs_connect/app/auth/login.dart';
 import 'package:chs_connect/constants/chs_colors.dart';
 import 'package:chs_connect/constants/chs_images.dart';
-import 'package:chs_connect/constants/chs_routes.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
-import 'package:community_material_icon/community_material_icon.dart';
+import 'package:chs_connect/utils/chs_page_transitions.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
-class Welcome extends StatelessWidget {
-  Welcome();
+class Welcome extends StatefulWidget {
+  final FirebaseAnalytics analytics;
+  final FirebaseAnalyticsObserver observer;
+
+  const Welcome({Key key, this.analytics, this.observer}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return _WelcomeState(analytics, observer);
+  }
+}
+class _WelcomeState extends State<Welcome> {
+  final FirebaseAnalytics analytics;
+  final FirebaseAnalyticsObserver observer;
+  _WelcomeState(this.analytics, this.observer);
 
   Widget welcomeScreen (BuildContext context) {
     var deviceSize = MediaQuery.of(context).size;
     return Scaffold(
-        backgroundColor: Color(0xffeeeeee),
+//        backgroundColor: Color(0xffeeeeee),
         body: Column(
           children: <Widget>[
             Container(
@@ -28,8 +45,11 @@ class Welcome extends StatelessWidget {
             Container(
               height: deviceSize.height / 15,
             ),
-            emailBtn(deviceSize, context),
+            emailBtn(deviceSize, context, this.analytics, this.observer),
             googleBtn(deviceSize),
+            Container(
+              height: deviceSize.height / 15,
+            ),
             Center(
               child: Text(ChsStrings.me,
                   style: TextStyle(color: Colors.grey, fontSize: 17)),
@@ -40,7 +60,7 @@ class Welcome extends StatelessWidget {
     );
   }
 
-  Widget emailBtn(size, context) {
+  Widget emailBtn(size, context, anal, observe) {
     var height = size.height;
     var width = size.width;
     return Container(
@@ -55,7 +75,7 @@ class Welcome extends StatelessWidget {
         color: ChsColors.default_blue,
         padding: EdgeInsets.symmetric(vertical: height * 0.02),
         onPressed: () {
-          Navigator.pushNamed(context, ChsRoutes.loginPageRoute);
+          Navigator.push(context,ChsPageRoute.fadeIn<void>(AuthProvider(child: LoginPage(analytics: analytics, observer: observer,),)));
         },
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(height * 0.05)),
@@ -88,6 +108,7 @@ class Welcome extends StatelessWidget {
         color: ChsColors.default_blue,
         padding: EdgeInsets.symmetric(vertical: height * 0.02),
         onPressed: () {
+
         },
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(height * 0.05)),
@@ -105,9 +126,20 @@ class Welcome extends StatelessWidget {
     );
   }
 
+  Future<void> _analyticsSetup() async {
+    await analytics.setCurrentScreen(
+        screenName: 'Welcome Screen', screenClassOverride: 'WelcomeScreenClass');
+  }
+
   @override
   Widget build(BuildContext context) {
     return welcomeScreen(context);
 
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _analyticsSetup();
   }
 }

@@ -2,19 +2,29 @@ import 'package:chs_connect/app/auth/blocs/auth_provider.dart';
 import 'package:chs_connect/app/auth/tools/card_clipper.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
 import 'package:chs_connect/constants/chs_colors.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class RegisterCard extends StatefulWidget {
+  final FirebaseAnalytics analytics;
+  final FirebaseAnalyticsObserver observer;
+  RegisterCard({Key key, this.analytics, this.observer}) : super(key:key);
+
   @override
   State<StatefulWidget> createState() {
-    return _RegisterCardState();
+    return _RegisterCardState(analytics, observer);
   }
 }
 
 class _RegisterCardState extends State<RegisterCard>
     with SingleTickerProviderStateMixin {
+  final FirebaseAnalytics analytics;
+  final FirebaseAnalyticsObserver observer;
+  _RegisterCardState(this.analytics, this.observer);
+
   var deviceSize;
   var height;
   var width;

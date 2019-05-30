@@ -2,7 +2,6 @@ import 'package:chs_connect/app/auth/components/register_widget.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class RegisterPage extends StatefulWidget {
   final FirebaseAnalyticsObserver observer;
@@ -22,23 +21,19 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffeeeeee),
-      body: RegisterWidget(),
+//      backgroundColor: Color(0xffeeeeee),
+      body: RegisterWidget(analytics, observer),
     );
   }
 
   @override
   void initState() {
     super.initState();
-    SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-
     _analyticsSetup();
   }
 
   Future<void> _analyticsSetup() async {
     await analytics.setCurrentScreen(
         screenName: 'Register Screen', screenClassOverride: 'RegisterScreen');
-    await analytics.android.setAnalyticsCollectionEnabled(true);
   }
 }

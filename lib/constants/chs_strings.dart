@@ -51,4 +51,20 @@ class ChsStrings {
   static const chatPage = "Chat";
   static const statusPage = "Status";
   static const accountPage = "Account";
+
+  //errors
+  static const connection_error = "Connection error - Check your internet";
+  static const g_cancelled = "SIGN_IN_CANCELLED";
+  static const g_cancelled_msg = "The sign in was cancelled by user";
+  static const g_cip = "SIGN_IN_CURRENTLY_IN_PROGRESS";
+  static const g_cip_msg = "A sign in process is currently in progress";
+  static const g_failed = "SIGN_IN_FAILED";
+  static const g_failed_msg = "Sign In attmept didn't succeed with the current account";
+  static const g_network = "NETWORK_ERROR";
+  static const g_network_msg = "A network error occured. Check your internet connection";
+  static const g_invalid = "INVALID_ACCOUNT";
+  static const g_invalid_msg = "Account name specified is invalid";
+  static const g_auth_req = "SIGN_IN_REQUIRED";
+  static const g_auth_req_msg = "Sign In to connect to the service";
+
 }

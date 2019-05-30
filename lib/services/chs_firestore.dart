@@ -7,6 +7,7 @@ class ChsFirestore {
   static Firestore instance = Firestore.instance;
 
   static String get authUserId => ChsAuth.getUser?.uid ?? null;
-
+  static DocumentReference get stats => instance.document('stats/$authUserId');
+  static DocumentReference get settings => instance.document('settings/common');
 
 }

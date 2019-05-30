@@ -1,21 +1,32 @@
+import 'package:chs_connect/app/auth/register.dart';
 import 'package:chs_connect/constants/chs_colors.dart';
-import 'package:chs_connect/constants/chs_routes.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
 import 'package:chs_connect/app/auth/blocs/auth_provider.dart';
 import 'package:chs_connect/constants/chs_images.dart';
+import 'package:chs_connect/utils/chs_page_transitions.dart';
 import 'package:community_material_icon/community_material_icon.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class LoginCard extends StatefulWidget {
+  final FirebaseAnalytics analytics;
+  final FirebaseAnalyticsObserver observer;
+  const LoginCard({Key key, this.analytics, this.observer}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
-    return _LoginCardState();
+    return _LoginCardState(analytics, observer);
   }
 }
 
 class _LoginCardState extends State<LoginCard>
     with SingleTickerProviderStateMixin {
+  final FirebaseAnalytics analytics;
+  final FirebaseAnalyticsObserver observer;
+  _LoginCardState(this.analytics, this.observer);
+
   var deviceSize;
   var height;
   var width;
@@ -232,7 +243,7 @@ class _LoginCardState extends State<LoginCard>
       child: FlatButton(
         padding: EdgeInsets.symmetric(vertical: height * 0.02),
         onPressed: () {
-          Navigator.pushNamed(context, ChsRoutes.registerPageRoute);
+          Navigator.push(context, ChsPageRoute.slideIn<void>(AuthProvider(child: RegisterPage(analytics: analytics, observer: observer,),)));
         },
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(height * 0.05)),
