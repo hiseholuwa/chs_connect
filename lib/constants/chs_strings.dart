@@ -66,5 +66,13 @@ class ChsStrings {
   static const g_invalid_msg = "Account name specified is invalid";
   static const g_auth_req = "SIGN_IN_REQUIRED";
   static const g_auth_req_msg = "Sign In to connect to the service";
+//  static const f_invalid_token = "SIGN_IN_REQUIRED";
+//  static const f_invalid_token_msg = "Sign In to connect to the service";
+//  static const g_auth_req = "SIGN_IN_REQUIRED";
+//  static const g_auth_req_msg = "Sign In to connect to the service";
+//  static const g_auth_req = "SIGN_IN_REQUIRED";
+//  static const g_auth_req_msg = "Sign In to connect to the service";
+//  static const g_auth_req = "SIGN_IN_REQUIRED";
+//  static const g_auth_req_msg = "Sign In to connect to the service";
 
 }

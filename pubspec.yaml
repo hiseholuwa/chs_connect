@@ -97,6 +97,7 @@ flutter:
   assets:
     - assets/images/logo/
     - assets/images/icons/
+    - assets/images/drawables/
   fonts:
     - family: Work Sans
       fonts:

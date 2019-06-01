@@ -9,10 +9,8 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 class ChsAuth {
   ChsAuth._();
 
-  static FirebaseUser _user;
 
-  static FirebaseUser setUser(FirebaseUser user) => _user = user;
-  static FirebaseUser get getUser => _user;
+  static Future<FirebaseUser> get getUser => _auth.currentUser();
 
   static Future<GoogleSignInAccount> silently() async => await _googleSignIn.signInSilently();
 
@@ -25,7 +23,7 @@ class ChsAuth {
       currentUser ??= await _googleSignIn.signIn();
 
       if (currentUser == null) {
-        throw PlatformException(code: "canceled");
+        throw PlatformException(code: "Canceled", message: "Sign in cancelled");
       }
 
       final GoogleSignInAuthentication auth = await currentUser.authentication;
@@ -35,7 +33,6 @@ class ChsAuth {
       assert(user != null);
       assert(!user.isAnonymous);
 
-      setUser(user);
       return user;
 
     }  catch (e) {
@@ -49,7 +46,6 @@ class ChsAuth {
       assert(user != null);
       assert(!user.isAnonymous);
       assert(await user.getIdToken() != null);
-      setUser(user);
       return user;
 
     } catch (e) {
@@ -62,7 +58,6 @@ class ChsAuth {
       FirebaseUser user = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       assert(user != null);
       assert(await user.getIdToken() != null);
-      setUser(user);
       return user;
 
     } catch (e) {
@@ -72,13 +67,30 @@ class ChsAuth {
 
   static Future<void> logOut() async {
     await _auth.signOut();
-    _user = null;
+    await _googleSignIn.signOut();
   }
 
-  static Future<void> logOutWithGoogle() async {
-    await _auth.signOut();
-    await _googleSignIn.signOut();
-    _user = null;
+  static String getExceptionString(Exception e) {
+    if(e is PlatformException) {
+      switch (e.message) {
+        case 'There is no user record corresponding to this identifier. The user may have been deleted.':
+          return 'User with this e-mail not found.';
+          break;
+        case 'The password is invalid or the user does not have a password.':
+          return 'Invalid password.';
+          break;
+        case 'A network error (such as timeout, interrupted connection or unreachable host) has occurred.':
+          return 'No internet connection.';
+          break;
+        case 'Sign in cancelled':
+          return 'User cancelled sign in process.';
+          break;
+        default:
+          return 'Unknown error occured.';
+      }
+    } else {
+      return 'Unknown error occured.';
+    }
   }
 }
 

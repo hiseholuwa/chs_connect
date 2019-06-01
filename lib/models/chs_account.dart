@@ -10,15 +10,13 @@ class ChsAccountModel extends ChsBaseModel{
   String userName;
   String photoUrl;
   ChsAccountModelStatus status;
-  String notice;
-  bool hasReadNotice;
+
 
   ChsAccountModel copyWith({
     String userName,
     String photoUrl,
     ChsAccountModelStatus status,
-    String notice,
-    bool hasReadNotice,
+
   }) {
     return ChsAccountModel(
       uid : this.uid,
@@ -26,8 +24,6 @@ class ChsAccountModel extends ChsBaseModel{
       userName : userName ?? this.userName,
       photoUrl : photoUrl ?? this.photoUrl,
       status : status ?? this.status,
-      notice : notice ?? this.notice,
-      hasReadNotice : hasReadNotice ?? this.hasReadNotice,
     )..reference = this.reference;
   }
   factory ChsAccountModel.fromJson(Map<String, dynamic> json) {
@@ -38,8 +34,6 @@ class ChsAccountModel extends ChsBaseModel{
       userName : json['userName'],
       photoUrl : json['photoUrl'],
       status : ChsAccountModelStatus.values[int.tryParse(json['status'].toString())],
-      notice : json['notice'],
-      hasReadNotice : json['hasReadNotice'],
     );
   }
 
@@ -51,8 +45,6 @@ class ChsAccountModel extends ChsBaseModel{
     @required this.userName,
     @required this.photoUrl,
     @required this.status,
-    @required this.notice,
-    @required this.hasReadNotice,
   });
 
   @override
@@ -63,8 +55,6 @@ class ChsAccountModel extends ChsBaseModel{
       'userName' : userName,
       'photoUrl' : photoUrl,
       'status' : status.index,
-      'notice' : notice,
-      'hasReadNotice' : hasReadNotice,
     };
   }
 }
