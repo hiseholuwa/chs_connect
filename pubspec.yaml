@@ -40,6 +40,7 @@ dependencies:
   version: ^1.0.3
   timeago: ^2.0.16
   flushbar: ^1.5.3
+  flutter_statusbarcolor: ^0.2.0
   bubble_bottom_bar: ^1.2.0
   flutter:
     sdk: flutter

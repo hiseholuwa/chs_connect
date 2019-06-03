@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:flutter/services.dart';
 import 'package:rebloc/rebloc.dart';
 
@@ -19,6 +20,8 @@ class App extends StatefulWidget {
 
   App({@required this.isFirstTime}){
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+    FlutterStatusbarcolor.setStatusBarColor(Colors.black);
   }
 
   final bool isFirstTime;

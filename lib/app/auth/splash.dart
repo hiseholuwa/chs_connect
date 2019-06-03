@@ -49,7 +49,7 @@ class Splash extends StatelessWidget {
     FirebaseUser user = await auth.currentUser();
     if (user != null) {
       Future.delayed(Duration(milliseconds: 1000)).then((_){
-        Navigator.of(context, rootNavigator: true).pop();
+//        Navigator.of(context, rootNavigator: true).pop();
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           StoreProvider.of<ChsAppState>(context).dispatcher(
               ChsOnLoginAction(user));
@@ -60,7 +60,7 @@ class Splash extends StatelessWidget {
       });
     } else {
       Future.delayed(Duration(milliseconds: 1000)).then((_) {
-        Navigator.of(context, rootNavigator: true).pop();
+//        Navigator.of(context, rootNavigator: true).pop();
         RoutePredicate predicate = (Route<dynamic> route) => false;
         Navigator.pushAndRemoveUntil<void>(context, ChsPageRoute.fadeIn<void>(
             Welcome(analytics: analytics, observer: observer,)), predicate);
