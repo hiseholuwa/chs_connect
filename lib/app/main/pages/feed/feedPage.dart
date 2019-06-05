@@ -1,5 +1,6 @@
 import 'package:chs_connect/constants/chs_images.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
+import 'package:chs_connect/theme/model/chs_theme_model.dart';
 import 'package:flutter/material.dart';
 
 class FeedPage extends StatefulWidget {
@@ -10,22 +11,21 @@ class FeedPage extends StatefulWidget {
 }
 
 class _FeedPageState extends State<FeedPage> {
+  ChsThemeModel _theme;
+
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
+    _theme = Provider.of<ChsThemeModel>(context);
 //    final bloc = MainProvider.of(context);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: _theme.theme.appBarTheme.color,
         title: Text(
           ChsStrings.appName,
-          style: TextStyle(
-              fontFamily: "Rochester",
-              color: Colors.black,
-              fontWeight: FontWeight.w500,
-              fontSize: 35),
+          style: _theme.theme.textTheme.display1,
         ),
-        elevation: 4,
+        elevation: _theme.theme.appBarTheme.elevation,
       ),
       body: buildFeed(deviceSize),
     );
@@ -46,10 +46,7 @@ class _FeedPageState extends State<FeedPage> {
           ),
           Text(
             ChsStrings.no_feed,
-            style: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-                fontFamily: "WorkSans"),
+            style: _theme.theme.textTheme.body1,
           )
         ],
       ),

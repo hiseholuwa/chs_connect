@@ -104,7 +104,7 @@ class _LoginCardState extends State<LoginCard>
             FlatButton(
               onPressed: () {},
               child: Text(ChsStrings.forgot,
-                  style: TextStyle(color: ChsColors.default_blue, fontSize: 16)),
+                  style: TextStyle(color: ChsColors.default_accent, fontSize: 16)),
             ),
           ],
         ),
@@ -214,7 +214,7 @@ class _LoginCardState extends State<LoginCard>
           ),
           child: RaisedButton(
             padding: EdgeInsets.symmetric(vertical: height * 0.02),
-            color: ChsColors.default_blue,
+            color: ChsColors.default_accent,
             onPressed: snapshot.hasData
                 ? () {
               loginUser();
@@ -248,10 +248,10 @@ class _LoginCardState extends State<LoginCard>
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(height * 0.05)),
             side: BorderSide(
-              color: ChsColors.default_blue,
+              color: ChsColors.default_accent,
             )),
         child: Text(ChsStrings.register,
-            style: TextStyle(color: ChsColors.default_blue, fontSize: 17)),
+            style: TextStyle(color: ChsColors.default_accent, fontSize: 17)),
       ),
     );
   }

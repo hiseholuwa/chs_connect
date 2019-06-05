@@ -56,7 +56,7 @@ class _RegisterCardState extends State<RegisterCard>
               children: <Widget>[
                 Center(
                   child: CircleAvatar(
-                    backgroundColor: ChsColors.default_blue,
+                    backgroundColor: ChsColors.default_accent,
                     radius: height * 0.1,
                     child: GestureDetector(
                         onTap: (){},
@@ -119,7 +119,7 @@ class _RegisterCardState extends State<RegisterCard>
                 Navigator.pop(context);
               },
               child: Text(ChsStrings.sign_in,
-                  style: TextStyle(color: ChsColors.default_blue, fontSize: 16)),
+                  style: TextStyle(color: ChsColors.default_accent, fontSize: 16)),
             ),
           ],
         ),
@@ -277,7 +277,7 @@ class _RegisterCardState extends State<RegisterCard>
           ),
           child: RaisedButton(
             padding: EdgeInsets.symmetric(vertical: height * 0.02),
-            color: ChsColors.default_blue,
+            color: ChsColors.default_accent,
             onPressed: snapshot.hasData
                 ? () {
               register();

@@ -84,7 +84,7 @@ class _WelcomeState extends State<Welcome> {
           right: height * 0.015,
         ),
         child: RaisedButton(
-          color: ChsColors.default_blue,
+          color: ChsColors.default_accent,
           padding: EdgeInsets.symmetric(vertical: height * 0.02),
           onPressed: () {
             Navigator.push(context,ChsPageRoute.fadeIn<void>(AuthProvider(child: LoginPage(analytics: analytics, observer: observer,),)));
@@ -117,7 +117,7 @@ class _WelcomeState extends State<Welcome> {
           right: height * 0.015,
         ),
         child: RaisedButton(
-          color: ChsColors.default_blue,
+          color: ChsColors.default_accent,
           padding: EdgeInsets.symmetric(vertical: height * 0.02),
           onPressed: () {
             setState(() => isLoading = true);
