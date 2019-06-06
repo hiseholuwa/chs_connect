@@ -1,4 +1,5 @@
 import 'package:chs_connect/constants/chs_strings.dart';
+import 'package:chs_connect/theme/chs_theme.dart';
 import 'package:chs_connect/theme/model/chs_theme_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
@@ -38,9 +39,9 @@ class PrimaryColorPicker extends StatelessWidget {
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
                   title: Text(label),
-                  content: MaterialColorPicker(
-                    onColorChange: model.changePrimaryColor,
-                    selectedColor: Colors.red,
+                  content: ColorPicker(
+                    value: model.primaryColor,
+                    onChanged: model.changePrimaryColor,
                   ),
                   ),
               );
