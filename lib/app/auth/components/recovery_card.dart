@@ -1,32 +1,29 @@
-import 'package:chs_connect/app/auth/recovery.dart';
-import 'package:chs_connect/app/auth/register.dart';
 import 'package:chs_connect/constants/chs_colors.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
 import 'package:chs_connect/app/auth/blocs/auth_provider.dart';
 import 'package:chs_connect/constants/chs_images.dart';
-import 'package:chs_connect/utils/chs_page_transitions.dart';
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-class LoginCard extends StatefulWidget {
+class RecoveryCard extends StatefulWidget {
   final FirebaseAnalytics analytics;
   final FirebaseAnalyticsObserver observer;
-  const LoginCard({Key key, this.analytics, this.observer}) : super(key: key);
+  const RecoveryCard({Key key, this.analytics, this.observer}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _LoginCardState(analytics, observer);
+    return _RecoveryCardState(analytics, observer);
   }
 }
 
-class _LoginCardState extends State<LoginCard>
+class _RecoveryCardState extends State<RecoveryCard>
     with SingleTickerProviderStateMixin {
   final FirebaseAnalytics analytics;
   final FirebaseAnalyticsObserver observer;
-  _LoginCardState(this.analytics, this.observer);
+  _RecoveryCardState(this.analytics, this.observer);
 
   var deviceSize;
   var height;
@@ -35,8 +32,8 @@ class _LoginCardState extends State<LoginCard>
   TextEditingController passwordController = TextEditingController();
   AnimationController controller;
   Animation<double> animation;
-  static Icon eye = Icon(CommunityMaterialIcons.eye, color: ChsColors.default_accent,);
-  static Icon eyeOff = Icon(CommunityMaterialIcons.eye_off, color: ChsColors.default_accent,);
+  static Icon eye = Icon(CommunityMaterialIcons.eye);
+  static Icon eyeOff = Icon(CommunityMaterialIcons.eye_off);
   Icon suffix = eye;
   bool obscure = true;
 
@@ -46,10 +43,10 @@ class _LoginCardState extends State<LoginCard>
     height = deviceSize.height;
     width = deviceSize.width;
     final bloc = AuthProvider.of(context);
-    return loginCard(bloc);
+    return recoveryCard(bloc);
   }
 
-  Widget loginCard(AuthBloc bloc) {
+  Widget recoveryCard(AuthBloc bloc) {
     return Container(
       margin: EdgeInsets.only(top: deviceSize.height / 20),
       child: Opacity(
@@ -71,7 +68,7 @@ class _LoginCardState extends State<LoginCard>
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(15)),
                 ),
-                child: loginBuilder(bloc),
+                child: recoveryBuilder(bloc),
               ),
             ],
           ),
@@ -80,7 +77,7 @@ class _LoginCardState extends State<LoginCard>
     );
   }
 
-  Widget loginBuilder(AuthBloc bloc) {
+  Widget recoveryBuilder(AuthBloc bloc) {
     return Form(
       child: Padding(
         padding: EdgeInsets.only(
@@ -95,30 +92,18 @@ class _LoginCardState extends State<LoginCard>
             SizedBox(
               height: height * 0.02,
             ),
-            passwordField(bloc),
-            SizedBox(
-              height: height * 0.02,
-            ),
-            loginBtn(bloc),
-            registerBtn(),
+            sendBtn(bloc),
             FlatButton(
               onPressed: () {
-                Navigator.push(context, ChsPageRoute.slideIn<void>(AuthProvider(child: RecoveryPage(analytics: analytics, observer: observer,),)));
+                Navigator.pop(context);
               },
-              child: Text(ChsStrings.forgot,
+              child: Text(ChsStrings.back,
                   style: TextStyle(color: ChsColors.default_accent, fontSize: 16)),
             ),
           ],
         ),
       ),
     );
-  }
-
-  void _obscureToggle() {
-    setState(() {
-      obscure = !obscure;
-      suffix == eye ? suffix = eyeOff : suffix = eye;
-    });
   }
 
   @override
@@ -170,43 +155,9 @@ class _LoginCardState extends State<LoginCard>
     );
   }
 
-  Widget passwordField(AuthBloc bloc) {
+  Widget sendBtn(AuthBloc bloc) {
     return StreamBuilder(
-      stream: bloc.password,
-      builder: (context, snapshot) {
-        return TextField(
-          style: new TextStyle(
-            fontSize: 17.0,
-            color: Colors.black,
-          ),
-          decoration: InputDecoration(
-              hintText: ChsStrings.enter_password_hint,
-              errorText: snapshot.error,
-              contentPadding: EdgeInsets.fromLTRB(height * 0.025,
-                  height * 0.012, height * 0.025, height * 0.012),
-              border: OutlineInputBorder(
-                borderSide: BorderSide.none,
-                borderRadius: BorderRadius.circular(height * 0.05),
-              ),
-              filled: true,
-              fillColor: Color(0xffeeeeee),
-              hintStyle: TextStyle(color: Colors.black38),
-              prefixIcon: Icon(Icons.lock, color: ChsColors.default_accent,),
-              suffixIcon: GestureDetector(
-                child: suffix,
-                onTap: _obscureToggle,
-              )),
-          obscureText: obscure,
-          onChanged: bloc.changePassword,
-          controller: passwordController,
-        );
-      },
-    );
-  }
-
-  Widget loginBtn(AuthBloc bloc) {
-    return StreamBuilder(
-      stream: bloc.loginValid,
+      stream: bloc.email,
       builder: (context, snapshot) {
         return Container(
           width: double.infinity,
@@ -217,47 +168,22 @@ class _LoginCardState extends State<LoginCard>
             right: height * 0.015,
           ),
           child: RaisedButton(
-            disabledColor: Colors.grey[200],
             padding: EdgeInsets.symmetric(vertical: height * 0.02),
             color: ChsColors.default_accent,
+            disabledColor: Colors.grey[200],
             onPressed: snapshot.hasData
                 ? () {
-              loginUser();
+              sendEmail();
             }
                 : null,
             elevation: 11,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(height * 0.05))),
-            child: Text(ChsStrings.login,
+            child: Text(ChsStrings.recover,
                 style: TextStyle(color: Colors.white, fontSize: 17)),
           ),
         );
       },
-    );
-  }
-
-  Widget registerBtn() {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.only(
-        top: 5,
-        bottom: height * 0.002,
-        left: height * 0.015,
-        right: height * 0.015,
-      ),
-      child: FlatButton(
-        padding: EdgeInsets.symmetric(vertical: height * 0.02),
-        onPressed: () {
-          Navigator.push(context, ChsPageRoute.slideIn<void>(AuthProvider(child: RegisterPage(analytics: analytics, observer: observer,),)));
-        },
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(height * 0.05)),
-            side: BorderSide(
-              color: ChsColors.default_accent,
-            )),
-        child: Text(ChsStrings.register,
-            style: TextStyle(color: ChsColors.default_accent, fontSize: 17)),
-      ),
     );
   }
 
@@ -267,7 +193,7 @@ class _LoginCardState extends State<LoginCard>
     super.dispose();
   }
 
-  Future<void> loginUser() async {
+  Future<void> sendEmail() async {
 //    String email = emailController.text.toString().trim();
 //    String password = passwordController.text.toString();
 

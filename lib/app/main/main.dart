@@ -46,6 +46,7 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     _theme = Provider.of<ChsThemeModel>(context);
+    fabIcon = Icon(Icons.add, color: _theme.iconColor,);
     return body(size);
   }
 
@@ -65,76 +66,80 @@ class _MainPageState extends State<MainPage> {
   }
 
   Widget body(Size size) {
-    return Scaffold(
-      body: PageView(
-        children: <Widget>[
-          Container(
-            child: FeedPage(),
-          ),
-          Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Center(
-                  child: Text('Chat Page!!!', style: _theme.theme.textTheme.body1,),
-                ),
-              ],
+    return SafeArea(
+      top: true,
+      bottom: true,
+      child: Scaffold(
+        body: PageView(
+          children: <Widget>[
+            Container(
+              child: FeedPage(),
             ),
-          ),
-          Container(
-            child: StatusPage(),
-          ),
-          Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Center(
-                  child: Text('Account Page!!!', style: _theme.theme.textTheme.body1,),
-                ),
-                logOutBtn(size),
-              ],
+            Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Center(
+                    child: Text('Chat Page!!!', style: _theme.theme.textTheme.body1,),
+                  ),
+                ],
+              ),
             ),
-          )
-        ],
-        controller: pageController,
-        physics: NeverScrollableScrollPhysics(),
-      ),
-      floatingActionButton: _fab(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      bottomNavigationBar: BubbleBottomBar(
-        opacity: .2,
-        backgroundColor: _theme.theme.primaryColor,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-        elevation: 8,
-        fabLocation: BubbleBottomBarFabLocation.end,
-        currentIndex: currentIndex,
-        hasNotch: true,
-        hasInk: true,
-        onTap: _onTap,
-        items: <BubbleBottomBarItem>[
-          BubbleBottomBarItem(
-              backgroundColor: _theme.accentColor,
-              icon: Icon(CommunityMaterialIcons.home_variant, color: _theme.iconColor,),
-              activeIcon: Icon(CommunityMaterialIcons.home_variant, color: _theme.accentColor,),
-              title: Text(ChsStrings.feedPage)),
-          BubbleBottomBarItem(
-              backgroundColor: _theme.accentColor,
-              icon: Icon(CommunityMaterialIcons.chat, color: _theme.iconColor,),
-              activeIcon: Icon(CommunityMaterialIcons.chat, color: _theme.accentColor,),
-              title: Text(ChsStrings.chatPage)),
-          BubbleBottomBarItem(
-              backgroundColor: _theme.accentColor,
-              icon: Icon(CommunityMaterialIcons.hexagon_slice_4, color: _theme.iconColor,),
-              activeIcon: Icon(CommunityMaterialIcons.hexagon_slice_4, color: _theme.accentColor,),
-              title: Text(ChsStrings.statusPage)),
-          BubbleBottomBarItem(
-              backgroundColor: _theme.accentColor,
-              icon: Icon(CommunityMaterialIcons.account_circle, color: _theme.iconColor,),
-              activeIcon: Icon(CommunityMaterialIcons.account_circle, color: _theme.accentColor,),
-              title: Text(ChsStrings.accountPage)),
-        ],
-      ),
+            Container(
+              child: StatusPage(),
+            ),
+            Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Center(
+                    child: Text('Account Page!!!', style: _theme.theme.textTheme.body1,),
+                  ),
+                  logOutBtn(size),
+                ],
+              ),
+            )
+          ],
+          controller: pageController,
+          physics: NeverScrollableScrollPhysics(),
+        ),
+        floatingActionButton: _fab(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+        bottomNavigationBar: BubbleBottomBar(
+          opacity: .2,
+          backgroundColor: _theme.theme.primaryColor,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          elevation: 6,
+          fabLocation: BubbleBottomBarFabLocation.end,
+          currentIndex: currentIndex,
+          hasNotch: true,
+          hasInk: true,
+          onTap: _onTap,
+          items: <BubbleBottomBarItem>[
+            BubbleBottomBarItem(
+                backgroundColor: _theme.accentColor,
+                icon: Icon(CommunityMaterialIcons.home_variant, color: _theme.iconColor,),
+                activeIcon: Icon(CommunityMaterialIcons.home_variant, color: _theme.accentColor,),
+                title: Text(ChsStrings.feedPage)),
+            BubbleBottomBarItem(
+                backgroundColor: _theme.accentColor,
+                icon: Icon(CommunityMaterialIcons.chat, color: _theme.iconColor,),
+                activeIcon: Icon(CommunityMaterialIcons.chat, color: _theme.accentColor,),
+                title: Text(ChsStrings.chatPage)),
+            BubbleBottomBarItem(
+                backgroundColor: _theme.accentColor,
+                icon: Icon(CommunityMaterialIcons.hexagon_slice_4, color: _theme.iconColor,),
+                activeIcon: Icon(CommunityMaterialIcons.hexagon_slice_4, color: _theme.accentColor,),
+                title: Text(ChsStrings.statusPage)),
+            BubbleBottomBarItem(
+                backgroundColor: _theme.accentColor,
+                icon: Icon(CommunityMaterialIcons.account_circle, color: _theme.iconColor,),
+                activeIcon: Icon(CommunityMaterialIcons.account_circle, color: _theme.accentColor,),
+                title: Text(ChsStrings.accountPage)),
+          ],
+        ),
 
+      ),
     );
   }
 
@@ -200,16 +205,16 @@ class _MainPageState extends State<MainPage> {
         currentIndex = position;
         switch (position) {
           case 0:
-            fabIcon = Icon(Icons.add);
+            fabIcon = Icon(Icons.add, color: _theme.iconColor,);
             break;
           case 1:
-            fabIcon = Icon(CommunityMaterialIcons.chat);
+            fabIcon = Icon(CommunityMaterialIcons.chat, color: _theme.iconColor,);
             break;
           case 2:
-            fabIcon = Icon(Icons.add);
+            fabIcon = Icon(Icons.add, color: _theme.iconColor,);
             break;
           case 3:
-            fabIcon = Icon(Icons.edit);
+            fabIcon = Icon(Icons.edit, color: _theme.iconColor,);
         }
       },
     );
@@ -220,7 +225,6 @@ class _MainPageState extends State<MainPage> {
     super.initState();
     _analyticsSetup();
     pageController = PageController();
-    fabIcon = Icon(Icons.add);
     currentIndex = 0;
 
   }

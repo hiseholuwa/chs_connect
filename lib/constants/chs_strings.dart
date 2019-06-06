@@ -17,6 +17,8 @@ class ChsStrings {
   static const create = "Create a new Account";
   static const sign_in = "Already have an Account?";
   static const forgot = "Forgot Password?";
+  static const recover = "Recover Password";
+  static const back = "Sign In";
   static const enter_valid_email = "Please enter a valid email";
   static const enter_valid_password = "Password length should be >= 6";
   static const enter_valid_username = "Please enter valid username";
@@ -75,4 +77,16 @@ class ChsStrings {
 //  static const g_auth_req = "SIGN_IN_REQUIRED";
 //  static const g_auth_req_msg = "Sign In to connect to the service";
 
+
+  //Themes
+  static const dark_mode = "Dark Mode";
+  static const custom_theme = "Custom Theme";
+  static const accent_color = "Accent Color";
+  static const primary_color = "Primary Color";
+  static const scaffold_color = "Scaffold Color";
+  static const icon_color = "Icons Color";
+  static const bkg_color = "Background Color";
+  static const text1_color = "Text One Color";
+  static const text2_color = "Text Two Color";
+  static const text3_color = "Text Three Color";
 }

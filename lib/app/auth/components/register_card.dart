@@ -169,6 +169,7 @@ class _RegisterCardState extends State<RegisterCard>
             errorText: snapshot.error,
             filled: true,
             fillColor: Color(0xffeeeeee),
+            hintStyle: TextStyle(color: Colors.black38),
           ),
         );
       },
@@ -199,6 +200,7 @@ class _RegisterCardState extends State<RegisterCard>
             errorText: snapshot.error,
             filled: true,
             fillColor: Color(0xffeeeeee),
+            hintStyle: TextStyle(color: Colors.black38),
           ),
         );
       },
@@ -228,6 +230,7 @@ class _RegisterCardState extends State<RegisterCard>
             ),
             filled: true,
             fillColor: Color(0xffeeeeee),
+            hintStyle: TextStyle(color: Colors.black38),
             errorText: snapshot.error,
           ),
         );
@@ -259,6 +262,7 @@ class _RegisterCardState extends State<RegisterCard>
             errorText: snapshot.error,
             filled: true,
             fillColor: Color(0xffeeeeee),
+            hintStyle: TextStyle(color: Colors.black38),
           ),
         );
       },
@@ -278,6 +282,7 @@ class _RegisterCardState extends State<RegisterCard>
           child: RaisedButton(
             padding: EdgeInsets.symmetric(vertical: height * 0.02),
             color: ChsColors.default_accent,
+            disabledColor: Colors.grey[200],
             onPressed: snapshot.hasData
                 ? () {
               register();

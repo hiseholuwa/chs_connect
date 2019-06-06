@@ -27,7 +27,13 @@ class _DarkColorPickerState extends State<DarkColorPicker> {
   Widget build(BuildContext context) {
     return MaterialColorPicker(
       selectedColor: main,
-      allowShades: false,
+      onMainColorChange: (ColorSwatch color) {
+        if (mounted)
+          setState(() {
+            main = color;
+          });
+      },
+      onColorChange: (color) => widget.onChanged(color),
       colors: [
         Colors.redAccent,
         Colors.pinkAccent,
@@ -48,13 +54,6 @@ class _DarkColorPickerState extends State<DarkColorPicker> {
         Colors.brown,
         Colors.blueGrey
       ],
-      onMainColorChange: (ColorSwatch color) {
-        if (mounted)
-          setState(() {
-            main = color;
-          });
-      },
-      onColorChange: (color) => widget.onChanged(color),
     );
   }
 }

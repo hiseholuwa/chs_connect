@@ -18,17 +18,21 @@ class _FeedPageState extends State<FeedPage> {
     final deviceSize = MediaQuery.of(context).size;
     _theme = Provider.of<ChsThemeModel>(context);
 //    final bloc = MainProvider.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: _theme.theme.appBarTheme.color,
-        title: Text(
-          ChsStrings.appName,
-          style: _theme.theme.textTheme.display1,
+    return SafeArea(
+      top: true,
+      bottom: true,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: _theme.theme.appBarTheme.color,
+          title: Text(
+            ChsStrings.appName,
+            style: _theme.theme.textTheme.display1,
+          ),
+          elevation: _theme.theme.appBarTheme.elevation,
+          brightness: _theme.theme.appBarTheme.brightness,
         ),
-        elevation: _theme.theme.appBarTheme.elevation,
-        brightness: _theme.theme.appBarTheme.brightness,
+        body: buildFeed(deviceSize),
       ),
-      body: buildFeed(deviceSize),
     );
   }
 

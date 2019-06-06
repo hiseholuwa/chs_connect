@@ -17,17 +17,21 @@ class _StatusPageState extends State<StatusPage> {
     final deviceSize = MediaQuery.of(context).size;
     _theme = Provider.of<ChsThemeModel>(context);
 //    final bloc = MainProvider.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: _theme.theme.appBarTheme.color,
-        title: Text(
-          'Persist Theme',
-          style: _theme.theme.textTheme.display1,
+    return SafeArea(
+      top: true,
+      bottom: true,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: _theme.theme.appBarTheme.color,
+          title: Text(
+            'Change Theme',
+            style: _theme.theme.textTheme.display1,
+          ),
+          elevation: _theme.theme.appBarTheme.elevation,
+          brightness: _theme.theme.appBarTheme.brightness,
         ),
-        elevation: _theme.theme.appBarTheme.elevation,
-        brightness: _theme.theme.appBarTheme.brightness,
+        body: buildFeed(deviceSize),
       ),
-      body: buildFeed(deviceSize),
     );
   }
 
@@ -47,6 +51,12 @@ class _StatusPageState extends State<StatusPage> {
           children: <Widget>[
             Flexible(child: PrimaryColorPicker()),
             Flexible(child: AccentColorPicker()),
+            Flexible(child: ScaffoldColorPicker()),
+            Flexible(child: BackgroundColorPicker()),
+            Flexible(child: TextHighColorPicker()),
+            Flexible(child: TextMediumColorPicker()),
+            Flexible(child: TextDisabledColorPicker()),
+            Flexible(child: IconColorPicker()),
           ],
         ),
         DarkAccentColorPicker(),
@@ -56,6 +66,12 @@ class _StatusPageState extends State<StatusPage> {
         CustomThemeSwitch(),
         PrimaryColorPicker(),
         AccentColorPicker(),
+        ScaffoldColorPicker(),
+        BackgroundColorPicker(),
+        TextHighColorPicker(),
+        TextMediumColorPicker(),
+        TextDisabledColorPicker(),
+        IconColorPicker(),
         DarkAccentColorPicker(),
       ],
     );

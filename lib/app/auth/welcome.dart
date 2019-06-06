@@ -39,6 +39,7 @@ class _WelcomeState extends State<Welcome> {
     Widget welcomeScreen (BuildContext context) {
       var deviceSize = MediaQuery.of(context).size;
       return Scaffold(
+          backgroundColor: ChsColors.default_scaffold,
           body: Column(
             children: <Widget>[
               Container(

@@ -1,4 +1,5 @@
 import 'package:chs_connect/constants/chs_colors.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 export 'package:provider/provider.dart';
@@ -130,6 +131,11 @@ class ChsThemeModel extends ChangeNotifier {
               button: TextStyle(color: ChsColors.default_text_high, fontFamily: "Work Sans", fontSize: 14, fontWeight: FontWeight.w500),
               caption: TextStyle(color: ChsColors.default_text_disabled, fontFamily: "Work Sans", fontSize: 12, fontWeight: FontWeight.w500),
           ),
+          dialogTheme: DialogTheme(
+              backgroundColor: ChsColors.default_bkg,
+              elevation: 6,
+              titleTextStyle: TextStyle(color: ChsColors.default_text_high, fontFamily: "Work Sans", fontSize: 20, fontWeight: FontWeight.w500),
+          ),
           errorColor: ChsColors.default_error,
         );
       case ChsThemeType
@@ -140,9 +146,9 @@ class ChsThemeModel extends ChangeNotifier {
               scaffoldBackgroundColor: ChsColors.dark_scaffold,
               primaryColor: ChsColors.dark_primary,
               accentColor: darkAccentColor ?? ChsColors.default_accent,
-              appBarTheme: AppBarTheme(brightness: Brightness.dark, color: ChsColors.dark_primary, elevation: 8, ),
+              appBarTheme: AppBarTheme(color: ChsColors.dark_primary, elevation: 8, ),
               bottomAppBarColor: ChsColors.dark_primary,
-              iconTheme: IconThemeData(color: Colors.white),
+              iconTheme: IconThemeData(color: ChsColors.dark_icon),
               textTheme: TextTheme(
                 title: TextStyle(color: ChsColors.dark_text_high, fontFamily: "Work Sans", fontSize: 20, fontWeight: FontWeight.w500),
                 body1: TextStyle(color: ChsColors.dark_text_high, fontFamily: "Work Sans", fontSize: 16, fontWeight: FontWeight.w400),
@@ -150,6 +156,11 @@ class ChsThemeModel extends ChangeNotifier {
                 display1: TextStyle(color: ChsColors.dark_text_high, fontFamily: "Rochester", fontSize: 34, fontWeight: FontWeight.w400),
                 button: TextStyle(color: ChsColors.dark_text_high, fontFamily: "Work Sans", fontSize: 14, fontWeight: FontWeight.w500),
                 caption: TextStyle(color: ChsColors.dark_text_disabled, fontFamily: "Work Sans", fontSize: 12, fontWeight: FontWeight.w500),
+              ),
+              dialogTheme: DialogTheme(
+                backgroundColor: ChsColors.dark_bkg,
+                elevation: 16,
+                titleTextStyle: TextStyle(color: ChsColors.dark_text_high, fontFamily: "Work Sans", fontSize: 20, fontWeight: FontWeight.w500),
               ),
               errorColor: ChsColors.dark_error,
             );
@@ -172,6 +183,11 @@ class ChsThemeModel extends ChangeNotifier {
               button: TextStyle(color: textColorHigh ?? ChsColors.default_text_high, fontFamily: "Work Sans", fontSize: 14, fontWeight: FontWeight.w500),
               caption: TextStyle(color: textColorDisabled ?? ChsColors.default_text_disabled, fontFamily: "Work Sans", fontSize: 12, fontWeight: FontWeight.w500),
           ),
+          dialogTheme: DialogTheme(
+            backgroundColor: backgroundColor ?? ChsColors.default_bkg,
+            elevation: 6,
+            titleTextStyle: TextStyle(color: textColorHigh ?? ChsColors.default_text_high, fontFamily: "Work Sans", fontSize: 20, fontWeight: FontWeight.w500),
+          ),
           errorColor: ChsColors.default_error,
         )
             : ThemeData.light().copyWith(
@@ -189,6 +205,11 @@ class ChsThemeModel extends ChangeNotifier {
             display1: TextStyle(color: textColorHigh ?? ChsColors.default_text_high, fontFamily: "Rochester", fontSize: 34, fontWeight: FontWeight.w400),
             button: TextStyle(color: textColorHigh ?? ChsColors.default_text_high, fontFamily: "Work Sans", fontSize: 14, fontWeight: FontWeight.w500),
             caption: TextStyle(color: textColorDisabled ?? ChsColors.default_text_disabled, fontFamily: "Work Sans", fontSize: 12, fontWeight: FontWeight.w500),
+          ),
+          dialogTheme: DialogTheme(
+            backgroundColor: backgroundColor ?? ChsColors.default_bkg,
+            elevation: 6,
+            titleTextStyle: TextStyle(color: textColorHigh ?? ChsColors.default_text_high, fontFamily: "Work Sans", fontSize: 20, fontWeight: FontWeight.w500),
           ),
           errorColor: ChsColors.default_error,
         );
@@ -213,13 +234,12 @@ class ChsThemeModel extends ChangeNotifier {
           accentColor: darkAccentColor ?? null,
         );
   }
-
   Color get backgroundColor {
     if (darkMode ?? false) {
-      return ThemeData.dark().scaffoldBackgroundColor;
+      return ChsColors.dark_bkg;
     }
-    if (customTheme ?? false) return primaryColor;
-    return null;
+    if (customTheme ?? false) return bkgColor;
+    return ChsColors.default_bkg;
   }
 
   Color get textColorHigh {
@@ -274,6 +294,15 @@ class ChsThemeModel extends ChangeNotifier {
     return Color(_primaryColor);
   }
 
+  Color get bkgColor {
+    if(_backgroundColor == null) {
+      return type == ChsThemeType
+          .dark
+          ? ThemeData.dark().backgroundColor
+          : ThemeData.light().backgroundColor;
+    }
+    return Color(_backgroundColor);
+  }
   Color get accentColor {
     if (type == ChsThemeType
         .dark) {
@@ -315,14 +344,17 @@ class ChsThemeModel extends ChangeNotifier {
   }
 
   Color get iconColor {
-    if (type == ChsThemeType
-        .dark) {
-      if (_iconColor == null) {
-        return ThemeData.dark().iconTheme.color;
-      }
+    if (_iconColor == null) {
+      return ThemeData.light().iconTheme.color;
+    }
+
+    if (_darkMode){
+      return ThemeData.dark().iconTheme.color;
+    }
+
+    if (_customTheme) {
       return Color(_iconColor);
     }
-    if(_iconColor == null) return ThemeData.light().iconTheme.color;
     return Colors.black;
   }
 
