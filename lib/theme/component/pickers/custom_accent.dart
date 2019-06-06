@@ -9,11 +9,10 @@ class AccentColorPicker extends StatelessWidget {
     this.leading,
     this.label = "Accent Color",
     this.subtitle,
-    this.title = const Text("Accent Color"),
     this.showOnlyCustomTheme = true,
   });
 
-  final Widget leading, subtitle, title;
+  final Widget leading, subtitle;
   final String label;
   final bool showOnlyCustomTheme;
 

@@ -1,7 +1,6 @@
 import 'package:chs_connect/app/auth/welcome.dart';
 import 'package:chs_connect/app/main/pages/feed/feedPage.dart';
 import 'package:chs_connect/app/main/pages/status/status.dart';
-import 'package:chs_connect/constants/chs_colors.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
 import 'package:chs_connect/rebloc/actions/common.dart';
 import 'package:chs_connect/rebloc/states/main.dart';
@@ -77,7 +76,7 @@ class _MainPageState extends State<MainPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Center(
-                  child: Text('Chat Page!!!'),
+                  child: Text('Chat Page!!!', style: _theme.theme.textTheme.body1,),
                 ),
               ],
             ),
@@ -90,7 +89,7 @@ class _MainPageState extends State<MainPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Center(
-                  child: Text('Account Page!!!'),
+                  child: Text('Account Page!!!', style: _theme.theme.textTheme.body1,),
                 ),
                 logOutBtn(size),
               ],
@@ -104,7 +103,7 @@ class _MainPageState extends State<MainPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       bottomNavigationBar: BubbleBottomBar(
         opacity: .2,
-        backgroundColor: _theme.backgroundColor,
+        backgroundColor: _theme.theme.primaryColor,
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         elevation: 8,
         fabLocation: BubbleBottomBarFabLocation.end,

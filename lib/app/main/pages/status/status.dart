@@ -1,4 +1,5 @@
 import 'package:chs_connect/theme/chs_theme.dart';
+import 'package:chs_connect/theme/model/chs_theme_model.dart';
 import 'package:flutter/material.dart';
 
 class StatusPage extends StatefulWidget {
@@ -9,22 +10,22 @@ class StatusPage extends StatefulWidget {
 }
 
 class _StatusPageState extends State<StatusPage> {
+  ChsThemeModel _theme;
+
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
+    _theme = Provider.of<ChsThemeModel>(context);
 //    final bloc = MainProvider.of(context);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: _theme.theme.appBarTheme.color,
         title: Text(
           'Persist Theme',
-          style: TextStyle(
-              fontFamily: "Rochester",
-              color: Colors.black,
-              fontWeight: FontWeight.w500,
-              fontSize: 35),
+          style: _theme.theme.textTheme.display1,
         ),
-        elevation: 4,
+        elevation: _theme.theme.appBarTheme.elevation,
+        brightness: _theme.theme.appBarTheme.brightness,
       ),
       body: buildFeed(deviceSize),
     );

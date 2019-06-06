@@ -26,6 +26,7 @@ class _FeedPageState extends State<FeedPage> {
           style: _theme.theme.textTheme.display1,
         ),
         elevation: _theme.theme.appBarTheme.elevation,
+        brightness: _theme.theme.appBarTheme.brightness,
       ),
       body: buildFeed(deviceSize),
     );

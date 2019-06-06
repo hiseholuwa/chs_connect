@@ -9,16 +9,17 @@ class PrimaryColorPicker extends StatelessWidget {
     this.leading,
     this.subtitle,
     this.label = "Primary Color",
-    this.title = const Text("Primary Color"),
     this.showOnlyCustomTheme = true,
   });
 
-  final Widget leading, subtitle, title;
+  final Widget leading, subtitle;
   final String label;
   final bool showOnlyCustomTheme;
 
   @override
   Widget build(BuildContext context) {
+    ChsThemeModel theme = Provider.of<ChsThemeModel>(context);
+    Widget title =  Text("Primary Color", style: theme.theme.textTheme.body1,);
     return new Consumer<ChsThemeModel>(
         builder: (context, model, child) => Container(
           child: !showOnlyCustomTheme ||

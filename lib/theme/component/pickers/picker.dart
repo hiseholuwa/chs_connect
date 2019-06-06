@@ -27,7 +27,6 @@ class _ColorPickerState extends State<ColorPicker> {
   Widget build(BuildContext context) {
     return MaterialColorPicker(
       selectedColor: main,
-      allowShades: true,
       onMainColorChange: (ColorSwatch color) {
         if (mounted)
           setState(() {

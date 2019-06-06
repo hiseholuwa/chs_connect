@@ -119,7 +119,7 @@ class ChsThemeModel extends ChangeNotifier {
           scaffoldBackgroundColor: ChsColors.default_scaffold,
           primaryColor: ChsColors.default_primary,
           accentColor: ChsColors.default_accent,
-          appBarTheme: AppBarTheme(brightness: Brightness.dark, color: ChsColors.default_primary, elevation: 8, ),
+          appBarTheme: AppBarTheme(brightness: Brightness.light, color: ChsColors.default_primary, elevation: 8, ),
           bottomAppBarColor: ChsColors.default_primary,
           iconTheme: IconThemeData(color: Colors.black),
           textTheme: TextTheme(
