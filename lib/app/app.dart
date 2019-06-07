@@ -10,7 +10,6 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:flutter/services.dart';
 import 'package:rebloc/rebloc.dart';
 
@@ -21,11 +20,6 @@ class App extends StatefulWidget {
 
   App({@required this.isFirstTime}) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(
-      statusBarColor: Colors.transparent,
-    ));
-    FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
-    FlutterStatusbarcolor.setStatusBarColor(Colors.black);
   }
 
   final bool isFirstTime;
@@ -56,31 +50,36 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     return ListenableProvider<ChsThemeModel>(
       builder: (_) => _model..init(),
-      child: Consumer<ChsThemeModel>(
-        builder: (context, model, child){
-            return StoreProvider<ChsAppState>(
-              store: store,
-              child: FirstBuildDispatcher<ChsAppState>(
-                action: const ChsOnInitAction(),
-                child: Builder(
-                  builder: (BuildContext context){
-                    return MaterialApp(
-                      debugShowCheckedModeBanner: false,
-                      theme: model.theme,
-                      navigatorObservers: [observer],
-                      onGenerateRoute: (settings) {
-                        return ChsNavigateRoute<dynamic>(builder: (_){
-                          return Splash(analytics: analytics, observer: observer,);
+      child: Consumer<ChsThemeModel>(builder: (context, model, child) {
+        return StoreProvider<ChsAppState>(
+          store: store,
+          child: FirstBuildDispatcher<ChsAppState>(
+            action: const ChsOnInitAction(),
+            child: Builder(
+              builder: (BuildContext context) {
+                return MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  theme: model.theme,
+                  navigatorObservers: [observer],
+                  onGenerateRoute: (settings) {
+                    return ChsNavigateRoute<dynamic>(
+                        builder: (_) {
+                          return Splash(
+                            analytics: analytics,
+                            observer: observer,
+                          );
                         },
-                            settings: settings.copyWith(name: ChsRoutes.splashPageRoute, isInitialRoute: true,));
-                      },
-                    );
+                        settings: settings.copyWith(
+                          name: ChsRoutes.splashPageRoute,
+                          isInitialRoute: true,
+                        ));
                   },
-                ),
-              ),
-            );
-          }
-      ),
+                );
+              },
+            ),
+          ),
+        );
+      }),
     );
   }
 

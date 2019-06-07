@@ -11,25 +11,24 @@ class FeedPage extends StatefulWidget {
 }
 
 class _FeedPageState extends State<FeedPage> {
-  ChsThemeModel _theme;
+  ChsThemeModel theme;
 
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
-    _theme = Provider.of<ChsThemeModel>(context);
-//    final bloc = MainProvider.of(context);
+    theme = Provider.of<ChsThemeModel>(context);
     return SafeArea(
       top: true,
       bottom: true,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: _theme.theme.appBarTheme.color,
+          backgroundColor: theme.theme.appBarTheme.color,
           title: Text(
             ChsStrings.appName,
-            style: _theme.theme.textTheme.display1,
+            style: theme.theme.textTheme.display1,
           ),
-          elevation: _theme.theme.appBarTheme.elevation,
-          brightness: _theme.theme.appBarTheme.brightness,
+          elevation: theme.theme.appBarTheme.elevation,
+          brightness: theme.theme.appBarTheme.brightness,
         ),
         body: buildFeed(deviceSize),
       ),
@@ -51,7 +50,7 @@ class _FeedPageState extends State<FeedPage> {
           ),
           Text(
             ChsStrings.no_feed,
-            style: _theme.theme.textTheme.body1,
+            style: theme.theme.textTheme.body1,
           )
         ],
       ),

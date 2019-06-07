@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 export 'package:provider/provider.dart';
 
-enum ChsThemeType
-{ light, dark, custom}
+enum ChsThemeType { light, dark, custom }
 
 class ChsThemeModel extends ChangeNotifier {
   ChsThemeModel({
@@ -15,9 +14,7 @@ class ChsThemeModel extends ChangeNotifier {
     String key,
   }) : _storage = LocalStorage(key ?? "app_theme");
 
-  final ThemeData customLightTheme,
-      customDarkTheme,
-      customCustomTheme;
+  final ThemeData customLightTheme, customDarkTheme, customCustomTheme;
 
   int _accentColor = ChsColors.default_accent.value;
   bool _customTheme = false;
@@ -32,16 +29,12 @@ class ChsThemeModel extends ChangeNotifier {
   int _iconColor = Colors.black.value;
   LocalStorage _storage;
 
-  ChsThemeType
-  get type {
+  ChsThemeType get type {
     if (_darkMode ?? false) {
-      return ChsThemeType
-          .dark;
+      return ChsThemeType.dark;
     }
-    if (_customTheme ?? false) return ChsThemeType
-        .custom;
-    return ChsThemeType
-        .light;
+    if (_customTheme ?? false) return ChsThemeType.custom;
+    return ChsThemeType.light;
   }
 
   void changeDarkMode(bool value) {
@@ -91,128 +84,259 @@ class ChsThemeModel extends ChangeNotifier {
     _storage.setItem("background_color", _backgroundColor);
     notifyListeners();
   }
+
   void changeTextHighColor(Color value) {
     _textHigh = value.value;
     _storage.setItem("text_high_color", _textHigh);
     notifyListeners();
   }
+
   void changeTextMediumColor(Color value) {
     _textMedium = value.value;
     _storage.setItem("text_medium_color", _textMedium);
     notifyListeners();
   }
+
   void changeTextDisabledColor(Color value) {
     _textDisabled = value.value;
     _storage.setItem("text_disabled_color", _textDisabled);
     notifyListeners();
   }
 
-
   ThemeData get theme {
     if (_storage == null) {
       init();
     }
     switch (type) {
-      case ChsThemeType
-          .light:
-        return customLightTheme ?? ThemeData.light().copyWith(
-          backgroundColor: ChsColors.default_bkg,
-          scaffoldBackgroundColor: ChsColors.default_scaffold,
-          primaryColor: ChsColors.default_primary,
-          accentColor: ChsColors.default_accent,
-          appBarTheme: AppBarTheme(brightness: Brightness.light, color: ChsColors.default_primary, elevation: 8, ),
-          bottomAppBarColor: ChsColors.default_primary,
-          iconTheme: IconThemeData(color: Colors.black),
-          textTheme: TextTheme(
-              title: TextStyle(color: ChsColors.default_text_high, fontFamily: "Work Sans", fontSize: 20, fontWeight: FontWeight.w500),
-              body1: TextStyle(color: ChsColors.default_text_high, fontFamily: "Work Sans", fontSize: 16, fontWeight: FontWeight.w400),
-              body2: TextStyle(color: ChsColors.default_text_medium, fontFamily: "Work Sans", fontSize: 14, fontWeight: FontWeight.w400),
-              display1: TextStyle(color: ChsColors.default_text_high, fontFamily: "Rochester", fontSize: 34, fontWeight: FontWeight.w400),
-              button: TextStyle(color: ChsColors.default_text_high, fontFamily: "Work Sans", fontSize: 14, fontWeight: FontWeight.w500),
-              caption: TextStyle(color: ChsColors.default_text_disabled, fontFamily: "Work Sans", fontSize: 12, fontWeight: FontWeight.w500),
-          ),
-          dialogTheme: DialogTheme(
+      case ChsThemeType.light:
+        return customLightTheme ??
+            ThemeData.light().copyWith(
               backgroundColor: ChsColors.default_bkg,
-              elevation: 6,
-              titleTextStyle: TextStyle(color: ChsColors.default_text_high, fontFamily: "Work Sans", fontSize: 20, fontWeight: FontWeight.w500),
-          ),
-          errorColor: ChsColors.default_error,
-        );
-      case ChsThemeType
-          .dark:
+              scaffoldBackgroundColor: ChsColors.default_scaffold,
+              primaryColor: ChsColors.default_primary,
+              accentColor: ChsColors.default_accent,
+              appBarTheme: AppBarTheme(
+                brightness: Brightness.light,
+                color: ChsColors.default_primary,
+                elevation: 8,
+              ),
+              bottomAppBarColor: ChsColors.default_primary,
+              iconTheme: IconThemeData(color: Colors.black),
+              textTheme: TextTheme(
+                title: TextStyle(
+                    color: ChsColors.default_text_high,
+                    fontFamily: "Work Sans",
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500),
+                body1: TextStyle(
+                    color: ChsColors.default_text_high,
+                    fontFamily: "Work Sans",
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400),
+                body2: TextStyle(
+                    color: ChsColors.default_text_medium,
+                    fontFamily: "Work Sans",
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400),
+                display1: TextStyle(
+                    color: ChsColors.default_text_high,
+                    fontFamily: "Rochester",
+                    fontSize: 34,
+                    fontWeight: FontWeight.w400),
+                button: TextStyle(
+                    color: ChsColors.default_text_high,
+                    fontFamily: "Work Sans",
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500),
+                caption: TextStyle(
+                    color: ChsColors.default_text_disabled,
+                    fontFamily: "Work Sans",
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500),
+              ),
+              dialogTheme: DialogTheme(
+                backgroundColor: ChsColors.default_bkg,
+                elevation: 6,
+                titleTextStyle: TextStyle(
+                    color: ChsColors.default_text_high,
+                    fontFamily: "Work Sans",
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500),
+              ),
+              errorColor: ChsColors.default_error,
+            );
+      case ChsThemeType.dark:
         return customDarkTheme ??
             ThemeData.dark().copyWith(
               backgroundColor: ChsColors.dark_bkg,
               scaffoldBackgroundColor: ChsColors.dark_scaffold,
               primaryColor: ChsColors.dark_primary,
               accentColor: darkAccentColor ?? ChsColors.default_accent,
-              appBarTheme: AppBarTheme(color: ChsColors.dark_primary, elevation: 8, ),
+              appBarTheme: AppBarTheme(
+                color: ChsColors.dark_primary,
+                elevation: 8,
+              ),
               bottomAppBarColor: ChsColors.dark_primary,
               iconTheme: IconThemeData(color: ChsColors.dark_icon),
               textTheme: TextTheme(
-                title: TextStyle(color: ChsColors.dark_text_high, fontFamily: "Work Sans", fontSize: 20, fontWeight: FontWeight.w500),
-                body1: TextStyle(color: ChsColors.dark_text_high, fontFamily: "Work Sans", fontSize: 16, fontWeight: FontWeight.w400),
-                body2: TextStyle(color: ChsColors.dark_text_medium, fontFamily: "Work Sans", fontSize: 14, fontWeight: FontWeight.w400),
-                display1: TextStyle(color: ChsColors.dark_text_high, fontFamily: "Rochester", fontSize: 34, fontWeight: FontWeight.w400),
-                button: TextStyle(color: ChsColors.dark_text_high, fontFamily: "Work Sans", fontSize: 14, fontWeight: FontWeight.w500),
-                caption: TextStyle(color: ChsColors.dark_text_disabled, fontFamily: "Work Sans", fontSize: 12, fontWeight: FontWeight.w500),
+                title: TextStyle(
+                    color: ChsColors.dark_text_high,
+                    fontFamily: "Work Sans",
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500),
+                body1: TextStyle(
+                    color: ChsColors.dark_text_high,
+                    fontFamily: "Work Sans",
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400),
+                body2: TextStyle(
+                    color: ChsColors.dark_text_medium,
+                    fontFamily: "Work Sans",
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400),
+                display1: TextStyle(
+                    color: ChsColors.dark_text_high,
+                    fontFamily: "Rochester",
+                    fontSize: 34,
+                    fontWeight: FontWeight.w400),
+                button: TextStyle(
+                    color: ChsColors.dark_text_high,
+                    fontFamily: "Work Sans",
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500),
+                caption: TextStyle(
+                    color: ChsColors.dark_text_disabled,
+                    fontFamily: "Work Sans",
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500),
               ),
               dialogTheme: DialogTheme(
                 backgroundColor: ChsColors.dark_bkg,
                 elevation: 16,
-                titleTextStyle: TextStyle(color: ChsColors.dark_text_high, fontFamily: "Work Sans", fontSize: 20, fontWeight: FontWeight.w500),
+                titleTextStyle: TextStyle(
+                    color: ChsColors.dark_text_high,
+                    fontFamily: "Work Sans",
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500),
               ),
               errorColor: ChsColors.dark_error,
             );
-      case ChsThemeType
-          .custom:
+      case ChsThemeType.custom:
         return customCustomTheme != null
             ? customCustomTheme.copyWith(
-          backgroundColor: backgroundColor ?? ChsColors.default_bkg,
-          scaffoldBackgroundColor: scaffoldColor ?? ChsColors.default_scaffold,
-          primaryColor: primaryColor ?? ChsColors.default_primary,
-          accentColor: accentColor ?? ChsColors.default_accent,
-          appBarTheme: AppBarTheme(brightness: Brightness.light, color: primaryColor ?? ChsColors.default_primary, elevation: 8, ),
-          bottomAppBarColor: primaryColor ?? ChsColors.default_primary,
-          iconTheme: IconThemeData(color: iconColor ?? Colors.black),
-          textTheme: TextTheme(
-              title: TextStyle(color: textColorHigh ?? ChsColors.default_text_high, fontFamily: "Work Sans", fontSize: 20, fontWeight: FontWeight.w500),
-              body1: TextStyle(color: textColorHigh ?? ChsColors.default_text_high, fontFamily: "Work Sans", fontSize: 16, fontWeight: FontWeight.w400),
-              body2: TextStyle(color: textColorMedium ?? ChsColors.default_text_medium, fontFamily: "Work Sans", fontSize: 14, fontWeight: FontWeight.w400),
-              display1: TextStyle(color: textColorHigh ?? ChsColors.default_text_high, fontFamily: "Rochester", fontSize: 34, fontWeight: FontWeight.w400),
-              button: TextStyle(color: textColorHigh ?? ChsColors.default_text_high, fontFamily: "Work Sans", fontSize: 14, fontWeight: FontWeight.w500),
-              caption: TextStyle(color: textColorDisabled ?? ChsColors.default_text_disabled, fontFamily: "Work Sans", fontSize: 12, fontWeight: FontWeight.w500),
-          ),
-          dialogTheme: DialogTheme(
-            backgroundColor: backgroundColor ?? ChsColors.default_bkg,
-            elevation: 6,
-            titleTextStyle: TextStyle(color: textColorHigh ?? ChsColors.default_text_high, fontFamily: "Work Sans", fontSize: 20, fontWeight: FontWeight.w500),
-          ),
-          errorColor: ChsColors.default_error,
-        )
+                backgroundColor: backgroundColor ?? ChsColors.default_bkg,
+                scaffoldBackgroundColor:
+                    scaffoldColor ?? ChsColors.default_scaffold,
+                primaryColor: primaryColor ?? ChsColors.default_primary,
+                accentColor: accentColor ?? ChsColors.default_accent,
+                appBarTheme: AppBarTheme(
+                  brightness: Brightness.light,
+                  color: primaryColor ?? ChsColors.default_primary,
+                  elevation: 8,
+                ),
+                bottomAppBarColor: primaryColor ?? ChsColors.default_primary,
+                iconTheme: IconThemeData(color: iconColor ?? Colors.black),
+                textTheme: TextTheme(
+                  title: TextStyle(
+                      color: textColorHigh ?? ChsColors.default_text_high,
+                      fontFamily: "Work Sans",
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500),
+                  body1: TextStyle(
+                      color: textColorHigh ?? ChsColors.default_text_high,
+                      fontFamily: "Work Sans",
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400),
+                  body2: TextStyle(
+                      color: textColorMedium ?? ChsColors.default_text_medium,
+                      fontFamily: "Work Sans",
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400),
+                  display1: TextStyle(
+                      color: textColorHigh ?? ChsColors.default_text_high,
+                      fontFamily: "Rochester",
+                      fontSize: 34,
+                      fontWeight: FontWeight.w400),
+                  button: TextStyle(
+                      color: textColorHigh ?? ChsColors.default_text_high,
+                      fontFamily: "Work Sans",
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500),
+                  caption: TextStyle(
+                      color:
+                          textColorDisabled ?? ChsColors.default_text_disabled,
+                      fontFamily: "Work Sans",
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500),
+                ),
+                dialogTheme: DialogTheme(
+                  backgroundColor: backgroundColor ?? ChsColors.default_bkg,
+                  elevation: 6,
+                  titleTextStyle: TextStyle(
+                      color: textColorHigh ?? ChsColors.default_text_high,
+                      fontFamily: "Work Sans",
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500),
+                ),
+                errorColor: ChsColors.default_error,
+              )
             : ThemeData.light().copyWith(
-          backgroundColor: backgroundColor ?? ChsColors.default_bkg,
-          scaffoldBackgroundColor: scaffoldColor ?? ChsColors.default_scaffold,
-          primaryColor: primaryColor ?? ChsColors.default_primary,
-          accentColor: accentColor ?? ChsColors.default_accent,
-          appBarTheme: AppBarTheme(brightness: Brightness.light, color: primaryColor ?? ChsColors.default_primary, elevation: 8, ),
-          bottomAppBarColor: primaryColor ?? ChsColors.default_primary,
-          iconTheme: IconThemeData(color: iconColor ?? Colors.black),
-          textTheme: TextTheme(
-            title: TextStyle(color: textColorHigh ?? ChsColors.default_text_high, fontFamily: "Work Sans", fontSize: 20, fontWeight: FontWeight.w500),
-            body1: TextStyle(color: textColorHigh ?? ChsColors.default_text_high, fontFamily: "Work Sans", fontSize: 16, fontWeight: FontWeight.w400),
-            body2: TextStyle(color: textColorMedium ?? ChsColors.default_text_medium, fontFamily: "Work Sans", fontSize: 14, fontWeight: FontWeight.w400),
-            display1: TextStyle(color: textColorHigh ?? ChsColors.default_text_high, fontFamily: "Rochester", fontSize: 34, fontWeight: FontWeight.w400),
-            button: TextStyle(color: textColorHigh ?? ChsColors.default_text_high, fontFamily: "Work Sans", fontSize: 14, fontWeight: FontWeight.w500),
-            caption: TextStyle(color: textColorDisabled ?? ChsColors.default_text_disabled, fontFamily: "Work Sans", fontSize: 12, fontWeight: FontWeight.w500),
-          ),
-          dialogTheme: DialogTheme(
-            backgroundColor: backgroundColor ?? ChsColors.default_bkg,
-            elevation: 6,
-            titleTextStyle: TextStyle(color: textColorHigh ?? ChsColors.default_text_high, fontFamily: "Work Sans", fontSize: 20, fontWeight: FontWeight.w500),
-          ),
-          errorColor: ChsColors.default_error,
-        );
+                backgroundColor: backgroundColor ?? ChsColors.default_bkg,
+                scaffoldBackgroundColor:
+                    scaffoldColor ?? ChsColors.default_scaffold,
+                primaryColor: primaryColor ?? ChsColors.default_primary,
+                accentColor: accentColor ?? ChsColors.default_accent,
+                appBarTheme: AppBarTheme(
+                  brightness: Brightness.light,
+                  color: primaryColor ?? ChsColors.default_primary,
+                  elevation: 8,
+                ),
+                bottomAppBarColor: primaryColor ?? ChsColors.default_primary,
+                iconTheme: IconThemeData(color: iconColor ?? Colors.black),
+                textTheme: TextTheme(
+                  title: TextStyle(
+                      color: textColorHigh ?? ChsColors.default_text_high,
+                      fontFamily: "Work Sans",
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500),
+                  body1: TextStyle(
+                      color: textColorHigh ?? ChsColors.default_text_high,
+                      fontFamily: "Work Sans",
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400),
+                  body2: TextStyle(
+                      color: textColorMedium ?? ChsColors.default_text_medium,
+                      fontFamily: "Work Sans",
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400),
+                  display1: TextStyle(
+                      color: textColorHigh ?? ChsColors.default_text_high,
+                      fontFamily: "Rochester",
+                      fontSize: 34,
+                      fontWeight: FontWeight.w400),
+                  button: TextStyle(
+                      color: textColorHigh ?? ChsColors.default_text_high,
+                      fontFamily: "Work Sans",
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500),
+                  caption: TextStyle(
+                      color:
+                          textColorDisabled ?? ChsColors.default_text_disabled,
+                      fontFamily: "Work Sans",
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500),
+                ),
+                dialogTheme: DialogTheme(
+                  backgroundColor: backgroundColor ?? ChsColors.default_bkg,
+                  elevation: 6,
+                  titleTextStyle: TextStyle(
+                      color: textColorHigh ?? ChsColors.default_text_high,
+                      fontFamily: "Work Sans",
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500),
+                ),
+                errorColor: ChsColors.default_error,
+              );
       default:
         return customLightTheme ?? ThemeData.light().copyWith();
     }
@@ -234,6 +358,7 @@ class ChsThemeModel extends ChangeNotifier {
           accentColor: darkAccentColor ?? null,
         );
   }
+
   Color get backgroundColor {
     if (darkMode ?? false) {
       return ChsColors.dark_bkg;
@@ -281,92 +406,74 @@ class ChsThemeModel extends ChangeNotifier {
 
   bool get darkMode => _darkMode ?? type == ChsThemeType.dark;
 
-  bool get customTheme => _customTheme ?? type == ChsThemeType
-      .custom;
+  bool get customTheme => _customTheme ?? type == ChsThemeType.custom;
 
   Color get primaryColor {
     if (_primaryColor == null) {
-      return type == ChsThemeType
-          .dark
-          ? ThemeData.dark().primaryColor
-          : ThemeData.light().primaryColor;
+      return type == ChsThemeType.dark
+          ? ChsColors.dark_primary
+          : ChsColors.default_primary;
     }
     return Color(_primaryColor);
   }
 
   Color get bkgColor {
-    if(_backgroundColor == null) {
-      return type == ChsThemeType
-          .dark
-          ? ThemeData.dark().backgroundColor
-          : ThemeData.light().backgroundColor;
+    if (_backgroundColor == null) {
+      return type == ChsThemeType.dark
+          ? ChsColors.dark_bkg
+          : ChsColors.default_bkg;
     }
     return Color(_backgroundColor);
   }
+
   Color get accentColor {
-    if (type == ChsThemeType
-        .dark) {
+    if (type == ChsThemeType.dark) {
       if (_darkAccentColor == null) {
-        return ThemeData.dark().accentColor;
+        return ChsColors.default_accent;
       }
       return Color(_darkAccentColor);
     }
-
-    if (_accentColor == null) {
-      return ThemeData.light().accentColor;
-    }
-
-    if (_customTheme) {
-      return Color(_accentColor);
-    }
-
-    return ChsColors.default_accent;
+    if (_accentColor == null) return ChsColors.default_accent;
+    return Color(_accentColor);
   }
 
   Color get darkAccentColor {
-    if (_darkAccentColor == null) return ThemeData.dark().accentColor;
+    if (_darkAccentColor == null) return ChsColors.default_accent;
     return Color(_darkAccentColor);
   }
 
   Color get textHigh {
-    if(_textHigh == null) return ChsColors.default_text_high;
+    if (_textHigh == null) return ChsColors.default_text_high;
     return Color(_textHigh);
   }
 
   Color get textMedium {
-    if(_textMedium == null) return ChsColors.default_text_medium;
+    if (_textMedium == null) return ChsColors.default_text_medium;
     return Color(_textMedium);
   }
 
   Color get textDisabled {
-    if(_textDisabled == null) return ChsColors.default_text_disabled;
+    if (_textDisabled == null) return ChsColors.default_text_disabled;
     return Color(_textDisabled);
   }
 
   Color get iconColor {
-    if (_iconColor == null) {
-      return ThemeData.light().iconTheme.color;
+    if (_darkMode ?? false) {
+      if (_iconColor == null) {
+        return ChsColors.dark_icon;
+      }
+      return ChsColors.dark_icon;
     }
-
-    if (_darkMode){
-      return ThemeData.dark().iconTheme.color;
-    }
-
-    if (_customTheme) {
+    if (_customTheme ?? false) {
+      if (_iconColor == null) return Colors.black;
       return Color(_iconColor);
     }
     return Colors.black;
   }
 
   Color get scaffoldColor {
-    if (_scaffoldColor == null) {
-      return ThemeData.light().scaffoldBackgroundColor;
-    }
-
-    if (_customTheme) {
-      return Color(_scaffoldColor);
-    }
-    return ChsColors.default_scaffold;
+    if (_scaffoldColor == null) return ChsColors.default_scaffold;
+    return Color(_scaffoldColor);
   }
 
   void reset() {

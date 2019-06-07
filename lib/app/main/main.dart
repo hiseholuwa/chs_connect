@@ -21,7 +21,11 @@ import 'package:rebloc/rebloc.dart';
 class MainPage extends StatefulWidget {
   final FirebaseAnalytics analytics;
   final FirebaseAnalyticsObserver observer;
+
   const MainPage({Key key, this.analytics, this.observer}) : super(key: key);
+  static _MainPageState of(BuildContext context) =>
+      context.ancestorStateOfType(const TypeMatcher<MainPage>());
+
   @override
   State<StatefulWidget> createState() {
     return _MainPageState(analytics, observer);
@@ -31,22 +35,18 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   final FirebaseAnalytics analytics;
   final FirebaseAnalyticsObserver observer;
-  ChsThemeModel _theme;
+  ChsThemeModel theme;
   FirebaseAuth auth = FirebaseAuth.instance;
   PageController pageController;
   Icon fabIcon;
   int currentIndex;
-
-
-
 
   _MainPageState(this.analytics, this.observer);
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    _theme = Provider.of<ChsThemeModel>(context);
-    fabIcon = Icon(Icons.add, color: _theme.iconColor,);
+    theme = Provider.of<ChsThemeModel>(context);
     return body(size);
   }
 
@@ -56,7 +56,10 @@ class _MainPageState extends State<MainPage> {
 
     Flushbar(
       message: "You're signed in as $email",
-      icon: Icon(Icons.check_circle_outline, color: Colors.green,),
+      icon: Icon(
+        Icons.check_circle_outline,
+        color: Colors.green,
+      ),
       aroundPadding: EdgeInsets.all(8),
       borderRadius: 8,
       duration: Duration(seconds: 3),
@@ -80,7 +83,10 @@ class _MainPageState extends State<MainPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Center(
-                    child: Text('Chat Page!!!', style: _theme.theme.textTheme.body1,),
+                    child: Text(
+                      'Chat Page!!!',
+                      style: theme.theme.textTheme.body1,
+                    ),
                   ),
                 ],
               ),
@@ -93,7 +99,10 @@ class _MainPageState extends State<MainPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Center(
-                    child: Text('Account Page!!!', style: _theme.theme.textTheme.body1,),
+                    child: Text(
+                      'Account Page!!!',
+                      style: theme.theme.textTheme.body1,
+                    ),
                   ),
                   logOutBtn(size),
                 ],
@@ -107,7 +116,7 @@ class _MainPageState extends State<MainPage> {
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
         bottomNavigationBar: BubbleBottomBar(
           opacity: .2,
-          backgroundColor: _theme.theme.primaryColor,
+          backgroundColor: theme.theme.primaryColor,
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
           elevation: 6,
           fabLocation: BubbleBottomBarFabLocation.end,
@@ -117,28 +126,51 @@ class _MainPageState extends State<MainPage> {
           onTap: _onTap,
           items: <BubbleBottomBarItem>[
             BubbleBottomBarItem(
-                backgroundColor: _theme.accentColor,
-                icon: Icon(CommunityMaterialIcons.home_variant, color: _theme.iconColor,),
-                activeIcon: Icon(CommunityMaterialIcons.home_variant, color: _theme.accentColor,),
+                backgroundColor: theme.accentColor,
+                icon: Icon(
+                  CommunityMaterialIcons.home_variant,
+                  color: theme.iconColor,
+                ),
+                activeIcon: Icon(
+                  CommunityMaterialIcons.home_variant,
+                  color: theme.accentColor,
+                ),
                 title: Text(ChsStrings.feedPage)),
             BubbleBottomBarItem(
-                backgroundColor: _theme.accentColor,
-                icon: Icon(CommunityMaterialIcons.chat, color: _theme.iconColor,),
-                activeIcon: Icon(CommunityMaterialIcons.chat, color: _theme.accentColor,),
+                backgroundColor: theme.accentColor,
+                icon: Icon(
+                  CommunityMaterialIcons.chat,
+                  color: theme.iconColor,
+                ),
+                activeIcon: Icon(
+                  CommunityMaterialIcons.chat,
+                  color: theme.accentColor,
+                ),
                 title: Text(ChsStrings.chatPage)),
             BubbleBottomBarItem(
-                backgroundColor: _theme.accentColor,
-                icon: Icon(CommunityMaterialIcons.hexagon_slice_4, color: _theme.iconColor,),
-                activeIcon: Icon(CommunityMaterialIcons.hexagon_slice_4, color: _theme.accentColor,),
+                backgroundColor: theme.accentColor,
+                icon: Icon(
+                  CommunityMaterialIcons.hexagon_slice_4,
+                  color: theme.iconColor,
+                ),
+                activeIcon: Icon(
+                  CommunityMaterialIcons.hexagon_slice_4,
+                  color: theme.accentColor,
+                ),
                 title: Text(ChsStrings.statusPage)),
             BubbleBottomBarItem(
-                backgroundColor: _theme.accentColor,
-                icon: Icon(CommunityMaterialIcons.account_circle, color: _theme.iconColor,),
-                activeIcon: Icon(CommunityMaterialIcons.account_circle, color: _theme.accentColor,),
+                backgroundColor: theme.accentColor,
+                icon: Icon(
+                  CommunityMaterialIcons.account_circle,
+                  color: theme.iconColor,
+                ),
+                activeIcon: Icon(
+                  CommunityMaterialIcons.account_circle,
+                  color: theme.accentColor,
+                ),
                 title: Text(ChsStrings.accountPage)),
           ],
         ),
-
       ),
     );
   }
@@ -166,33 +198,64 @@ class _MainPageState extends State<MainPage> {
                   color: Colors.white,
                   type: SpinKitWaveType.start,
                 );
-              }
-          );
+              });
           FirebaseAuth auth = FirebaseAuth.instance;
           ChsAuth.logOut();
-          StoreProvider.of<ChsAppState>(context).dispatcher(const ChsOnLogOutAction());
+          StoreProvider.of<ChsAppState>(context)
+              .dispatcher(const ChsOnLogOutAction());
           auth.onAuthStateChanged.listen((FirebaseUser user) async {
             if (user == null) {
               RoutePredicate predicate = (Route<dynamic> route) => false;
-              Navigator.pushAndRemoveUntil<void>(context, ChsPageRoute.fadeIn<void>(Welcome(analytics: analytics, observer: observer,)), predicate);
+              Navigator.pushAndRemoveUntil<void>(
+                  context,
+                  ChsPageRoute.fadeIn<void>(Welcome(
+                    analytics: analytics,
+                    observer: observer,
+                  )),
+                  predicate);
             }
           });
         },
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(height * 0.05)),
             side: BorderSide(
-              color: _theme.accentColor,
+              color: theme.accentColor,
             )),
         child: Text(ChsStrings.log_out,
-            style: TextStyle(color: _theme.accentColor, fontSize: 17)),
+            style: TextStyle(color: theme.accentColor, fontSize: 17)),
       ),
     );
   }
 
   _fab() {
+    switch (currentIndex) {
+      case 0:
+        fabIcon = Icon(
+          Icons.add,
+          color: theme.iconColor,
+        );
+        break;
+      case 1:
+        fabIcon = Icon(
+          CommunityMaterialIcons.chat,
+          color: theme.iconColor,
+        );
+        break;
+      case 2:
+        fabIcon = Icon(
+          Icons.add,
+          color: theme.iconColor,
+        );
+        break;
+      case 3:
+        fabIcon = Icon(
+          Icons.edit,
+          color: theme.iconColor,
+        );
+    }
     return FloatingActionButton(
       onPressed: () {},
-      backgroundColor: _theme.accentColor,
+      backgroundColor: theme.accentColor,
       child: fabIcon,
       elevation: 2.0,
     );
@@ -200,22 +263,9 @@ class _MainPageState extends State<MainPage> {
 
   _onTap(int position) {
     setState(
-          () {
+      () {
         pageController.jumpToPage(position);
         currentIndex = position;
-        switch (position) {
-          case 0:
-            fabIcon = Icon(Icons.add, color: _theme.iconColor,);
-            break;
-          case 1:
-            fabIcon = Icon(CommunityMaterialIcons.chat, color: _theme.iconColor,);
-            break;
-          case 2:
-            fabIcon = Icon(Icons.add, color: _theme.iconColor,);
-            break;
-          case 3:
-            fabIcon = Icon(Icons.edit, color: _theme.iconColor,);
-        }
       },
     );
   }
@@ -226,7 +276,7 @@ class _MainPageState extends State<MainPage> {
     _analyticsSetup();
     pageController = PageController();
     currentIndex = 0;
-
+//    fabIcon = Icon(Icons.add,);
   }
 
   @override
