@@ -434,7 +434,8 @@ class ChsThemeModel extends ChangeNotifier {
       return Color(_darkAccentColor);
     }
     if (_accentColor == null) return ChsColors.default_accent;
-    return Color(_accentColor);
+    if (_customTheme ?? false) return Color(_accentColor);
+    return ChsColors.default_accent;
   }
 
   Color get darkAccentColor {
