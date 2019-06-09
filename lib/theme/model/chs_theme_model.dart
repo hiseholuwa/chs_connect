@@ -1,6 +1,7 @@
 import 'package:chs_connect/constants/chs_colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:localstorage/localstorage.dart';
 export 'package:provider/provider.dart';
 
@@ -413,6 +414,21 @@ class ChsThemeModel extends ChangeNotifier {
       return type == ChsThemeType.dark
           ? ChsColors.dark_primary
           : ChsColors.default_primary;
+    }
+    if(_customTheme){
+      Color temp = Color(_primaryColor);
+      bool useWhiteForeground(color) => 1.05 / (color.computeLuminance() + 0.05) > 4.5;
+      if(useWhiteForeground(temp)){
+        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+            statusBarColor: temp,
+            statusBarBrightness: Brightness.light,
+            statusBarIconBrightness: Brightness.light));
+      } else {
+        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+            statusBarColor: temp,
+            statusBarBrightness: Brightness.dark,
+            statusBarIconBrightness: Brightness.dark));
+      }
     }
     return Color(_primaryColor);
   }

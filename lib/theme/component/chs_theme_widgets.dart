@@ -1,7 +1,5 @@
 export 'package:chs_connect/theme/component/pickers/custom_accent.dart';
 export 'package:chs_connect/theme/component/pickers/dark_accent.dart';
-export 'package:chs_connect/theme/component/pickers/dark_picker.dart';
-export 'package:chs_connect/theme/component/pickers/picker.dart';
 export 'package:chs_connect/theme/component/pickers/primary.dart';
 export 'package:chs_connect/theme/component/pickers/scaffold.dart';
 export 'package:chs_connect/theme/component/pickers/icon.dart';

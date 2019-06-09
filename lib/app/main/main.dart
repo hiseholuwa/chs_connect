@@ -1,4 +1,5 @@
 import 'package:chs_connect/app/auth/welcome.dart';
+import 'package:chs_connect/app/main/pages/chat/chat.dart';
 import 'package:chs_connect/app/main/pages/feed/feedPage.dart';
 import 'package:chs_connect/app/main/pages/status/status.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
@@ -79,17 +80,7 @@ class _MainPageState extends State<MainPage> {
               child: FeedPage(),
             ),
             Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Center(
-                    child: Text(
-                      'Chat Page!!!',
-                      style: theme.theme.textTheme.body1,
-                    ),
-                  ),
-                ],
-              ),
+              child: ChatPage(),
             ),
             Container(
               child: StatusPage(),
