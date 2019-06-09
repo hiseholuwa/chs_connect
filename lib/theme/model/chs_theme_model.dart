@@ -108,6 +108,12 @@ class ChsThemeModel extends ChangeNotifier {
     if (_storage == null) {
       init();
     }
+    if (!_darkMode){
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+          statusBarColor: Colors.white,
+          statusBarBrightness: Brightness.dark,
+          statusBarIconBrightness: Brightness.dark));
+    }
     switch (type) {
       case ChsThemeType.light:
         return customLightTheme ??
