@@ -1,8 +1,6 @@
 import 'package:chs_connect/app/auth/welcome.dart';
 import 'package:chs_connect/app/main/main.dart';
 import 'package:chs_connect/constants/chs_images.dart';
-import 'package:chs_connect/rebloc/actions/common.dart';
-import 'package:chs_connect/rebloc/states/main.dart';
 import 'package:chs_connect/theme/model/chs_theme_model.dart';
 import 'package:chs_connect/utils/chs_page_transitions.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -12,7 +10,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:rebloc/rebloc.dart';
 
 class Splash extends StatelessWidget {
   final FirebaseAnalytics analytics;
@@ -58,10 +55,7 @@ class Splash extends StatelessWidget {
     FirebaseUser user = await auth.currentUser();
     if (user != null) {
       Future.delayed(Duration(milliseconds: 1000)).then((_) {
-//        Navigator.of(context, rootNavigator: true).pop();
         WidgetsBinding.instance.addPostFrameCallback((_) async {
-          StoreProvider.of<ChsAppState>(context)
-              .dispatcher(ChsOnLoginAction(user));
           RoutePredicate predicate = (Route<dynamic> route) => false;
           Navigator.pushAndRemoveUntil<void>(
               context,
@@ -74,7 +68,6 @@ class Splash extends StatelessWidget {
       });
     } else {
       Future.delayed(Duration(milliseconds: 1000)).then((_) {
-//        Navigator.of(context, rootNavigator: true).pop();
         RoutePredicate predicate = (Route<dynamic> route) => false;
         Navigator.pushAndRemoveUntil<void>(
             context,

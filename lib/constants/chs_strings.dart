@@ -29,8 +29,11 @@ class ChsStrings {
   static const snackbar_no_photo = "Photo required";
   static const snackbar_verification =
       "Verification link has been sent to the provided email";
+  static const snackbar_reset =
+      "Reset link has been sent to the provided email";
   static const snackbar_chk_verification = "Email has been verified";
   static const snackbar_chk_verification_err = "Email has not been verified";
+  static const snackbar_reset_err = "Reset link not sent to email";
   static const verification_text = "Almost there! Please verify your email.";
   static const verification_btn = "Resend Verification Email";
   static const verification_chk_btn = "Verified?";

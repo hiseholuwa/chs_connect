@@ -2,9 +2,8 @@ import 'package:chs_connect/app/auth/welcome.dart';
 import 'package:chs_connect/app/main/pages/chat/chat.dart';
 import 'package:chs_connect/app/main/pages/feed/feedPage.dart';
 import 'package:chs_connect/app/main/pages/status/status.dart';
+import 'package:chs_connect/constants/chs_colors.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
-import 'package:chs_connect/rebloc/actions/common.dart';
-import 'package:chs_connect/rebloc/states/main.dart';
 import 'package:chs_connect/services/chs_auth.dart';
 import 'package:chs_connect/theme/model/chs_theme_model.dart';
 import 'package:chs_connect/utils/chs_page_transitions.dart';
@@ -17,7 +16,6 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:rebloc/rebloc.dart';
 
 class MainPage extends StatefulWidget {
   final FirebaseAnalytics analytics;
@@ -53,18 +51,27 @@ class _MainPageState extends State<MainPage> {
 
   Future<void> _analyticsSetup() async {
     FirebaseUser user = await auth.currentUser();
+    bool newUser = await ChsAuth.newUser();
+    int temp = user.metadata.creationTimestamp + 2;
+    print("Created at:" + user.metadata.creationTimestamp.toString());
+    print("Signed in at:" + user.metadata.lastSignInTimestamp.toString());
+    print("temp:" + temp.toString());
     String email = user.email;
 
-    Flushbar(
-      message: "You're signed in as $email",
-      icon: Icon(
-        Icons.check_circle_outline,
-        color: Colors.green,
-      ),
-      aroundPadding: EdgeInsets.all(8),
-      borderRadius: 8,
-      duration: Duration(seconds: 3),
-    )..show(context);
+    if(newUser) {
+      Flushbar(
+        message: "You're signed in as $email",
+        icon: Icon(
+          Icons.check_circle_outline,
+          color: Colors.green,
+        ),
+        aroundPadding: EdgeInsets.all(8),
+        borderRadius: 8,
+        backgroundColor: theme.darkMode ? Colors.white : ChsColors.dark_bkg,
+        duration: Duration(seconds: 3),
+      )
+        ..show(context);
+    }
     await analytics.setCurrentScreen(
         screenName: 'Main Screen', screenClassOverride: 'MainScreenClass');
   }
@@ -192,8 +199,6 @@ class _MainPageState extends State<MainPage> {
               });
           FirebaseAuth auth = FirebaseAuth.instance;
           ChsAuth.logOut();
-          StoreProvider.of<ChsAppState>(context)
-              .dispatcher(const ChsOnLogOutAction());
           auth.onAuthStateChanged.listen((FirebaseUser user) async {
             if (user == null) {
               RoutePredicate predicate = (Route<dynamic> route) => false;
@@ -267,7 +272,6 @@ class _MainPageState extends State<MainPage> {
     _analyticsSetup();
     pageController = PageController();
     currentIndex = 0;
-//    fabIcon = Icon(Icons.add,);
   }
 
   @override

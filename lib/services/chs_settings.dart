@@ -14,7 +14,6 @@ class ChsSettings {
   static Future<void> initVersion() async => _versionName = await GetVersion.projectVersion.catchError((dynamic e) => null);
   static void setVersion(String version) => _versionName = version;
   static String getVersion() => _versionName;
-  static void setData(ChsSettingsModel data) => _settings = data;
   static ChsSettingsModel getData() => _settings;
   static Future<bool> checkIsFirstTime() async {
     final state = await ChsPreferences.getBool(IS_FIRST_TIME);

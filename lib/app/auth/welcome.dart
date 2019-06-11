@@ -4,9 +4,6 @@ import 'package:chs_connect/app/main/main.dart';
 import 'package:chs_connect/constants/chs_colors.dart';
 import 'package:chs_connect/constants/chs_images.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
-import 'package:chs_connect/rebloc/actions/common.dart';
-import 'package:chs_connect/rebloc/states/main.dart';
-import 'package:chs_connect/rebloc/view_models/settings.dart';
 import 'package:chs_connect/services/chs_auth.dart';
 import 'package:chs_connect/services/chs_settings.dart';
 import 'package:chs_connect/utils/chs_page_transitions.dart';
@@ -17,7 +14,6 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:rebloc/rebloc.dart';
 
 class Welcome extends StatefulWidget {
   final FirebaseAnalytics analytics;
@@ -207,8 +203,6 @@ class _WelcomeState extends State<Welcome> {
     if (user != null) {
       setState(() => isLoading = false);
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        StoreProvider.of<ChsAppState>(context)
-            .dispatcher(ChsOnLoginAction(user));
         RoutePredicate predicate = (Route<dynamic> route) => false;
         Navigator.pushAndRemoveUntil<void>(
             context,
@@ -251,13 +245,7 @@ class _WelcomeState extends State<Welcome> {
 
   @override
   Widget build(BuildContext context) {
-    return ViewModelSubscriber<ChsAppState, ChsSettingsViewModel>(
-      converter: (store) => ChsSettingsViewModel(store),
-      builder: (BuildContext context, DispatchFunction dispatcher,
-          ChsSettingsViewModel vm) {
-        return welcomeScreen(context);
-      },
-    );
+    return  welcomeScreen(context);
   }
 
 //    Future<void> authState() async {

@@ -2,9 +2,11 @@ import 'package:chs_connect/constants/chs_colors.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
 import 'package:chs_connect/app/auth/blocs/auth_provider.dart';
 import 'package:chs_connect/constants/chs_images.dart';
-import 'package:community_material_icon/community_material_icon.dart';
+import 'package:chs_connect/services/chs_auth.dart';
+import 'package:chs_connect/theme/model/chs_theme_model.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
@@ -32,14 +34,13 @@ class _RecoveryCardState extends State<RecoveryCard>
   TextEditingController passwordController = TextEditingController();
   AnimationController controller;
   Animation<double> animation;
-  static Icon eye = Icon(CommunityMaterialIcons.eye);
-  static Icon eyeOff = Icon(CommunityMaterialIcons.eye_off);
-  Icon suffix = eye;
-  bool obscure = true;
+  ChsThemeModel theme;
+
 
   @override
   Widget build(BuildContext context) {
     deviceSize = MediaQuery.of(context).size;
+    theme = Provider.of<ChsThemeModel>(context);
     height = deviceSize.height;
     width = deviceSize.width;
     final bloc = AuthProvider.of(context);
@@ -48,17 +49,17 @@ class _RecoveryCardState extends State<RecoveryCard>
 
   Widget recoveryCard(AuthBloc bloc) {
     return Container(
-      margin: EdgeInsets.only(top: deviceSize.height / 20),
+      margin: EdgeInsets.only(top: height / 20),
       child: Opacity(
         opacity: animation.value,
         child: SizedBox(
-          width: deviceSize.width * 0.85,
+          width: width * 0.85,
           child: Column(
             children: <Widget>[
               Center(
                 child: CircleAvatar(
                   backgroundColor: Colors.transparent,
-                  radius: deviceSize.height * 0.15,
+                  radius: height * 0.15,
                   child: Image.asset(ChsImages.auth_logo),
                 ),
               ),
@@ -129,7 +130,7 @@ class _RecoveryCardState extends State<RecoveryCard>
       builder: (context, snapshot) {
         return TextField(
           keyboardType: TextInputType.emailAddress,
-          textInputAction: TextInputAction.next,
+          textInputAction: TextInputAction.done,
           onChanged: bloc.changeEmail,
           controller: emailController,
           style: new TextStyle(
@@ -194,9 +195,7 @@ class _RecoveryCardState extends State<RecoveryCard>
   }
 
   Future<void> sendEmail() async {
-//    String email = emailController.text.toString().trim();
-//    String password = passwordController.text.toString();
-
+    String email = emailController.text.toString().trim();
     showDialog(
         context: context,
         barrierDismissible: true,
@@ -207,39 +206,39 @@ class _RecoveryCardState extends State<RecoveryCard>
           );
         });
 
-//    try {
-//      FirebaseApi api = await FirebaseApi.signIn(email, password);
-//      if (api != null) {
-//        if (api.firebaseUser.isEmailVerified) {
-//          RoutePredicate predicate = (Route<dynamic> route) => false;
-//          Navigator.pushNamedAndRemoveUntil(
-//              context, UIData.mainPageRoute, predicate);
-//        } else {
-//          Navigator.pop(context);
-//          var snackbar = SnackBar(
-//            content: Text(
-//              UIData.snackbar_chk_verification_err,
-//              style: TextStyle(color: Colors.white),
-//            ),
-//            backgroundColor: Colors.black,
-//            duration: Duration(seconds: 2, milliseconds: 500),
-//          );
-//          Scaffold.of(context).showSnackBar(snackbar);
-//        }
-//      }
-//    } catch (e) {
-//      print(e);
-//      String error = FirebaseApi.getExceptionString(e);
-//      Navigator.pop(context);
-//      var snackbar = SnackBar(
-//        content: Text(
-//          error,
-//          style: TextStyle(color: Colors.white),
-//        ),
-//        backgroundColor: Colors.black,
-//        duration: Duration(seconds: 2, milliseconds: 500),
-//      );
-//      Scaffold.of(context).showSnackBar(snackbar);
-//    }
+    try {
+      bool sent = await ChsAuth.resetPassword(email);
+      if(sent){
+        Navigator.pop(context);
+        Flushbar(
+          message: ChsStrings.snackbar_reset,
+          icon: Icon(
+            Icons.check_circle_outline,
+            color: Colors.green,
+          ),
+          aroundPadding: EdgeInsets.all(8),
+          borderRadius: 8,
+          backgroundColor: theme.darkMode ? Colors.white : Colors.black,
+          duration: Duration(seconds: 3),
+        )
+          ..show(context);
+      }
+    } catch (e) {
+      print(e);
+      String error = ChsAuth.getExceptionString(e);
+      Navigator.pop(context);
+      Flushbar(
+        message: error,
+        icon: Icon(
+          Icons.error,
+          color: Theme.of(context).errorColor,
+        ),
+        aroundPadding: EdgeInsets.all(8),
+        borderRadius: 8,
+        backgroundColor: theme.darkMode ? Colors.white : Colors.black,
+        duration: Duration(seconds: 3),
+      )
+        ..show(context);
+    }
   }
 }

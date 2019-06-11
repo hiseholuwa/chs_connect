@@ -47,10 +47,17 @@ class ChsAuth {
       assert(!user.isAnonymous);
       assert(await user.getIdToken() != null);
       return user;
-
     } catch (e) {
       rethrow;
     }
+  }
+
+  static Future<bool> newUser() async {
+    FirebaseUser user = await _auth.currentUser();
+    FirebaseUserMetadata data = user.metadata;
+    int createdAt = data.creationTimestamp;
+    int lastSignedIn = data.lastSignInTimestamp;
+    return lastSignedIn - createdAt < 10;
   }
 
   static Future<FirebaseUser> createUserWithEmail(String email, String password) async {
@@ -63,6 +70,27 @@ class ChsAuth {
     } catch (e) {
       rethrow;
     }
+  }
+
+  static Future<void> verifyEmail() async {
+    FirebaseUser user = await _auth.currentUser();
+    if (user != null) {
+      await user.sendEmailVerification();
+    } else {
+      print(user);
+    }
+  }
+
+  static Future<bool> userVerified(FirebaseUser user) async {
+    return user.isEmailVerified;
+  }
+
+  static Future<bool> resetPassword(String email) async {
+    bool done;
+    await _auth.sendPasswordResetEmail(email: email).whenComplete((){
+      done = true;
+    });
+    return done;
   }
 
   static Future<void> logOut() async {

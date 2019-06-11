@@ -1,8 +1,5 @@
 import 'package:chs_connect/app/auth/splash.dart';
 import 'package:chs_connect/constants/chs_routes.dart';
-import 'package:chs_connect/rebloc/actions/common.dart';
-import 'package:chs_connect/rebloc/main.dart';
-import 'package:chs_connect/rebloc/states/main.dart';
 import 'package:chs_connect/services/chs_settings.dart';
 import 'package:chs_connect/theme/model/chs_theme_model.dart';
 import 'package:chs_connect/utils/chs_page_transitions.dart';
@@ -11,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/services.dart';
-import 'package:rebloc/rebloc.dart';
 
 class App extends StatefulWidget {
   static FirebaseAnalytics analytics = FirebaseAnalytics();
@@ -43,7 +39,6 @@ class _AppState extends State<App> {
   final FirebaseAnalytics analytics;
   final FirebaseAnalyticsObserver observer;
   final _model = ChsThemeModel();
-  final Store<ChsAppState> store = reblocStore();
   _AppState(this.analytics, this.observer);
 
   @override
@@ -51,33 +46,23 @@ class _AppState extends State<App> {
     return ListenableProvider<ChsThemeModel>(
       builder: (_) => _model..init(),
       child: Consumer<ChsThemeModel>(builder: (context, model, child) {
-        return StoreProvider<ChsAppState>(
-          store: store,
-          child: FirstBuildDispatcher<ChsAppState>(
-            action: const ChsOnInitAction(),
-            child: Builder(
-              builder: (BuildContext context) {
-                return MaterialApp(
-                  debugShowCheckedModeBanner: false,
-                  theme: model.theme,
-                  navigatorObservers: [observer],
-                  onGenerateRoute: (settings) {
-                    return ChsNavigateRoute<dynamic>(
-                        builder: (_) {
-                          return Splash(
-                            analytics: analytics,
-                            observer: observer,
-                          );
-                        },
-                        settings: settings.copyWith(
-                          name: ChsRoutes.splashPageRoute,
-                          isInitialRoute: true,
-                        ));
-                  },
-                );
-              },
-            ),
-          ),
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: model.theme,
+          navigatorObservers: [observer],
+          onGenerateRoute: (settings) {
+            return ChsNavigateRoute<dynamic>(
+                builder: (_) {
+                  return Splash(
+                    analytics: analytics,
+                    observer: observer,
+                  );
+                },
+                settings: settings.copyWith(
+                  name: ChsRoutes.splashPageRoute,
+                  isInitialRoute: true,
+                ));
+          },
         );
       }),
     );
@@ -90,7 +75,6 @@ class _AppState extends State<App> {
 
   @override
   void dispose() {
-    store.dispatcher(const ChsOnDisposeAction());
     super.dispose();
   }
 }
