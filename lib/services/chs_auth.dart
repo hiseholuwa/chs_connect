@@ -1,7 +1,11 @@
 import 'dart:async';
-import 'package:flutter/services.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+export 'package:firebase_auth/firebase_auth.dart';
+export 'package:google_sign_in/google_sign_in.dart';
 
 final GoogleSignIn _googleSignIn = GoogleSignIn();
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -10,7 +14,13 @@ class ChsAuth {
   ChsAuth._();
 
 
-  static Future<FirebaseUser> get getUser => _auth.currentUser();
+  static FirebaseUser _user;
+
+  static FirebaseUser setUser(FirebaseUser user) => _user = user;
+
+  static FirebaseUser get getUser => _user;
+
+  static GoogleSignInAccount get getGoogleUser => _googleSignIn.currentUser;
 
   static Future<GoogleSignInAccount> silently() async => await _googleSignIn.signInSilently();
 
@@ -19,7 +29,6 @@ class ChsAuth {
   static Future<FirebaseUser> signInWithGoogle() async {
     try {
       GoogleSignInAccount currentUser = _googleSignIn.currentUser;
-      currentUser ??= await _googleSignIn.signInSilently();
       currentUser ??= await _googleSignIn.signIn();
 
       if (currentUser == null) {
@@ -33,6 +42,7 @@ class ChsAuth {
       assert(user != null);
       assert(!user.isAnonymous);
 
+      setUser(user);
       return user;
 
     }  catch (e) {
@@ -46,15 +56,15 @@ class ChsAuth {
       assert(user != null);
       assert(!user.isAnonymous);
       assert(await user.getIdToken() != null);
+      setUser(user);
       return user;
     } catch (e) {
       rethrow;
     }
   }
 
-  static Future<bool> newUser() async {
-    FirebaseUser user = await _auth.currentUser();
-    FirebaseUserMetadata data = user.metadata;
+  static bool newUser() {
+    FirebaseUserMetadata data = _user.metadata;
     int createdAt = data.creationTimestamp;
     int lastSignedIn = data.lastSignInTimestamp;
     return lastSignedIn - createdAt < 10;
@@ -65,6 +75,7 @@ class ChsAuth {
       FirebaseUser user = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       assert(user != null);
       assert(await user.getIdToken() != null);
+      setUser(user);
       return user;
 
     } catch (e) {
@@ -72,13 +83,15 @@ class ChsAuth {
     }
   }
 
-  static Future<void> verifyEmail() async {
+  static Future<bool> verifyEmail() async {
     FirebaseUser user = await _auth.currentUser();
+    bool done = false;
     if (user != null) {
-      await user.sendEmailVerification();
+      await user.sendEmailVerification().whenComplete(() => done = true);
     } else {
       print(user);
     }
+    return done;
   }
 
   static Future<bool> userVerified(FirebaseUser user) async {

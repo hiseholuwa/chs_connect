@@ -8,7 +8,7 @@ class ChsColors {
   static const Color default_accent = const Color(0xFF007ECB);
   static const Color default_bkg = const Color(0xFFFFFFFF);
   static const Color default_primary = const Color(0xFFFFFFFF);
-  static const Color default_scaffold = const Color(0xFFEEEEEE);
+  static const Color default_scaffold = const Color(0xFFFAFAFA);
   static const Color default_text_high = const Color(0xDE000000);
   static const Color default_text_medium = const Color(0x99000000);
   static const Color default_text_disabled = const Color(0x61000000);

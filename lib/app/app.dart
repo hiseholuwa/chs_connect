@@ -1,32 +1,23 @@
+import 'package:chs_connect/app/auth/blocs/auth_provider.dart';
 import 'package:chs_connect/app/auth/splash.dart';
 import 'package:chs_connect/constants/chs_routes.dart';
-import 'package:chs_connect/services/chs_settings.dart';
+import 'package:chs_connect/services/chs_cloud_messaging.dart';
 import 'package:chs_connect/theme/model/chs_theme_model.dart';
 import 'package:chs_connect/utils/chs_page_transitions.dart';
-import 'package:provider/provider.dart';
-import 'package:flutter/material.dart';
+import 'package:chs_connect/utils/chs_user_cache.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class App extends StatefulWidget {
   static FirebaseAnalytics analytics = FirebaseAnalytics();
   static FirebaseAnalyticsObserver observer =
-      FirebaseAnalyticsObserver(analytics: analytics);
+  FirebaseAnalyticsObserver(analytics: analytics);
 
-  App({@required this.isFirstTime}) {
+  App({Key key}) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  }
-
-  final bool isFirstTime;
-
-  static Future<BootstrapModel> bootstrap() async {
-    final isFirstTime = await ChsSettings.checkIsFirstTimeLogin();
-    try {
-      await ChsSettings.initVersion();
-    } catch (e) {}
-
-    return BootstrapModel(isFirstTime: isFirstTime);
   }
 
   @override
@@ -39,13 +30,18 @@ class _AppState extends State<App> {
   final FirebaseAnalytics analytics;
   final FirebaseAnalyticsObserver observer;
   final _model = ChsThemeModel();
+  final _cache = ChsUserCache();
+
   _AppState(this.analytics, this.observer);
 
   @override
   Widget build(BuildContext context) {
-    return ListenableProvider<ChsThemeModel>(
-      builder: (_) => _model..init(),
-      child: Consumer<ChsThemeModel>(builder: (context, model, child) {
+    return MultiProvider(
+      providers: [
+        Provider<ChsThemeModel>(builder: (_) => _model..init(),),
+        Provider<ChsUserCache>(builder: (_) => _cache..init(),)
+      ],
+      child: Consumer2<ChsThemeModel, ChsUserCache>(builder: (context, model, user, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: model.theme,
@@ -53,9 +49,8 @@ class _AppState extends State<App> {
           onGenerateRoute: (settings) {
             return ChsNavigateRoute<dynamic>(
                 builder: (_) {
-                  return Splash(
-                    analytics: analytics,
-                    observer: observer,
+                  return AuthProvider(
+                    child: Splash(),
                   );
                 },
                 settings: settings.copyWith(
@@ -64,13 +59,14 @@ class _AppState extends State<App> {
                 ));
           },
         );
-      }),
+      },),
     );
   }
 
   @override
   void initState() {
     super.initState();
+    ChsFCM.getFCMToken();
   }
 
   @override
@@ -79,10 +75,3 @@ class _AppState extends State<App> {
   }
 }
 
-class BootstrapModel {
-  const BootstrapModel({
-    @required this.isFirstTime,
-  });
-
-  final bool isFirstTime;
-}

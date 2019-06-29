@@ -1,5 +1,6 @@
-import 'package:chs_connect/constants/chs_strings.dart';
 import 'dart:async';
+
+import 'package:chs_connect/constants/chs_strings.dart';
 
 class AuthValidator {
   static final _emailRegExpString =
@@ -17,15 +18,6 @@ class AuthValidator {
     }
   });
 
-  final validateUserName = StreamTransformer<String, String>.fromHandlers(
-      handleData: (userName, sink) {
-        if (userName.length >= 2) {
-          sink.add(userName);
-        } else {
-          sink.addError(ChsStrings.enter_valid_username);
-        }
-      });
-
   final validateFullName = StreamTransformer<String, String>.fromHandlers(
       handleData: (fullName, sink) {
         if (fullName.length >= 2) {
@@ -41,6 +33,33 @@ class AuthValidator {
           sink.add(password);
         } else {
           sink.addError(ChsStrings.enter_valid_password);
+        }
+      });
+
+  final validateUserName = StreamTransformer<String, String>.fromHandlers(
+      handleData: (userName, sink) {
+        if (userName.length >= 2) {
+          sink.add(userName);
+        } else {
+          sink.addError(ChsStrings.enter_valid_username);
+        }
+      });
+
+  final validatePhone = StreamTransformer<String, String>.fromHandlers(
+      handleData: (phone, sink) {
+        if (phone.length >= 6) {
+          sink.add(phone);
+        } else {
+          sink.addError(ChsStrings.enter_valid_phone);
+        }
+      });
+
+  final validateBio = StreamTransformer<String, String>.fromHandlers(
+      handleData: (bio, sink) {
+        if (bio.length >= 2) {
+          sink.add(bio);
+        } else {
+          sink.addError(ChsStrings.enter_valid_bio);
         }
       });
 }

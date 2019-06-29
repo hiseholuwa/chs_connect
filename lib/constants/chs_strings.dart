@@ -21,8 +21,10 @@ class ChsStrings {
   static const back = "Sign In";
   static const enter_valid_email = "Please enter a valid email";
   static const enter_valid_password = "Password length should be >= 6";
-  static const enter_valid_username = "Please enter valid username";
-  static const enter_valid_full_name = "Please enter valid fullname";
+  static const enter_valid_username = "Please enter a valid username";
+  static const enter_valid_phone = "Please enter a valid phone number";
+  static const enter_valid_bio = "Please enter a valid bio";
+  static const enter_valid_full_name = "Please enter a valid fullname";
   static const snackbar_login = "SIGN IN";
   static const snackbar_photo = "ADD PHOTO";
   static const snackbar_user_exists = "User already exists with that email";
@@ -33,10 +35,11 @@ class ChsStrings {
       "Reset link has been sent to the provided email";
   static const snackbar_chk_verification = "Email has been verified";
   static const snackbar_chk_verification_err = "Email has not been verified";
+  static const snackbar_chk_extra_err = "Please complete all fields";
   static const snackbar_reset_err = "Reset link not sent to email";
   static const verification_text = "Almost there! Please verify your email.";
   static const verification_btn = "Resend Verification Email";
-  static const verification_chk_btn = "Verified?";
+  static const verification_chk_btn = "Check Verification";
 
   //Database
   static const database_users = "registeredUsers";

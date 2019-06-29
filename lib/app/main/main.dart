@@ -1,80 +1,44 @@
+import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:chs_connect/app/auth/welcome.dart';
 import 'package:chs_connect/app/main/pages/chat/chat.dart';
 import 'package:chs_connect/app/main/pages/feed/feedPage.dart';
 import 'package:chs_connect/app/main/pages/status/status.dart';
 import 'package:chs_connect/constants/chs_colors.dart';
+import 'package:chs_connect/constants/chs_constants.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
 import 'package:chs_connect/services/chs_auth.dart';
 import 'package:chs_connect/theme/model/chs_theme_model.dart';
 import 'package:chs_connect/utils/chs_page_transitions.dart';
+import 'package:chs_connect/utils/chs_preferences.dart';
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class MainPage extends StatefulWidget {
-  final FirebaseAnalytics analytics;
-  final FirebaseAnalyticsObserver observer;
 
-  const MainPage({Key key, this.analytics, this.observer}) : super(key: key);
+  const MainPage({Key key}) : super(key: key);
+
   static _MainPageState of(BuildContext context) =>
       context.ancestorStateOfType(const TypeMatcher<MainPage>());
 
   @override
   State<StatefulWidget> createState() {
-    return _MainPageState(analytics, observer);
+    return _MainPageState();
   }
 }
 
 class _MainPageState extends State<MainPage> {
-  final FirebaseAnalytics analytics;
-  final FirebaseAnalyticsObserver observer;
+  final FirebaseAnalytics analytics = FirebaseAnalytics();
   ChsThemeModel theme;
-  FirebaseAuth auth = FirebaseAuth.instance;
   PageController pageController;
   Icon fabIcon;
   int currentIndex;
 
-  _MainPageState(this.analytics, this.observer);
-
-  @override
-  Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    theme = Provider.of<ChsThemeModel>(context);
-    return body(size);
-  }
-
-  Future<void> _analyticsSetup() async {
-    FirebaseUser user = await auth.currentUser();
-    bool newUser = await ChsAuth.newUser();
-    int temp = user.metadata.creationTimestamp + 2;
-    print("Created at:" + user.metadata.creationTimestamp.toString());
-    print("Signed in at:" + user.metadata.lastSignInTimestamp.toString());
-    print("temp:" + temp.toString());
-    String email = user.email;
-
-    if(newUser) {
-      Flushbar(
-        message: "You're signed in as $email",
-        icon: Icon(
-          Icons.check_circle_outline,
-          color: Colors.green,
-        ),
-        aroundPadding: EdgeInsets.all(8),
-        borderRadius: 8,
-        backgroundColor: theme.darkMode ? Colors.white : ChsColors.dark_bkg,
-        duration: Duration(seconds: 3),
-      )
-        ..show(context);
-    }
-    await analytics.setCurrentScreen(
-        screenName: 'Main Screen', screenClassOverride: 'MainScreenClass');
-  }
+  _MainPageState();
 
   Widget body(Size size) {
     return SafeArea(
@@ -204,10 +168,7 @@ class _MainPageState extends State<MainPage> {
               RoutePredicate predicate = (Route<dynamic> route) => false;
               Navigator.pushAndRemoveUntil<void>(
                   context,
-                  ChsPageRoute.fadeIn<void>(Welcome(
-                    analytics: analytics,
-                    observer: observer,
-                  )),
+                  ChsPageRoute.fadeIn<void>(Welcome()),
                   predicate);
             }
           });
@@ -223,47 +184,13 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  _fab() {
-    switch (currentIndex) {
-      case 0:
-        fabIcon = Icon(
-          Icons.add,
-          color: theme.iconColor,
-        );
-        break;
-      case 1:
-        fabIcon = Icon(
-          CommunityMaterialIcons.chat,
-          color: theme.iconColor,
-        );
-        break;
-      case 2:
-        fabIcon = Icon(
-          Icons.add,
-          color: theme.iconColor,
-        );
-        break;
-      case 3:
-        fabIcon = Icon(
-          Icons.edit,
-          color: theme.iconColor,
-        );
-    }
-    return FloatingActionButton(
-      onPressed: () {},
-      backgroundColor: theme.accentColor,
-      child: fabIcon,
-      elevation: 2.0,
-    );
-  }
-
-  _onTap(int position) {
-    setState(
-      () {
-        pageController.jumpToPage(position);
-        currentIndex = position;
-      },
-    );
+  @override
+  Widget build(BuildContext context) {
+    var size = MediaQuery
+        .of(context)
+        .size;
+    theme = Provider.of<ChsThemeModel>(context);
+    return body(size);
   }
 
   @override
@@ -279,4 +206,81 @@ class _MainPageState extends State<MainPage> {
     super.dispose();
     pageController.dispose();
   }
+
+  Future<void> _analyticsSetup() async {
+    FirebaseUser user = ChsAuth.getUser;
+    String email = user.email;
+    bool newUser = await ChsPreferences.getBool(IS_FIRST_TIME_LOGIN);
+    if (true) {
+      ChsPreferences.setBool(IS_FIRST_TIME_LOGIN, false);
+      await analytics.logEvent(
+        name: 'new_user',
+        parameters: <String, dynamic>{
+          'id': user.uid,
+          'name': user.displayName,
+          'email': user.email,
+        },
+      );
+      Flushbar(
+        message: "Welcome 😃! \nYou're signed in as $email",
+        icon: Icon(
+          Icons.check_circle_outline,
+          color: Colors.green,
+        ),
+        aroundPadding: EdgeInsets.all(8),
+        borderRadius: 8,
+        backgroundColor: theme.darkMode ? Colors.white : ChsColors.dark_bkg,
+        duration: Duration(seconds: 3),
+      )
+        ..show(context);
+    }
+
+
+    await analytics.setCurrentScreen(
+        screenName: 'Main Screen', screenClassOverride: 'MainScreenClass');
+  }
+
+  _fab() {
+    switch (currentIndex) {
+      case 0:
+        fabIcon = Icon(
+          Icons.add,
+          color: theme.lightMode ? Colors.white : theme.iconColor,
+        );
+        break;
+      case 1:
+        fabIcon = Icon(
+          CommunityMaterialIcons.chat,
+          color: theme.lightMode ? Colors.white : theme.iconColor,
+        );
+        break;
+      case 2:
+        fabIcon = Icon(
+          Icons.add,
+          color: theme.lightMode ? Colors.white : theme.iconColor,
+        );
+        break;
+      case 3:
+        fabIcon = Icon(
+          Icons.edit,
+          color: theme.lightMode ? Colors.white : theme.iconColor,
+        );
+    }
+    return FloatingActionButton(
+      onPressed: () {},
+      backgroundColor: theme.accentColor,
+      child: fabIcon,
+      elevation: 2.0,
+    );
+  }
+
+  _onTap(int position) {
+    setState(
+          () {
+        pageController.jumpToPage(position);
+        currentIndex = position;
+      },
+    );
+  }
+
 }

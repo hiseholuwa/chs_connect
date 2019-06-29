@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:localstorage/localstorage.dart';
+
 export 'package:provider/provider.dart';
 
 enum ChsThemeType { light, dark, custom }
@@ -13,7 +14,7 @@ class ChsThemeModel extends ChangeNotifier {
     this.customDarkTheme,
     this.customCustomTheme,
     String key,
-  }) : _storage = LocalStorage(key ?? "app_theme");
+  }) : _storage = LocalStorage("app_theme");
 
   final ThemeData customLightTheme, customDarkTheme, customCustomTheme;
 
@@ -21,6 +22,7 @@ class ChsThemeModel extends ChangeNotifier {
   bool _customTheme = false;
   int _darkAccentColor = ChsColors.default_accent.value;
   bool _darkMode = false;
+  bool _lightMode = false;
   int _primaryColor = ChsColors.default_primary.value;
   int _scaffoldColor = ChsColors.default_scaffold.value;
   int _backgroundColor = ChsColors.default_bkg.value;
@@ -35,6 +37,7 @@ class ChsThemeModel extends ChangeNotifier {
       return ChsThemeType.dark;
     }
     if (_customTheme ?? false) return ChsThemeType.custom;
+    _lightMode = true;
     return ChsThemeType.light;
   }
 
@@ -108,11 +111,21 @@ class ChsThemeModel extends ChangeNotifier {
     if (_storage == null) {
       init();
     }
-    if (!_darkMode){
+    if (_lightMode ?? false) {
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
           statusBarColor: Colors.white,
           statusBarBrightness: Brightness.dark,
+          systemNavigationBarColor: Colors.white,
+          systemNavigationBarIconBrightness: Brightness.dark,
           statusBarIconBrightness: Brightness.dark));
+    }
+    if (_darkMode ?? false) {
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+          statusBarColor: Colors.black,
+          statusBarBrightness: Brightness.light,
+          systemNavigationBarColor: Colors.black,
+          systemNavigationBarIconBrightness: Brightness.light,
+          statusBarIconBrightness: Brightness.light));
     }
     switch (type) {
       case ChsThemeType.light:
@@ -126,6 +139,13 @@ class ChsThemeModel extends ChangeNotifier {
                 brightness: Brightness.light,
                 color: ChsColors.default_primary,
                 elevation: 8,
+                iconTheme: IconThemeData(color: Colors.black,),
+                actionsIconTheme: IconThemeData(color: Colors.black,),
+                textTheme: TextTheme(title: TextStyle(
+                    color: ChsColors.default_text_high,
+                    fontFamily: "Work Sans",
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500),),
               ),
               bottomAppBarColor: ChsColors.default_primary,
               iconTheme: IconThemeData(color: Colors.black),
@@ -169,6 +189,12 @@ class ChsThemeModel extends ChangeNotifier {
                     fontFamily: "Work Sans",
                     fontSize: 20,
                     fontWeight: FontWeight.w500),
+                contentTextStyle: TextStyle(
+                    color: ChsColors.default_text_high,
+                    fontFamily: "Work Sans",
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500
+                ),
               ),
               errorColor: ChsColors.default_error,
             );
@@ -182,6 +208,8 @@ class ChsThemeModel extends ChangeNotifier {
               appBarTheme: AppBarTheme(
                 color: ChsColors.dark_primary,
                 elevation: 8,
+                iconTheme: IconThemeData(color: ChsColors.dark_icon),
+                actionsIconTheme: IconThemeData(color: ChsColors.dark_icon),
               ),
               bottomAppBarColor: ChsColors.dark_primary,
               iconTheme: IconThemeData(color: ChsColors.dark_icon),
@@ -225,6 +253,12 @@ class ChsThemeModel extends ChangeNotifier {
                     fontFamily: "Work Sans",
                     fontSize: 20,
                     fontWeight: FontWeight.w500),
+                contentTextStyle: TextStyle(
+                    color: ChsColors.dark_text_high,
+                    fontFamily: "Work Sans",
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500
+                ),
               ),
               errorColor: ChsColors.dark_error,
             );
@@ -240,6 +274,8 @@ class ChsThemeModel extends ChangeNotifier {
                   brightness: Brightness.light,
                   color: primaryColor ?? ChsColors.default_primary,
                   elevation: 8,
+                  iconTheme: IconThemeData(color: iconColor ?? Colors.black),
+                  actionsIconTheme: IconThemeData(color: iconColor ?? Colors.black),
                 ),
                 bottomAppBarColor: primaryColor ?? ChsColors.default_primary,
                 iconTheme: IconThemeData(color: iconColor ?? Colors.black),
@@ -284,6 +320,12 @@ class ChsThemeModel extends ChangeNotifier {
                       fontFamily: "Work Sans",
                       fontSize: 20,
                       fontWeight: FontWeight.w500),
+                  contentTextStyle: TextStyle(
+                      color: textColorHigh ?? ChsColors.default_text_high,
+                      fontFamily: "Work Sans",
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500
+                  ),
                 ),
                 errorColor: ChsColors.default_error,
               )
@@ -297,6 +339,8 @@ class ChsThemeModel extends ChangeNotifier {
                   brightness: Brightness.light,
                   color: primaryColor ?? ChsColors.default_primary,
                   elevation: 8,
+                  iconTheme: IconThemeData(color: iconColor ?? Colors.black),
+                  actionsIconTheme: IconThemeData(color: iconColor ?? Colors.black),
                 ),
                 bottomAppBarColor: primaryColor ?? ChsColors.default_primary,
                 iconTheme: IconThemeData(color: iconColor ?? Colors.black),
@@ -341,6 +385,12 @@ class ChsThemeModel extends ChangeNotifier {
                       fontFamily: "Work Sans",
                       fontSize: 20,
                       fontWeight: FontWeight.w500),
+                  contentTextStyle: TextStyle(
+                      color: textColorHigh ?? ChsColors.default_text_high,
+                      fontFamily: "Work Sans",
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500
+                  ),
                 ),
                 errorColor: ChsColors.default_error,
               );
@@ -349,12 +399,12 @@ class ChsThemeModel extends ChangeNotifier {
     }
   }
 
-  void checkPlatformBrightness(BuildContext context) {
-    if (!darkMode &&
-        MediaQuery.of(context).platformBrightness == Brightness.dark) {
-      changeDarkMode(true);
-    }
-  }
+//  void checkPlatformBrightness(BuildContext context) {
+//    if (!darkMode &&
+//        MediaQuery.of(context).platformBrightness == Brightness.dark) {
+//      changeDarkMode(true);
+//    }
+//  }
 
   ThemeData get darkTheme {
     if (_storage == null) {
@@ -412,6 +462,8 @@ class ChsThemeModel extends ChangeNotifier {
   }
 
   bool get darkMode => _darkMode ?? type == ChsThemeType.dark;
+
+  bool get lightMode => _lightMode ?? type == ChsThemeType.light;
 
   bool get customTheme => _customTheme ?? type == ChsThemeType.custom;
 
@@ -495,6 +547,16 @@ class ChsThemeModel extends ChangeNotifier {
   }
 
   Color get scaffoldColor {
+    if (_darkMode ?? false) {
+      if (_scaffoldColor == null) {
+        return ChsColors.dark_scaffold;
+      }
+      return ChsColors.dark_scaffold;
+    }
+    if (_customTheme ?? false) {
+      if (_scaffoldColor == null) return ChsColors.default_scaffold;
+      return Color(_scaffoldColor);
+    }
     if (_scaffoldColor == null) return ChsColors.default_scaffold;
     return Color(_scaffoldColor);
   }

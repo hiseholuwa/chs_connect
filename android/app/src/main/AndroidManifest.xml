@@ -39,6 +39,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity
+                android:name="com.yalantis.ucrop.UCropActivity"
+                android:screenOrientation="portrait"
+                android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <meta-data
                 android:name="io.fabric.ApiKey"
                 android:value="13852009a6b396893fd0e1287e60ab45b613955b" />

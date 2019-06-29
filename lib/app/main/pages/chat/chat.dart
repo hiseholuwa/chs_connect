@@ -1,5 +1,6 @@
-import 'package:flutter_colorpicker/material_picker.dart';
+import 'package:chs_connect/constants/chs_colors.dart';
 import 'package:chs_connect/theme/model/chs_theme_model.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 
 class ChatPage extends StatefulWidget {
@@ -11,13 +12,6 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   ChsThemeModel theme;
-  Color pickerColor = Color(0xff443a49);
-  Color currentColor = Color(0xff443a49);
-
-
-  void changeColor(Color color) {
-    setState(() => pickerColor = color);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +24,7 @@ class _ChatPageState extends State<ChatPage> {
         appBar: AppBar(
           backgroundColor: theme.theme.appBarTheme.color,
           title: Text(
-            "Color Picker",
+            "FlushBar",
             style: theme.theme.textTheme.display1,
           ),
           elevation: theme.theme.appBarTheme.elevation,
@@ -46,47 +40,22 @@ class _ChatPageState extends State<ChatPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           RaisedButton(
-            child: Text("Click"),
+            child: Text("Click Me!!!!!"),
             onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) =>  AlertDialog(
-                  title: const Text('Pick a color!'),
-                  content: SingleChildScrollView(
-//                    child: ColorPicker(
-//                      pickerColor: pickerColor,
-//                      onColorChanged: changeColor,
-//                      enableLabel: true,
-//                      pickerAreaHeightPercent: 0.8,
-//                    ),
-                    // Use Material color picker:
-                    //
-                     child: MaterialPicker(
-                       pickerColor: pickerColor,
-                       onColorChanged: changeColor,
-                      // enableLabel: true, // only on portrait mode
-                     ),
-                    //
-                    // Use Block color picker:
-                    //
-                    // child: BlockPicker(
-                    //   pickerColor: currentColor,
-                    //   onColorChanged: changeColor,
-                    // ),
-                  ),
-                  actions: <Widget>[
-                    FlatButton(
-                      child: const Text('OK'),
-                      onPressed: () {
-                        setState(() => currentColor = pickerColor);
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
+              Flushbar(
+                messageText: Text("Hello From the other side", style: TextStyle(color: theme.darkMode ? Colors.black : Colors.white),),
+                icon: Icon(
+                  Icons.check_circle_outline,
+                  color: Colors.green,
                 ),
-              );
+                aroundPadding: EdgeInsets.all(8),
+                borderRadius: 8,
+                backgroundColor: theme.darkMode ? Colors.white : ChsColors.dark_bkg,
+                duration: Duration(seconds: 3),
+              )
+                ..show(context);
             },
-          )
+          ),
         ],
       ),
     );

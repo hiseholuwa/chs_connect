@@ -1,13 +1,14 @@
 import 'dart:io';
 
 import 'package:chs_connect/app/app.dart';
+import 'package:chs_connect/services/chs_settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 Future main() async {
-  final BootstrapModel bs = await App.bootstrap();
+  await ChsSettings.initVersion();
   _setTargetPlatform();
-  runApp(App(isFirstTime: bs.isFirstTime,));
+  runApp(App());
 }
 
 void _setTargetPlatform() {

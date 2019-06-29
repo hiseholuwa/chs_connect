@@ -1,28 +1,27 @@
+import 'package:chs_connect/app/auth/verify.dart';
 import 'package:chs_connect/app/auth/welcome.dart';
 import 'package:chs_connect/app/main/main.dart';
 import 'package:chs_connect/constants/chs_images.dart';
+import 'package:chs_connect/services/chs_auth.dart';
 import 'package:chs_connect/theme/model/chs_theme_model.dart';
 import 'package:chs_connect/utils/chs_page_transitions.dart';
+import 'package:chs_connect/utils/chs_user_cache.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Splash extends StatelessWidget {
-  final FirebaseAnalytics analytics;
-  final FirebaseAnalyticsObserver observer;
-  static ChsThemeModel theme;
+  final FirebaseAnalytics analytics = FirebaseAnalytics();
+  static ChsThemeModel theme = ChsThemeModel();
+  static ChsUserCache userCache;
 
-  Splash({Key key, @required this.analytics, @required this.observer})
-      : super(key: key);
+  Splash({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    theme = Provider.of<ChsThemeModel>(context);
-    changeStatusBar(theme);
+    userCache = Provider.of<ChsUserCache>(context);
     Future.delayed(Duration(milliseconds: 500), () {
       authState(context);
     });
@@ -53,42 +52,51 @@ class Splash extends StatelessWidget {
         });
     FirebaseAuth auth = FirebaseAuth.instance;
     FirebaseUser user = await auth.currentUser();
+    bool verified = user?.isEmailVerified;
     if (user != null) {
-      Future.delayed(Duration(milliseconds: 1000)).then((_) {
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
+      userCache.changeName(user.displayName);
+      userCache.changePhotoUrl(user.photoUrl);
+      userCache.changeEmail(user.email);
+      if (verified) {
+        ChsAuth.setUser(user);
+        Future.delayed(Duration(milliseconds: 1000)).then((_) {
           RoutePredicate predicate = (Route<dynamic> route) => false;
-          Navigator.pushAndRemoveUntil<void>(
+          Navigator.pushAndRemoveUntil(
               context,
-              ChsPageRoute.fadeIn<void>(MainPage(
-                analytics: analytics,
-                observer: observer,
+              ChsPageRoute.slideIn<void>(ListenableProvider<ChsThemeModel>(
+                builder: (_) => theme..init(),
+                child: Consumer<ChsThemeModel>(
+                  builder: (context, model, child) {
+                    return Theme(
+                      data: model.theme,
+                      child: MainPage(),
+                    );
+                  },
+                ),
               )),
               predicate);
         });
-      });
+      } else {
+        Future.delayed(Duration(milliseconds: 1000)).then((_) {
+          RoutePredicate predicate = (Route<dynamic> route) => false;
+          Navigator.pushAndRemoveUntil(
+              context,
+              ChsPageRoute.fadeIn<void>(
+                Verify(
+                  userCache: userCache,
+                ),
+              ),
+              predicate);
+        });
+      }
     } else {
       Future.delayed(Duration(milliseconds: 1000)).then((_) {
         RoutePredicate predicate = (Route<dynamic> route) => false;
-        Navigator.pushAndRemoveUntil<void>(
+        Navigator.pushAndRemoveUntil(
             context,
-            ChsPageRoute.fadeIn<void>(Welcome(
-              analytics: analytics,
-              observer: observer,
-            )),
+            ChsPageRoute.fadeIn<void>(Welcome()),
             predicate);
       });
-    }
-  }
-
-  void changeStatusBar(ChsThemeModel theme) {
-    if (!theme.darkMode) {
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-          statusBarColor: Colors.white,
-          statusBarIconBrightness: Brightness.dark));
-    } else {
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.light));
     }
   }
 }

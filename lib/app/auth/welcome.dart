@@ -1,37 +1,44 @@
 import 'package:chs_connect/app/auth/blocs/auth_provider.dart';
+import 'package:chs_connect/app/auth/extra.dart';
 import 'package:chs_connect/app/auth/login.dart';
+import 'package:chs_connect/app/auth/verify.dart';
 import 'package:chs_connect/app/main/main.dart';
 import 'package:chs_connect/constants/chs_colors.dart';
+import 'package:chs_connect/constants/chs_constants.dart';
 import 'package:chs_connect/constants/chs_images.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
 import 'package:chs_connect/services/chs_auth.dart';
+import 'package:chs_connect/services/chs_cloud_messaging.dart';
+import 'package:chs_connect/services/chs_firestore.dart';
 import 'package:chs_connect/services/chs_settings.dart';
+import 'package:chs_connect/theme/model/chs_theme_model.dart';
 import 'package:chs_connect/utils/chs_page_transitions.dart';
+import 'package:chs_connect/utils/chs_preferences.dart';
+import 'package:chs_connect/utils/chs_user_cache.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Welcome extends StatefulWidget {
-  final FirebaseAnalytics analytics;
-  final FirebaseAnalyticsObserver observer;
 
-  const Welcome({Key key, this.analytics, this.observer}) : super(key: key);
+  const Welcome({Key key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _WelcomeState(analytics, observer);
+    return _WelcomeState();
   }
 }
 
 class _WelcomeState extends State<Welcome> {
-  final FirebaseAnalytics analytics;
-  final FirebaseAnalyticsObserver observer;
-  _WelcomeState(this.analytics, this.observer);
-  bool isLoading;
+  final FirebaseAnalytics analytics = FirebaseAnalytics();
+  static ChsThemeModel theme = ChsThemeModel();
+  ChsUserCache userCache;
+
+  _WelcomeState();
 
   Widget welcomeScreen(BuildContext context) {
     var deviceSize = MediaQuery.of(context).size;
@@ -52,7 +59,7 @@ class _WelcomeState extends State<Welcome> {
           Container(
             height: deviceSize.height / 15,
           ),
-          emailBtn(deviceSize, context, this.analytics, this.observer),
+          emailBtn(deviceSize, context),
           googleBtn(deviceSize),
           Container(
             height: deviceSize.height / 20,
@@ -66,15 +73,14 @@ class _WelcomeState extends State<Welcome> {
                 : const SizedBox(),
           ),
           Center(
-            child: Text(ChsStrings.me,
-                style: TextStyle(color: Colors.grey, fontSize: 17)),
+            child: Text(ChsStrings.me, style: TextStyle(color: Colors.grey, fontSize: 17)),
           ),
         ],
       ),
     );
   }
 
-  Widget emailBtn(size, context, anal, observe) {
+  Widget emailBtn(size, context) {
     var height = size.height;
     var width = size.width;
     return Container(
@@ -92,10 +98,7 @@ class _WelcomeState extends State<Welcome> {
           Navigator.push(
               context,
               ChsPageRoute.fadeIn<void>(AuthProvider(
-                child: LoginPage(
-                  analytics: analytics,
-                  observer: observer,
-                ),
+                child: LoginPage(),
               )));
         },
         shape: RoundedRectangleBorder(
@@ -113,8 +116,7 @@ class _WelcomeState extends State<Welcome> {
             Padding(
               padding: EdgeInsets.only(left: width * 0.1),
             ),
-            Text(ChsStrings.login_email,
-                style: TextStyle(color: Colors.white, fontSize: 17)),
+            Text(ChsStrings.login_email, style: TextStyle(color: Colors.white, fontSize: 17)),
           ],
         ),
       ),
@@ -136,11 +138,9 @@ class _WelcomeState extends State<Welcome> {
         color: ChsColors.default_accent,
         padding: EdgeInsets.symmetric(vertical: height * 0.02),
         onPressed: () {
-          setState(() => isLoading = true);
           try {
             _login();
           } catch (e) {
-            setState(() => isLoading = false);
             Flushbar(
               message: e.toString(),
               icon: Icon(Icons.error),
@@ -164,12 +164,37 @@ class _WelcomeState extends State<Welcome> {
             Padding(
               padding: EdgeInsets.only(left: width * 0.1),
             ),
-            Text(ChsStrings.login_google,
-                style: TextStyle(color: Colors.white, fontSize: 17)),
+            Text(ChsStrings.login_google, style: TextStyle(color: Colors.white, fontSize: 17)),
           ],
         ),
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    userCache = Provider.of<ChsUserCache>(context);
+    return welcomeScreen(context);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _analyticsSetup();
+    changeStatusBar();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  Future<void> _analyticsSetup() async {
+    await analytics.setCurrentScreen(screenName: 'Welcome Screen', screenClassOverride: 'WelcomeScreenClass');
+  }
+
+  void changeStatusBar() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.transparent, statusBarIconBrightness: Brightness.dark));
   }
 
   Future<void> _login() async {
@@ -183,8 +208,12 @@ class _WelcomeState extends State<Welcome> {
           );
         });
     FirebaseUser user;
+    bool newUser;
+    bool verified;
     try {
       user = await ChsAuth.signInWithGoogle();
+      newUser = ChsAuth.newUser();
+      verified = user.isEmailVerified;
     } catch (e) {
       Navigator.pop(context);
       var message = ChsAuth.getExceptionString(e);
@@ -201,87 +230,50 @@ class _WelcomeState extends State<Welcome> {
       )..show(context);
     }
     if (user != null) {
-      setState(() => isLoading = false);
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (newUser) {
+        ChsPreferences.setBool(IS_FIRST_TIME_LOGIN, true);
+        await analytics.logSignUp(signUpMethod: 'Google');
+        userCache.changeName(user.displayName);
+        userCache.changePhotoUrl(user.photoUrl);
+        userCache.changeEmail(user.email);
+        ChsFirestore.token.setData(ChsFCM.tokenToMap());
         RoutePredicate predicate = (Route<dynamic> route) => false;
-        Navigator.pushAndRemoveUntil<void>(
+        Navigator.pushAndRemoveUntil(
             context,
-            ChsPageRoute.fadeIn<void>(MainPage(
-              analytics: analytics,
-              observer: observer,
-            )),
+            ChsPageRoute.fadeIn<void>(
+              AuthProvider(
+                child: ExtraPage(),
+              ),
+            ),
             predicate);
-      });
+      } else {
+        if (verified) {
+          RoutePredicate predicate = (Route<dynamic> route) => false;
+          Navigator.pushAndRemoveUntil(
+              context,
+              ChsPageRoute.slideIn<void>(ListenableProvider<ChsThemeModel>(
+                builder: (_) => theme..init(),
+                child: Consumer<ChsThemeModel>(
+                  builder: (context, model, child) {
+                    return Theme(
+                      data: model.theme,
+                      child: MainPage(),
+                    );
+                  },
+                ),
+              )),
+              predicate);
+        } else {
+          ChsAuth.verifyEmail();
+          RoutePredicate predicate = (Route<dynamic> route) => false;
+          Navigator.pushAndRemoveUntil(
+              context,
+              ChsPageRoute.fadeIn<void>(Verify(
+                userCache: userCache,
+              )),
+              predicate);
+        }
+      }
     }
-
-//      return await ChsAuth.signInWithGoogle().catchError((dynamic e) async {
-//        if(e.message.isNotEmpty) {
-//          Flushbar(
-//            message: e.message,
-//            icon: Icon(Icons.error),
-//            aroundPadding: EdgeInsets.all(8),
-//            borderRadius: 8,
-//          );
-//        }
-//        if(!mounted){
-//          return;
-//        }
-//        if (ChsAuth.getUser != null) {
-//          setState(() => isLoading = false);
-//          WidgetsBinding.instance.addPostFrameCallback((_) async{
-//            StoreProvider.of<ChsAppState>(context).dispatcher(ChsOnLoginAction(ChsAuth.getUser));
-//            RoutePredicate predicate = (Route<dynamic> route) => false;
-//            Navigator.pushAndRemoveUntil<void>(context, ChsPageRoute.fadeIn<void>(MainPage(analytics: analytics, observer: observer,)), predicate);
-//          });
-//        }
-//      });
-  }
-
-  Future<void> _analyticsSetup() async {
-    await analytics.setCurrentScreen(
-        screenName: 'Welcome Screen',
-        screenClassOverride: 'WelcomeScreenClass');
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return  welcomeScreen(context);
-  }
-
-//    Future<void> authState() async {
-////      showDialog(
-////          context: context,
-////          barrierDismissible: true,
-////          builder: (context) {
-////            return SpinKitWave(
-////              color: Colors.white,
-////              type: SpinKitWaveType.start,
-////            );
-////          }
-////      );
-//      FirebaseAuth auth = FirebaseAuth.instance;
-//      FirebaseUser user = await auth.currentUser();
-//      if (user != null) {
-//        WidgetsBinding.instance.addPostFrameCallback((_) async {
-//          StoreProvider.of<ChsAppState>(context).dispatcher(
-//              ChsOnLoginAction(user));
-//          RoutePredicate predicate = (Route<dynamic> route) => false;
-//          Navigator.pushAndRemoveUntil<void>(context, ChsPageRoute.fadeIn<void>(
-//              MainPage(analytics: analytics, observer: observer,)), predicate);
-//        });
-//      }
-//    }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _analyticsSetup();
-    isLoading = false;
-//      authState();
   }
 }

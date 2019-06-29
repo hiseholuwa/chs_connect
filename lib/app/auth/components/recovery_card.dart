@@ -1,31 +1,28 @@
-import 'package:chs_connect/constants/chs_colors.dart';
-import 'package:chs_connect/constants/chs_strings.dart';
 import 'package:chs_connect/app/auth/blocs/auth_provider.dart';
+import 'package:chs_connect/constants/chs_colors.dart';
 import 'package:chs_connect/constants/chs_images.dart';
+import 'package:chs_connect/constants/chs_strings.dart';
 import 'package:chs_connect/services/chs_auth.dart';
 import 'package:chs_connect/theme/model/chs_theme_model.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class RecoveryCard extends StatefulWidget {
-  final FirebaseAnalytics analytics;
-  final FirebaseAnalyticsObserver observer;
-  const RecoveryCard({Key key, this.analytics, this.observer}) : super(key: key);
+  const RecoveryCard({Key key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _RecoveryCardState(analytics, observer);
+    return _RecoveryCardState();
   }
 }
 
 class _RecoveryCardState extends State<RecoveryCard>
     with SingleTickerProviderStateMixin {
-  final FirebaseAnalytics analytics;
-  final FirebaseAnalyticsObserver observer;
-  _RecoveryCardState(this.analytics, this.observer);
+  final FirebaseAnalytics analytics = FirebaseAnalytics();
+
+  _RecoveryCardState();
 
   var deviceSize;
   var height;
@@ -35,17 +32,6 @@ class _RecoveryCardState extends State<RecoveryCard>
   AnimationController controller;
   Animation<double> animation;
   ChsThemeModel theme;
-
-
-  @override
-  Widget build(BuildContext context) {
-    deviceSize = MediaQuery.of(context).size;
-    theme = Provider.of<ChsThemeModel>(context);
-    height = deviceSize.height;
-    width = deviceSize.width;
-    final bloc = AuthProvider.of(context);
-    return recoveryCard(bloc);
-  }
 
   Widget recoveryCard(AuthBloc bloc) {
     return Container(
@@ -105,23 +91,6 @@ class _RecoveryCardState extends State<RecoveryCard>
         ),
       ),
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    controller = new AnimationController(
-      vsync: this,
-      duration: new Duration(milliseconds: 1500),
-    );
-    animation = new Tween(begin: 0.0, end: 1.0).animate(
-      new CurvedAnimation(
-        parent: controller,
-        curve: Curves.fastOutSlowIn,
-      ),
-    );
-    animation.addListener(() => this.setState(() {}));
-    controller.forward();
   }
 
   Widget emailField(AuthBloc bloc) {
@@ -189,9 +158,69 @@ class _RecoveryCardState extends State<RecoveryCard>
   }
 
   @override
+  Widget build(BuildContext context) {
+    deviceSize = MediaQuery
+        .of(context)
+        .size;
+    theme = Provider.of<ChsThemeModel>(context);
+    height = deviceSize.height;
+    width = deviceSize.width;
+    final bloc = AuthProvider.of(context);
+    return recoveryCard(bloc);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    controller = new AnimationController(
+      vsync: this,
+      duration: new Duration(milliseconds: 1500),
+    );
+    animation = new Tween(begin: 0.0, end: 1.0).animate(
+      new CurvedAnimation(
+        parent: controller,
+        curve: Curves.fastOutSlowIn,
+      ),
+    );
+    animation.addListener(() => this.setState(() {}));
+    controller.forward();
+  }
+
+
+  @override
   void dispose() {
     controller.dispose();
     super.dispose();
+  }
+
+  void snackBar(bool error, String message) {
+    if (error) {
+      Flushbar(
+        message: message,
+        icon: Icon(
+          Icons.error,
+          color: Colors.red,
+        ),
+        aroundPadding: EdgeInsets.all(8),
+        borderRadius: 8,
+        backgroundColor: ChsColors.dark_bkg,
+        duration: Duration(seconds: 3),
+      )
+        ..show(context);
+    } else {
+      Flushbar(
+        message: message,
+        icon: Icon(
+          Icons.check_circle_outline,
+          color: Colors.green,
+        ),
+        aroundPadding: EdgeInsets.all(8),
+        borderRadius: 8,
+        backgroundColor: ChsColors.dark_bkg,
+        duration: Duration(seconds: 3),
+      )
+        ..show(context);
+    }
   }
 
   Future<void> sendEmail() async {
@@ -210,35 +239,13 @@ class _RecoveryCardState extends State<RecoveryCard>
       bool sent = await ChsAuth.resetPassword(email);
       if(sent){
         Navigator.pop(context);
-        Flushbar(
-          message: ChsStrings.snackbar_reset,
-          icon: Icon(
-            Icons.check_circle_outline,
-            color: Colors.green,
-          ),
-          aroundPadding: EdgeInsets.all(8),
-          borderRadius: 8,
-          backgroundColor: theme.darkMode ? Colors.white : Colors.black,
-          duration: Duration(seconds: 3),
-        )
-          ..show(context);
+        snackBar(false, ChsStrings.snackbar_reset);
       }
     } catch (e) {
       print(e);
       String error = ChsAuth.getExceptionString(e);
       Navigator.pop(context);
-      Flushbar(
-        message: error,
-        icon: Icon(
-          Icons.error,
-          color: Theme.of(context).errorColor,
-        ),
-        aroundPadding: EdgeInsets.all(8),
-        borderRadius: 8,
-        backgroundColor: theme.darkMode ? Colors.white : Colors.black,
-        duration: Duration(seconds: 3),
-      )
-        ..show(context);
+      snackBar(true, error);
     }
   }
 }
