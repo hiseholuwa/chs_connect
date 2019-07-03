@@ -7,6 +7,7 @@ import 'package:chs_connect/constants/chs_colors.dart';
 import 'package:chs_connect/constants/chs_constants.dart';
 import 'package:chs_connect/constants/chs_images.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
+import 'package:chs_connect/models/chs_user.dart';
 import 'package:chs_connect/services/chs_auth.dart';
 import 'package:chs_connect/services/chs_cloud_messaging.dart';
 import 'package:chs_connect/services/chs_firestore.dart';
@@ -43,6 +44,7 @@ class _WelcomeState extends State<Welcome> {
   Widget welcomeScreen(BuildContext context) {
     var deviceSize = MediaQuery.of(context).size;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: ChsColors.default_scaffold,
       body: Column(
         children: <Widget>[
@@ -67,9 +69,9 @@ class _WelcomeState extends State<Welcome> {
           Center(
             child: ChsSettings.getVersion() != null
                 ? Text(
-                    "v" + ChsSettings.getVersion(),
-                    style: TextStyle(color: Colors.grey, fontSize: 17),
-                  )
+              "v" + ChsSettings.getVersion(),
+              style: TextStyle(color: Colors.grey, fontSize: 17),
+            )
                 : const SizedBox(),
           ),
           Center(
@@ -139,7 +141,7 @@ class _WelcomeState extends State<Welcome> {
         padding: EdgeInsets.symmetric(vertical: height * 0.02),
         onPressed: () {
           try {
-            _login();
+            _login(size);
           } catch (e) {
             Flushbar(
               message: e.toString(),
@@ -197,7 +199,72 @@ class _WelcomeState extends State<Welcome> {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.transparent, statusBarIconBrightness: Brightness.dark));
   }
 
-  Future<void> _login() async {
+  void resolveTokenConflict(Size size) {
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(ChsStrings.auth_alert_title),
+            titleTextStyle: TextStyle(color: ChsColors.default_accent, fontFamily: ChsStrings.work_sans, fontSize: 25, fontWeight: FontWeight.w500),
+            content: SizedBox(
+              height: size.height * 0.2,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(ChsStrings.auth_alert_text1),
+                  Text(ChsStrings.auth_alert_text2),
+                  Text(ChsStrings.auth_alert_text3),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text(ChsStrings.auth_alert_btn1),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  ChsAuth.logOut();
+                },
+              ),
+              FlatButton(
+                child: Text(ChsStrings.auth_alert_btn2),
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) {
+                        return SpinKitWave(
+                          color: Colors.white,
+                          type: SpinKitWaveType.start,
+                        );
+                      });
+                  ChsFirestore.token.updateData(ChsFCM.tokenToMap()).whenComplete(() {
+                    RoutePredicate predicate = (Route<dynamic> route) => false;
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        ChsPageRoute.slideIn<void>(ListenableProvider(
+                          builder: (_) => theme..init(),
+                          child: Consumer<ChsThemeModel>(
+                            builder: (context, model, child) {
+                              return Theme(
+                                data: model.theme,
+                                child: MainPage(),
+                              );
+                            },
+                          ),
+                        )),
+                        predicate);
+                  });
+                },
+              ),
+            ],
+          );
+        }
+    );
+  }
+
+  Future<void> _login(Size size) async {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -210,9 +277,12 @@ class _WelcomeState extends State<Welcome> {
     FirebaseUser user;
     bool newUser;
     bool verified;
+    DocumentSnapshot ts;
+
     try {
       user = await ChsAuth.signInWithGoogle();
       newUser = ChsAuth.newUser();
+      ts = await Firestore.instance.collection(ChsStrings.database_app_token).document(user.uid).get();
       verified = user.isEmailVerified;
     } catch (e) {
       Navigator.pop(context);
@@ -230,48 +300,131 @@ class _WelcomeState extends State<Welcome> {
       )..show(context);
     }
     if (user != null) {
+      userCache.changeName(user.displayName);
+      userCache.changePhotoUrl(user.photoUrl);
+      userCache.changeEmail(user.email);
+      ChsAuth.setUser(user);
       if (newUser) {
         ChsPreferences.setBool(IS_FIRST_TIME_LOGIN, true);
         await analytics.logSignUp(signUpMethod: 'Google');
-        userCache.changeName(user.displayName);
-        userCache.changePhotoUrl(user.photoUrl);
-        userCache.changeEmail(user.email);
         ChsFirestore.token.setData(ChsFCM.tokenToMap());
         RoutePredicate predicate = (Route<dynamic> route) => false;
         Navigator.pushAndRemoveUntil(
             context,
             ChsPageRoute.fadeIn<void>(
               AuthProvider(
-                child: ExtraPage(),
+                  child: ListenableProvider(
+                    builder: (_) => userCache..init(),
+                    child: Consumer<ChsUserCache>(
+                      builder: (context, user, child) {
+                        return ExtraPage();
+                      },
+                    ),
+                  )
               ),
             ),
             predicate);
       } else {
-        if (verified) {
-          RoutePredicate predicate = (Route<dynamic> route) => false;
-          Navigator.pushAndRemoveUntil(
-              context,
-              ChsPageRoute.slideIn<void>(ListenableProvider<ChsThemeModel>(
-                builder: (_) => theme..init(),
-                child: Consumer<ChsThemeModel>(
-                  builder: (context, model, child) {
-                    return Theme(
-                      data: model.theme,
-                      child: MainPage(),
-                    );
-                  },
-                ),
-              )),
-              predicate);
+        if (userCache.userName.isEmpty) {
+          Firestore.instance.collection(ChsStrings.database_app_user).document(user.uid).get().then((ds) {
+            if (ds.exists) {
+              ChsUser cacheUser = ChsUser.fromDoc(ds);
+              userCache.changeUsername(cacheUser.username);
+              userCache.changeName(cacheUser.name);
+              userCache.changeEmail(cacheUser.email);
+              userCache.changePhone(cacheUser.phone);
+              userCache.changeBio(cacheUser.bio);
+              userCache.changePhotoUrl(cacheUser.photoUrl);
+              userCache.changeBirthday(cacheUser.birthday.toUtc().toString());
+
+              if (verified) {
+                String token = ChsFCM.token;
+                String cloudToken = ChsFCM.getFCMTokenFromDoc(ts);
+                if (token != cloudToken) {
+                  Navigator.pop(context);
+                  resolveTokenConflict(size);
+                } else {
+                  RoutePredicate predicate = (Route<dynamic> route) => false;
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      ChsPageRoute.slideIn<void>(ListenableProvider(
+                        builder: (_) => theme..init(),
+                        child: Consumer<ChsThemeModel>(
+                          builder: (context, model, child) {
+                            return Theme(
+                              data: model.theme,
+                              child: MainPage(),
+                            );
+                          },
+                        ),
+                      )),
+                      predicate);
+                }
+              } else {
+                ChsAuth.verifyEmail();
+                RoutePredicate predicate = (Route<dynamic> route) => false;
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    ChsPageRoute.fadeIn<void>(Verify(
+                      userCache: userCache,
+                    )),
+                    predicate);
+              }
+            } else {
+              ChsPreferences.setBool(IS_FIRST_TIME_LOGIN, true);
+              ChsFirestore.token.setData(ChsFCM.tokenToMap());
+              RoutePredicate predicate = (Route<dynamic> route) => false;
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  ChsPageRoute.fadeIn<void>(
+                    AuthProvider(
+                        child: ListenableProvider(
+                          builder: (_) => userCache..init(),
+                          child: Consumer<ChsUserCache>(
+                            builder: (context, user, child) {
+                              return ExtraPage();
+                            },
+                          ),
+                        )
+                    ),
+                  ),
+                  predicate);
+            }
+          });
         } else {
-          ChsAuth.verifyEmail();
-          RoutePredicate predicate = (Route<dynamic> route) => false;
-          Navigator.pushAndRemoveUntil(
-              context,
-              ChsPageRoute.fadeIn<void>(Verify(
-                userCache: userCache,
-              )),
-              predicate);
+          if (verified) {
+            String token = ChsFCM.token;
+            String cloudToken = ChsFCM.getFCMTokenFromDoc(ts);
+            if (token != cloudToken) {
+              Navigator.pop(context);
+              resolveTokenConflict(size);
+            } else {
+              RoutePredicate predicate = (Route<dynamic> route) => false;
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  ChsPageRoute.slideIn<void>(ListenableProvider(
+                    builder: (_) => theme..init(),
+                    child: Consumer<ChsThemeModel>(
+                      builder: (context, model, child) {
+                        return Theme(
+                          data: model.theme,
+                          child: MainPage(),
+                        );
+                      },
+                    ),
+                  )),
+                  predicate);
+            }
+          } else {
+            ChsAuth.verifyEmail();
+            RoutePredicate predicate = (Route<dynamic> route) => false;
+            Navigator.pushAndRemoveUntil(
+                context,
+                ChsPageRoute.fadeIn<void>(Verify(
+                  userCache: userCache,
+                )),
+                predicate);
+          }
         }
       }
     }

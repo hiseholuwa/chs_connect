@@ -29,22 +29,17 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   final FirebaseAnalytics analytics;
   final FirebaseAnalyticsObserver observer;
-  final _model = ChsThemeModel();
   final _cache = ChsUserCache();
 
   _AppState(this.analytics, this.observer);
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider<ChsThemeModel>(builder: (_) => _model..init(),),
-        Provider<ChsUserCache>(builder: (_) => _cache..init(),)
-      ],
-      child: Consumer2<ChsThemeModel, ChsUserCache>(builder: (context, model, user, child) {
+    return ListenableProvider(
+      builder: (_) => _cache..init(),
+      child: Consumer<ChsUserCache>(builder: (context, user, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          theme: model.theme,
           navigatorObservers: [observer],
           onGenerateRoute: (settings) {
             return ChsNavigateRoute<dynamic>(

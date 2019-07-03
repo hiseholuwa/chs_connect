@@ -1,6 +1,6 @@
-import 'package:chs_connect/constants/chs_colors.dart';
 import 'package:chs_connect/theme/model/chs_theme_model.dart';
-import 'package:flushbar/flushbar.dart';
+import 'package:chs_connect/utils/chs_user_cache.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ChatPage extends StatefulWidget {
@@ -12,11 +12,13 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   ChsThemeModel theme;
+  ChsUserCache userCache;
 
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
     theme = Provider.of<ChsThemeModel>(context);
+    userCache = Provider.of<ChsUserCache>(context);
     return SafeArea(
       top: true,
       bottom: true,
@@ -42,22 +44,36 @@ class _ChatPageState extends State<ChatPage> {
           RaisedButton(
             child: Text("Click Me!!!!!"),
             onPressed: () {
-              Flushbar(
-                messageText: Text("Hello From the other side", style: TextStyle(color: theme.darkMode ? Colors.black : Colors.white),),
-                icon: Icon(
-                  Icons.check_circle_outline,
-                  color: Colors.green,
-                ),
-                aroundPadding: EdgeInsets.all(8),
-                borderRadius: 8,
-                backgroundColor: theme.darkMode ? Colors.white : ChsColors.dark_bkg,
-                duration: Duration(seconds: 3),
-              )
-                ..show(context);
+              String userName = userCache.name;
+              print(userName);
+              Firestore.instance.collection('username').document('hiseholuwa').get().then((ds) {
+                if (ds.exists) {
+                  print('exists');
+                } else {
+                  print('do not exist');
+                }
+              });
+//              Flushbar(
+//                messageText: Text("Hello From the other side", style: TextStyle(color: theme.darkMode ? Colors.black : Colors.white),),
+//                icon: Icon(
+//                  Icons.check_circle_outline,
+//                  color: Colors.green,
+//                ),
+//                aroundPadding: EdgeInsets.all(8),
+//                borderRadius: 8,
+//                backgroundColor: theme.darkMode ? Colors.white : ChsColors.dark_bkg,
+//                duration: Duration(seconds: 3),
+//              )
+//                ..show(context);
             },
           ),
         ],
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 }

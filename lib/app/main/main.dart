@@ -3,19 +3,20 @@ import 'package:chs_connect/app/auth/welcome.dart';
 import 'package:chs_connect/app/main/pages/chat/chat.dart';
 import 'package:chs_connect/app/main/pages/feed/feedPage.dart';
 import 'package:chs_connect/app/main/pages/status/status.dart';
-import 'package:chs_connect/constants/chs_colors.dart';
 import 'package:chs_connect/constants/chs_constants.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
 import 'package:chs_connect/services/chs_auth.dart';
 import 'package:chs_connect/theme/model/chs_theme_model.dart';
 import 'package:chs_connect/utils/chs_page_transitions.dart';
 import 'package:chs_connect/utils/chs_preferences.dart';
+import 'package:chs_connect/utils/chs_user_cache.dart';
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class MainPage extends StatefulWidget {
@@ -34,6 +35,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   final FirebaseAnalytics analytics = FirebaseAnalytics();
   ChsThemeModel theme;
+  ChsUserCache userCache;
   PageController pageController;
   Icon fabIcon;
   int currentIndex;
@@ -190,6 +192,8 @@ class _MainPageState extends State<MainPage> {
         .of(context)
         .size;
     theme = Provider.of<ChsThemeModel>(context);
+    userCache = Provider.of<ChsUserCache>(context);
+    changeStatusBar();
     return body(size);
   }
 
@@ -207,11 +211,20 @@ class _MainPageState extends State<MainPage> {
     pageController.dispose();
   }
 
+  void changeStatusBar() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: Colors.white,
+        statusBarBrightness: Brightness.dark,
+        systemNavigationBarColor: Colors.white,
+        systemNavigationBarIconBrightness: Brightness.dark,
+        statusBarIconBrightness: Brightness.dark));
+  }
+
   Future<void> _analyticsSetup() async {
     FirebaseUser user = ChsAuth.getUser;
     String email = user.email;
     bool newUser = await ChsPreferences.getBool(IS_FIRST_TIME_LOGIN);
-    if (true) {
+    if (newUser) {
       ChsPreferences.setBool(IS_FIRST_TIME_LOGIN, false);
       await analytics.logEvent(
         name: 'new_user',
@@ -229,7 +242,6 @@ class _MainPageState extends State<MainPage> {
         ),
         aroundPadding: EdgeInsets.all(8),
         borderRadius: 8,
-        backgroundColor: theme.darkMode ? Colors.white : ChsColors.dark_bkg,
         duration: Duration(seconds: 3),
       )
         ..show(context);

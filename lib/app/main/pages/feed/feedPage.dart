@@ -17,10 +17,7 @@ class _FeedPageState extends State<FeedPage> {
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
     theme = Provider.of<ChsThemeModel>(context);
-    return SafeArea(
-      top: true,
-      bottom: true,
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           backgroundColor: theme.theme.appBarTheme.color,
           title: Text(
@@ -31,7 +28,6 @@ class _FeedPageState extends State<FeedPage> {
           brightness: theme.theme.appBarTheme.brightness,
         ),
         body: buildFeed(deviceSize),
-      ),
     );
   }
 

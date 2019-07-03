@@ -502,7 +502,14 @@ class _RegisterCardState extends State<RegisterCard> with TickerProviderStateMix
               context,
               ChsPageRoute.fadeIn<void>(
                 AuthProvider(
-                  child: ExtraPage(),
+                    child: ListenableProvider<ChsUserCache>(
+                      builder: (_) => userCache..init(),
+                      child: Consumer<ChsUserCache>(
+                        builder: (context, user, child) {
+                          return ExtraPage();
+                        },
+                      ),
+                    )
                 ),
               ),
               predicate);

@@ -10,6 +10,7 @@ class ChsUserCache extends ChangeNotifier {
   String _userName;
   String _name;
   String _email;
+  String _phone;
   String _photoUrl;
   String _birthday;
   String _bio;
@@ -29,6 +30,12 @@ class ChsUserCache extends ChangeNotifier {
   void changeEmail(String value) {
     _email = value;
     _storage.setItem("email", _email);
+    notifyListeners();
+  }
+
+  void changePhone(String value) {
+    _phone = value;
+    _storage.setItem("phone", _phone);
     notifyListeners();
   }
 
@@ -55,6 +62,7 @@ class ChsUserCache extends ChangeNotifier {
     _userName = "";
     _name = "";
     _email = "";
+    _phone = "";
     _photoUrl = "";
     _birthday = "";
     _bio = "";
@@ -65,6 +73,7 @@ class ChsUserCache extends ChangeNotifier {
       _userName = _storage.getItem("username");
       _name = _storage.getItem("name");
       _email = _storage.getItem("email");
+      _phone = _storage.getItem("phone");
       _photoUrl = _storage.getItem("photourl");
       _birthday = _storage.getItem("birthday");
       _bio = _storage.getItem("bio");
@@ -90,6 +99,13 @@ class ChsUserCache extends ChangeNotifier {
       return "";
     }
     return _email;
+  }
+
+  String get phone {
+    if (_phone == null) {
+      return "";
+    }
+    return _phone;
   }
 
   String get photoUrl {

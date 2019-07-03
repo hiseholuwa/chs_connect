@@ -4,7 +4,8 @@ class ChsStrings {
   static const appName = "CHS Connect";
   static const me = "Hiseholuwa \u00a9";
 
-  //auth strings
+
+  //general auth strings
   static const enter_username_hint = "Username";
   static const enter_full_name_hint = "Full Name";
   static const enter_email_hint = "Email Address";
@@ -41,14 +42,54 @@ class ChsStrings {
   static const verification_btn = "Resend Verification Email";
   static const verification_chk_btn = "Check Verification";
 
+  //Two Devices Auth Resolve
+  static const auth_alert_title = "Uh oh 😲";
+  static const auth_alert_text1 = "Looks like you're already signed in to another device.";
+  static const auth_alert_text2 = "Press \"Continue\" to sign in on this device instead.";
+  static const auth_alert_text3 = "Press \"Cancel\" to stop.";
+  static const auth_alert_btn1 = "Cancel 😒";
+  static const auth_alert_btn2 = "Continue 😘";
+
+  //VerifyScreen
+  static String verifyScreenText1(name) => "This is the last gotcha I promise $name! 😅";
+  static const verify_screen_text2 = "Please check your email for the link.";
+  static const verify_screen_text3 = "Didn't get it?";
+  static const verify_screen_text4 = "Verified?";
+
+  //ExtraScreen
+  static const extra_screen_prefix_init = "234";
+
+  static String extraScreenAppbarName(name) => "Hi $name 😍";
+  static const extra_screen_username = "Username:";
+  static const extra_screen_username_hint = "Username...";
+  static const extra_screen_phone = "Phone:";
+  static const extra_screen_phone_hint = "(123) 456-7890";
+  static const extra_screen_phone_init = "ng";
+  static const extra_screen_bd = "Birthday:";
+  static const extra_screen_bd_init = "May 28";
+  static const extra_screen_bio = "Bio:";
+  static const extra_screen_bio_hint = "Psalms 19:1";
+  static const extra_screen_text = "Almost there.... 😎";
+  static const extra_screen_continue = "Continue";
+  static const january = "January";
+  static const february = "February";
+  static const march = "March";
+  static const april = "April";
+  static const may = "May";
+  static const june = "June";
+  static const july = "July";
+  static const august = "August";
+  static const september = "September";
+  static const october = "October";
+  static const november = "November";
+  static const december = "December";
+  static const extra_screen_username_snackbar = "Username exists already 😭! Choose another.";
+
+
   //Database
-  static const database_users = "registeredUsers";
-  static const database_app = "Main";
-  static const database_app_user = "Users";
-  static const database_app_feed = "Feeds";
-  static const database_app_post = "Posts";
-  static const database_app_comment = "Comments";
-  static const default_bio = "Hi there! I'm a Connect User";
+  static const database_app_user = "user";
+  static const database_app_username = "username";
+  static const database_app_token = "token";
 
   //storage
   static const avatarRef = "User Avatar";
@@ -85,6 +126,8 @@ class ChsStrings {
 
 
   //Themes
+  static const rochester = "Rochester";
+  static const work_sans = "Work Sans";
   static const dark_mode = "Dark Mode";
   static const custom_theme = "Custom Theme";
   static const accent_color = "Accent Color";
@@ -95,4 +138,6 @@ class ChsStrings {
   static const text1_color = "Text One Color";
   static const text2_color = "Text Two Color";
   static const text3_color = "Text Three Color";
+
+
 }

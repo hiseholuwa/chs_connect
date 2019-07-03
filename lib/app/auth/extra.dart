@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:chs_connect/app/auth/blocs/auth_provider.dart';
 import 'package:chs_connect/app/auth/verify.dart';
+import 'package:chs_connect/app/main/main.dart';
 import 'package:chs_connect/components/chs_circle_avatar.dart';
 import 'package:chs_connect/constants/chs_colors.dart';
+import 'package:chs_connect/constants/chs_images.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
 import 'package:chs_connect/models/chs_user.dart';
 import 'package:chs_connect/services/chs_auth.dart';
@@ -35,13 +37,13 @@ class ExtraPage extends StatefulWidget {
 
 class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMixin {
   final FirebaseAnalytics analytics = FirebaseAnalytics();
+  final ChsThemeModel theme = ChsThemeModel();
   AnimationController _controller;
-  ChsThemeModel theme;
   ChsUserCache userCache;
   String name;
   String avatar;
-  String prefix = '234';
-  String bd = 'May 28';
+  String prefix = ChsStrings.extra_screen_prefix_init;
+  String bd = ChsStrings.extra_screen_bd_init;
   DateTime birthday;
   TextEditingController usernameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
@@ -57,12 +59,12 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
         child: Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: AppBar(
-            backgroundColor: theme.theme.appBarTheme.color,
+            backgroundColor: ChsColors.default_primary,
             title: Text(
-              "Hi $name",
-              style: theme.theme.textTheme.display1,
+              ChsStrings.extraScreenAppbarName(name),
+              style: TextStyle(color: ChsColors.default_text_high, fontFamily: ChsStrings.rochester, fontSize: 34, fontWeight: FontWeight.w400),
             ),
-            elevation: theme.theme.appBarTheme.elevation,
+            elevation: 8,
           ),
           backgroundColor: ChsColors.default_scaffold,
           body: Column(
@@ -90,7 +92,7 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
                       Padding(
                         padding: EdgeInsets.all(width * 0.02),
                       ),
-                      Text("Username:"),
+                      Text(ChsStrings.extra_screen_username),
                       Padding(
                         padding: EdgeInsets.all(width * 0.02),
                       ),
@@ -109,7 +111,7 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
                                 keyboardType: TextInputType.text,
                                 onChanged: bloc.changeUserName,
                                 decoration: InputDecoration(
-                                  hintText: "Username...",
+                                  hintText: ChsStrings.extra_screen_username_hint,
                                   contentPadding: EdgeInsets.fromLTRB(height * 0.025, height * 0.010, height * 0.025, height * 0.010),
                                   border: OutlineInputBorder(
                                     borderSide: BorderSide.none,
@@ -139,12 +141,12 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
                           top: height * 0.08,
                         ),
                       ),
-                      Text("Phone:"),
+                      Text(ChsStrings.extra_screen_phone),
                       Padding(
                         padding: EdgeInsets.all(width * 0.02),
                       ),
                       CountryPickerDropdown(
-                        initialValue: 'ng',
+                        initialValue: ChsStrings.extra_screen_phone_init,
                         itemBuilder: _buildDropdownItem,
                         onValuePicked: (Country country) {
                           setState(() {
@@ -181,7 +183,7 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
                                         keyboardType: TextInputType.phone,
                                         onChanged: bloc.changePhone,
                                         decoration: InputDecoration(
-                                          hintText: "(123)-456-7890",
+                                          hintText: ChsStrings.extra_screen_phone_hint,
                                           border: OutlineInputBorder(
                                             borderSide: BorderSide.none,
                                             borderRadius: BorderRadius.circular(height * 0.05),
@@ -215,7 +217,7 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
                           top: height * 0.08,
                         ),
                       ),
-                      Text("Birthday:"),
+                      Text(ChsStrings.extra_screen_bd),
                       Padding(
                         padding: EdgeInsets.all(width * 0.02),
                       ),
@@ -229,7 +231,7 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
                             builder: (BuildContext context, Widget child) {
                               return Theme(
                                 data: ThemeData(
-                                  primaryColor: theme.theme.accentColor,
+                                  primaryColor: ChsColors.default_accent,
                                 ),
                                 child: child,
                               );
@@ -276,7 +278,7 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
                           top: height * 0.08,
                         ),
                       ),
-                      Text("Bio:"),
+                      Text(ChsStrings.extra_screen_bio),
                       Padding(
                         padding: EdgeInsets.all(width * 0.02),
                       ),
@@ -299,7 +301,7 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
                                       keyboardType: TextInputType.multiline,
                                       onChanged: bloc.changeBio,
                                       decoration: InputDecoration(
-                                        hintText: "Y'ello",
+                                        hintText: ChsStrings.extra_screen_bio_hint,
                                         border: OutlineInputBorder(
                                           borderSide: BorderSide.none,
                                           borderRadius: BorderRadius.circular(height * 0.05),
@@ -326,14 +328,14 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
                 height: height * 0.4,
                 child: LottieView.fromFile(
                   loop: true,
-                  filePath: "assets/animations/dino-dance.json",
+                  filePath: ChsImages.dino_anim,
                   autoPlay: true,
                   onViewCreated: onViewCreatedFile,
                 ),
               ),
               Center(
                 child: Text(
-                  "Almost there.... 😎",
+                  ChsStrings.extra_screen_text,
                   style: TextStyle(color: Colors.black, fontSize: 18),
                 ),
               ),
@@ -358,7 +360,7 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Text(
-                            "Continue",
+                            ChsStrings.extra_screen_continue,
                             style: TextStyle(color: Colors.white),
                           )
                         ],
@@ -383,7 +385,6 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     final bloc = AuthProvider.of(context);
-    theme = Provider.of<ChsThemeModel>(context);
     userCache = Provider.of<ChsUserCache>(context);
     name = userCache.name.split(" ")[0];
     return extraScreen(width, height, bloc);
@@ -393,6 +394,7 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
   void initState() {
     super.initState();
     _analyticsSetup();
+    changeStatusBar();
     usernameController = TextEditingController();
     phoneController = TextEditingController();
     bioController = TextEditingController();
@@ -407,6 +409,15 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
 
   Future<void> _analyticsSetup() async {
     await analytics.setCurrentScreen(screenName: 'Extra Screen', screenClassOverride: 'ExtraScreenClass');
+  }
+
+  void changeStatusBar() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: Colors.white,
+        statusBarBrightness: Brightness.dark,
+        systemNavigationBarColor: Colors.white,
+        systemNavigationBarIconBrightness: Brightness.dark,
+        statusBarIconBrightness: Brightness.dark));
   }
 
   void onViewCreatedFile(LottieController controller) {
@@ -424,29 +435,29 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
   String month(int month) {
     switch (month) {
       case 1:
-        return 'January';
+        return ChsStrings.january;
       case 2:
-        return 'February';
+        return ChsStrings.february;
       case 3:
-        return 'March';
+        return ChsStrings.march;
       case 4:
-        return 'April';
+        return ChsStrings.april;
       case 5:
-        return 'May';
+        return ChsStrings.may;
       case 6:
-        return 'June';
+        return ChsStrings.june;
       case 7:
-        return 'July';
+        return ChsStrings.july;
       case 8:
-        return 'August';
+        return ChsStrings.august;
       case 9:
-        return 'September';
+        return ChsStrings.september;
       case 10:
-        return 'October';
+        return ChsStrings.october;
       case 11:
-        return 'November';
+        return ChsStrings.november;
       case 12:
-        return 'December';
+        return ChsStrings.december;
       default:
         return null;
     }
@@ -480,11 +491,12 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
     }
   }
 
-  void updateProfile() {
+  void updateProfile() async {
     String userName = usernameController.value.text;
     String bio = bioController.value.text;
     String phone = phoneNumber();
-    FirebaseUser authUser = ChsAuth.getUser;
+    FirebaseUser authUser = await FirebaseAuth.instance.currentUser();
+
     showDialog(
         context: context,
         barrierDismissible: true,
@@ -495,34 +507,61 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
           );
         });
     try {
-      bool exist = false;
-      Firestore.instance.collection('user').where("username", isEqualTo: userName).snapshots().listen((data) => data.documents.isEmpty ? exist = false : exist = true);
-      if (exist) {
-        snackBar(true, "Username exists already 😭! Choose another.");
-      } else {
-        ChsUser user = ChsUser(
-          username: userName,
-          name: userCache.name,
-          email: authUser.email,
-          phone: phone,
-          bio: bio,
-          photoUrl: userCache.photoUrl,
-          birthday: birthday ?? DateTime.now().toUtc(),
-          createdAt: Timestamp.fromMillisecondsSinceEpoch(authUser.metadata.creationTimestamp),
-        );
+      Firestore.instance.collection(ChsStrings.database_app_username).document(userName).get().then((ds) {
+        if (ds.exists) {
+          Navigator.pop(context);
+          snackBar(true, ChsStrings.extra_screen_username_snackbar);
+        } else {
+          ChsUser user = ChsUser(
+            username: userName,
+            name: userCache.name,
+            email: authUser.email,
+            phone: phone,
+            bio: bio,
+            photoUrl: userCache.photoUrl,
+            birthday: birthday ?? DateTime.now().toUtc(),
+            createdAt: Timestamp.fromMillisecondsSinceEpoch(authUser.metadata.creationTimestamp),
+          );
+          userCache.changeUsername(userName);
+          userCache.changeEmail(authUser.email);
+          userCache.changePhone(phone);
+          userCache.changeBio(bio);
+          userCache.changeBirthday(birthday.toUtc().toString());
+          ChsFirestore.userName(userName).setData(ChsFirestore.idToMap(authUser.uid));
+          ChsAuth.setUser(authUser);
 
-        ChsFirestore.userName(userName).setData({'id': authUser.uid});
-        ChsAuth.verifyEmail();
-        ChsFirestore.user.setData(user.toMap()).whenComplete(() {
-          RoutePredicate predicate = (Route<dynamic> route) => false;
-          Navigator.pushAndRemoveUntil(
-              context,
-              ChsPageRoute.slideIn<void>(Verify(
-                userCache: userCache,
-              )),
-              predicate);
-        });
-      }
+          if (!authUser.isEmailVerified) {
+            ChsAuth.verifyEmail();
+            ChsFirestore.user.setData(user.toMap()).whenComplete(() {
+              RoutePredicate predicate = (Route<dynamic> route) => false;
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  ChsPageRoute.fadeIn<void>(Verify(
+                    userCache: userCache,
+                  )),
+                  predicate);
+            });
+          } else {
+            ChsFirestore.user.setData(user.toMap()).whenComplete(() {
+              RoutePredicate predicate = (Route<dynamic> route) => false;
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  ChsPageRoute.slideIn<void>(ListenableProvider(
+                    builder: (_) => theme..init(),
+                    child: Consumer<ChsThemeModel>(
+                      builder: (context, model, child) {
+                        return Theme(
+                          data: model.theme,
+                          child: MainPage(),
+                        );
+                      },
+                    ),
+                  )),
+                  predicate);
+            });
+          }
+        }
+      });
     } on PlatformException catch (e) {
       if (e.message != null) {
         Navigator.pop(context);

@@ -14,6 +14,8 @@ class ChsFCM {
     _token = await _messaging.getToken();
   }
 
+  static String get token => _token;
+
   static Map<String, dynamic> tokenToMap() {
     return <String, dynamic>{
       'token': _token,

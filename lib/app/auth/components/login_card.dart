@@ -1,14 +1,20 @@
 import 'package:chs_connect/app/auth/blocs/auth_provider.dart';
+import 'package:chs_connect/app/auth/extra.dart';
 import 'package:chs_connect/app/auth/recovery.dart';
 import 'package:chs_connect/app/auth/register.dart';
 import 'package:chs_connect/app/auth/verify.dart';
 import 'package:chs_connect/app/main/main.dart';
 import 'package:chs_connect/constants/chs_colors.dart';
+import 'package:chs_connect/constants/chs_constants.dart';
 import 'package:chs_connect/constants/chs_images.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
+import 'package:chs_connect/models/chs_user.dart';
 import 'package:chs_connect/services/chs_auth.dart';
+import 'package:chs_connect/services/chs_cloud_messaging.dart';
+import 'package:chs_connect/services/chs_firestore.dart';
 import 'package:chs_connect/theme/model/chs_theme_model.dart';
 import 'package:chs_connect/utils/chs_page_transitions.dart';
+import 'package:chs_connect/utils/chs_preferences.dart';
 import 'package:chs_connect/utils/chs_user_cache.dart';
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -339,33 +345,71 @@ class _LoginCardState extends State<LoginCard> with SingleTickerProviderStateMix
       FirebaseUser authUser = await ChsAuth.signInWithEmail(email, password);
       bool verified = await ChsAuth.userVerified(authUser);
       if (authUser != null) {
-        if (verified) {
-          RoutePredicate predicate = (Route<dynamic> route) => false;
-          Navigator.pushAndRemoveUntil(
-              context,
-              ChsPageRoute.slideIn<void>(ListenableProvider<ChsThemeModel>(
-                builder: (_) => theme..init(),
-                child: Consumer<ChsThemeModel>(
-                  builder: (context, model, child) {
-                    return Theme(
-                      data: model.theme,
-                      child: MainPage(),
-                    );
-                  },
-                ),
-              )),
-              predicate);
-        } else {
-          RoutePredicate predicate = (Route<dynamic> route) => false;
-          Navigator.pushAndRemoveUntil(
-              context,
-              ChsPageRoute.fadeIn<void>(
-                Verify(
-                  userCache: userCache,
-                ),
-              ),
-              predicate);
+        ChsAuth.setUser(authUser);
+        if (userCache.userName.isEmpty) {
+          Firestore.instance.collection('user').document(authUser.uid).get().then((ds) {
+            if (ds.exists) {
+              ChsUser cacheUser = ChsUser.fromDoc(ds);
+              userCache.changeUsername(cacheUser.username);
+              userCache.changeName(cacheUser.name);
+              userCache.changeEmail(cacheUser.email);
+              userCache.changePhone(cacheUser.phone);
+              userCache.changeBio(cacheUser.bio);
+              userCache.changePhotoUrl(cacheUser.photoUrl);
+              userCache.changeBirthday(cacheUser.birthday.toUtc().toString());
+              if (verified) {
+                RoutePredicate predicate = (Route<dynamic> route) => false;
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    ChsPageRoute.slideIn<void>(MultiProvider(
+                      providers: [
+                        Provider<ChsThemeModel>(builder: (_) => theme..init(),),
+                        Provider<ChsUserCache>(builder: (_) => userCache..init(),)
+                      ],
+                      child: Consumer2<ChsThemeModel, ChsUserCache>(
+                        builder: (context, model, user, child) {
+                          return Theme(
+                            data: model.theme,
+                            child: MainPage(),
+                          );
+                        },
+                      ),
+                    )),
+                    predicate);
+              } else {
+                RoutePredicate predicate = (Route<dynamic> route) => false;
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    ChsPageRoute.fadeIn<void>(
+                      Verify(
+                        userCache: userCache,
+                      ),
+                    ),
+                    predicate);
+              }
+            } else {
+              ChsPreferences.setBool(IS_FIRST_TIME_LOGIN, true);
+              ChsFirestore.token.setData(ChsFCM.tokenToMap());
+              RoutePredicate predicate = (Route<dynamic> route) => false;
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  ChsPageRoute.fadeIn<void>(
+                    AuthProvider(
+                        child: ListenableProvider(
+                          builder: (_) => userCache..init(),
+                          child: Consumer<ChsUserCache>(
+                            builder: (context, user, child) {
+                              return ExtraPage();
+                            },
+                          ),
+                        )
+                    ),
+                  ),
+                  predicate);
+            }
+          });
         }
+
       }
     } catch (e) {
       print(e);

@@ -3,7 +3,6 @@ import 'package:chs_connect/constants/chs_colors.dart';
 import 'package:chs_connect/constants/chs_images.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
 import 'package:chs_connect/services/chs_auth.dart';
-import 'package:chs_connect/theme/model/chs_theme_model.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +30,6 @@ class _RecoveryCardState extends State<RecoveryCard>
   TextEditingController passwordController = TextEditingController();
   AnimationController controller;
   Animation<double> animation;
-  ChsThemeModel theme;
 
   Widget recoveryCard(AuthBloc bloc) {
     return Container(
@@ -162,7 +160,6 @@ class _RecoveryCardState extends State<RecoveryCard>
     deviceSize = MediaQuery
         .of(context)
         .size;
-    theme = Provider.of<ChsThemeModel>(context);
     height = deviceSize.height;
     width = deviceSize.width;
     final bloc = AuthProvider.of(context);

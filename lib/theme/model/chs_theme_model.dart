@@ -34,6 +34,7 @@ class ChsThemeModel extends ChangeNotifier {
 
   ChsThemeType get type {
     if (_darkMode ?? false) {
+      _lightMode = false;
       return ChsThemeType.dark;
     }
     if (_customTheme ?? false) return ChsThemeType.custom;
@@ -43,6 +44,7 @@ class ChsThemeModel extends ChangeNotifier {
 
   void changeDarkMode(bool value) {
     _darkMode = value;
+    _lightMode = !value;
     _storage.setItem("dark_mode", _darkMode);
     notifyListeners();
   }
@@ -136,7 +138,6 @@ class ChsThemeModel extends ChangeNotifier {
               primaryColor: ChsColors.default_primary,
               accentColor: ChsColors.default_accent,
               appBarTheme: AppBarTheme(
-                brightness: Brightness.light,
                 color: ChsColors.default_primary,
                 elevation: 8,
                 iconTheme: IconThemeData(color: Colors.black,),
@@ -271,7 +272,6 @@ class ChsThemeModel extends ChangeNotifier {
                 primaryColor: primaryColor ?? ChsColors.default_primary,
                 accentColor: accentColor ?? ChsColors.default_accent,
                 appBarTheme: AppBarTheme(
-                  brightness: Brightness.light,
                   color: primaryColor ?? ChsColors.default_primary,
                   elevation: 8,
                   iconTheme: IconThemeData(color: iconColor ?? Colors.black),
@@ -399,12 +399,14 @@ class ChsThemeModel extends ChangeNotifier {
     }
   }
 
-//  void checkPlatformBrightness(BuildContext context) {
-//    if (!darkMode &&
-//        MediaQuery.of(context).platformBrightness == Brightness.dark) {
-//      changeDarkMode(true);
-//    }
-//  }
+  void checkPlatformBrightness(BuildContext context) {
+    if (!darkMode &&
+        MediaQuery
+            .of(context)
+            .platformBrightness == Brightness.dark) {
+      changeDarkMode(true);
+    }
+  }
 
   ThemeData get darkTheme {
     if (_storage == null) {

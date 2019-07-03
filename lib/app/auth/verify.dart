@@ -1,5 +1,6 @@
 import 'package:chs_connect/app/main/main.dart';
 import 'package:chs_connect/constants/chs_colors.dart';
+import 'package:chs_connect/constants/chs_images.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
 import 'package:chs_connect/services/chs_auth.dart';
 import 'package:chs_connect/theme/model/chs_theme_model.dart';
@@ -47,17 +48,17 @@ class _VerifyState extends State<Verify> with WidgetsBindingObserver {
             height: deviceSize.height * 0.4,
             child: LottieView.fromFile(
               loop: true,
-              filePath: "assets/animations/mail-verification.json",
+              filePath: ChsImages.mail_anim,
               autoPlay: true,
               onViewCreated: onViewCreatedFile,
             ),
           ),
-          Text("This is the last gotcha I promise $name! 😅"),
-          Text("Please check your email for the link."),
+          Text(ChsStrings.verifyScreenText1(name)),
+          Text(ChsStrings.verify_screen_text2),
           Padding(
             padding: EdgeInsets.only(bottom: deviceSize.height * 0.05),
           ),
-          Text("Didn't get it?"),
+          Text(ChsStrings.verify_screen_text3),
           Padding(
             padding: EdgeInsets.only(bottom: deviceSize.height * 0.01),
           ),
@@ -65,7 +66,7 @@ class _VerifyState extends State<Verify> with WidgetsBindingObserver {
           Padding(
             padding: EdgeInsets.only(bottom: deviceSize.height * 0.02),
           ),
-          Text("Verified?"),
+          Text(ChsStrings.verify_screen_text4),
           verifiedBtn(deviceSize),
         ],
       ),
@@ -147,11 +148,14 @@ class _VerifyState extends State<Verify> with WidgetsBindingObserver {
     super.initState();
     _analyticsSetup();
     changeStatusBar();
+    reloadUser();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
   }
 
   Future<void> _analyticsSetup() async {
@@ -160,6 +164,11 @@ class _VerifyState extends State<Verify> with WidgetsBindingObserver {
 
   void onViewCreatedFile(LottieController controller) {
     this.controller = controller;
+  }
+
+  void reloadUser() async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    user.reload();
   }
 
   void snackBar(bool error, String message) {
@@ -225,9 +234,11 @@ class _VerifyState extends State<Verify> with WidgetsBindingObserver {
         });
 
     try {
-      FirebaseUser user = ChsAuth.getUser;
+      FirebaseUser user = await FirebaseAuth.instance.currentUser();
       user.reload();
-      bool verified = await ChsAuth.userVerified(user);
+      user = await FirebaseAuth.instance.currentUser();
+      ChsAuth.setUser(user);
+      bool verified = user.isEmailVerified;
       if (verified) {
         RoutePredicate predicate = (Route<dynamic> route) => false;
         Navigator.pushAndRemoveUntil(
@@ -260,23 +271,21 @@ class _VerifyState extends State<Verify> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
     switch (state) {
       case AppLifecycleState.resumed:
-        FirebaseUser user = ChsAuth.getUser;
+        FirebaseUser user = await FirebaseAuth.instance.currentUser();
         user.reload();
+        ChsAuth.setUser(user);
         break;
       case AppLifecycleState.inactive:
-        FirebaseUser user = ChsAuth.getUser;
-        user.reload();
         break;
       case AppLifecycleState.paused:
-        FirebaseUser user = ChsAuth.getUser;
+        FirebaseUser user = await FirebaseAuth.instance.currentUser();
         user.reload();
+        ChsAuth.setUser(user);
         break;
       case AppLifecycleState.suspending:
-        FirebaseUser user = ChsAuth.getUser;
-        user.reload();
         break;
     }
   }
