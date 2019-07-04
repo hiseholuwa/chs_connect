@@ -135,11 +135,11 @@ class Splash extends StatelessWidget {
     FirebaseUser user = await auth.currentUser();
     bool verified = user?.isEmailVerified;
     if (user != null) {
+      Navigator.pop(context);
       ChsAuth.setUser(user);
       Firestore.instance.collection(ChsStrings.database_app_token).document(user.uid).get().then((ts) {
         String token = ChsFCM.token;
         String cloudToken = ChsFCM.getFCMTokenFromDoc(ts);
-
         if (token != cloudToken) {
           Navigator.pop(context);
           resolveTokenConflict(context, size);
@@ -205,6 +205,36 @@ class Splash extends StatelessWidget {
                 });
               }
             });
+          } else {
+            if (verified) {
+              RoutePredicate predicate = (Route<dynamic> route) => false;
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  ChsPageRoute.slideIn<void>(ListenableProvider(
+                    builder: (_) => theme..init(),
+                    child: Consumer<ChsThemeModel>(
+                      builder: (context, model, child) {
+                        return Theme(
+                          data: model.theme,
+                          child: MainPage(),
+                        );
+                      },
+                    ),
+                  )),
+                  predicate);
+            } else {
+              Future.delayed(Duration(milliseconds: 1000)).then((_) {
+                RoutePredicate predicate = (Route<dynamic> route) => false;
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    ChsPageRoute.fadeIn<void>(
+                      Verify(
+                        userCache: userCache,
+                      ),
+                    ),
+                    predicate);
+              });
+            }
           }
         }
       });

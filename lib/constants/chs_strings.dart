@@ -58,7 +58,6 @@ class ChsStrings {
 
   //ExtraScreen
   static const extra_screen_prefix_init = "234";
-
   static String extraScreenAppbarName(name) => "Hi $name 😍";
   static const extra_screen_username = "Username:";
   static const extra_screen_username_hint = "Username...";
@@ -84,6 +83,17 @@ class ChsStrings {
   static const november = "November";
   static const december = "December";
   static const extra_screen_username_snackbar = "Username exists already 😭! Choose another.";
+
+  //MapScreen
+  static const map_alert_title = "Ummm... 😬";
+  static const map_alert_text1 = "Your location is needed to show this page.";
+  static const map_alert_text2 = "Press \"Continue\" to give the NSA..sorry CHS Connect access to your location.";
+  static const map_alert_text3 = "Press \"Cancel\" to stop and receive a tinfoil hat.";
+  static const map_alert_btn1 = "Cancel ⛔";
+  static const map_alert_btn2 = "Continue 😎";
+  static const map_ask_text = "This page is only for the elite 😛. Click the button below to join";
+  static const map_ask_btn = "I want Access 😩!";
+
 
 
   //Database

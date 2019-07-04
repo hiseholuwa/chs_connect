@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ChsPreferences {
@@ -35,6 +36,15 @@ class ChsPreferences {
   }
   static Future<int> setInt(String key, int value) async {
     await (await _getInstance()).setInt(key, value);
+    return value;
+  }
+
+  static Future<double> getDouble(String key) async {
+    return (await _getInstance()).getDouble(key);
+  }
+
+  static Future<double> setDouble(String key, double value) async {
+    await (await _getInstance()).setDouble(key, value);
     return value;
   }
   static Future<bool> getBool(String key) async {

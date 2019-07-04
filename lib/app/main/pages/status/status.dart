@@ -19,7 +19,6 @@ class _StatusPageState extends State<StatusPage> {
 //    final bloc = MainProvider.of(context);
     return SafeArea(
       top: true,
-      bottom: true,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: theme.theme.appBarTheme.color,
@@ -31,6 +30,7 @@ class _StatusPageState extends State<StatusPage> {
           brightness: theme.theme.appBarTheme.brightness,
         ),
         body: buildFeed(deviceSize),
+        extendBody: true,
       ),
     );
   }

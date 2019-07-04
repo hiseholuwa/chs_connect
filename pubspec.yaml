@@ -7,6 +7,9 @@ environment:
 
 dependencies:
   shared_preferences: ^0.5.2+1
+  permission_handler: ^3.1.0
+  google_maps_flutter: ^0.5.19
+  location: ^2.3.5
   firebase_auth: ^0.11.1+7
   cloud_firestore: ^0.12.5+2
   firebase_storage: ^3.0.2

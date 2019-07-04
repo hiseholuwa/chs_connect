@@ -43,21 +43,14 @@ class _MainPageState extends State<MainPage> {
   _MainPageState();
 
   Widget body(Size size) {
-    return SafeArea(
-      top: true,
-      bottom: true,
-      child: Scaffold(
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      extendBody: true,
         body: PageView(
           children: <Widget>[
-            Container(
-              child: FeedPage(),
-            ),
-            Container(
-              child: ChatPage(),
-            ),
-            Container(
-              child: StatusPage(),
-            ),
+            FeedPage(),
+            ChatPage(),
+            StatusPage(),
             Container(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -78,6 +71,7 @@ class _MainPageState extends State<MainPage> {
         ),
         floatingActionButton: _fab(),
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      resizeToAvoidBottomPadding: false,
         bottomNavigationBar: BubbleBottomBar(
           opacity: .2,
           backgroundColor: theme.theme.primaryColor,
@@ -135,7 +129,6 @@ class _MainPageState extends State<MainPage> {
                 title: Text(ChsStrings.accountPage)),
           ],
         ),
-      ),
     );
   }
 
@@ -224,7 +217,7 @@ class _MainPageState extends State<MainPage> {
     FirebaseUser user = ChsAuth.getUser;
     String email = user.email;
     bool newUser = await ChsPreferences.getBool(IS_FIRST_TIME_LOGIN);
-    if (newUser) {
+    if (newUser ?? false) {
       ChsPreferences.setBool(IS_FIRST_TIME_LOGIN, false);
       await analytics.logEvent(
         name: 'new_user',
