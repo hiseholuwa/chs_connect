@@ -32,11 +32,12 @@ class _ChatPageState extends State<ChatPage> {
   StreamSubscription<LocationData> _locationSubscription;
   Location _locationService = new Location();
   Completer<GoogleMapController> _controller = Completer();
+  GoogleMapController fabMapController;
   CameraPosition _currentCameraPosition;
   GoogleMap googleMap;
   CameraPosition savedCameraPosition;
   bool exist = false;
-  static final CameraPosition _initialCamera = CameraPosition(
+  static CameraPosition _initialCamera = CameraPosition(
     target: LatLng(0, 0),
     zoom: 4,
   );
@@ -93,7 +94,8 @@ class _ChatPageState extends State<ChatPage> {
         myLocationEnabled: true,
         myLocationButtonEnabled: false,
         initialCameraPosition: exist ? savedCameraPosition : _initialCamera,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (GoogleMapController controller) async {
+          fabMapController = controller;
           _controller.complete(controller);
         },
         onCameraMove: (position) {
@@ -106,7 +108,13 @@ class _ChatPageState extends State<ChatPage> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           FloatingActionButton(
-            onPressed: () {},
+            onPressed: () async {
+              CameraPosition position = CameraPosition(
+                  target: LatLng(_currentLocation.latitude, _currentLocation.longitude),
+                  zoom: 16
+              );
+              fabMapController.animateCamera(CameraUpdate.newCameraPosition(position));
+            },
             child: Icon(CommunityMaterialIcons.crosshairs_gps, color: ChsColors.default_accent,),
             backgroundColor: Colors.white,
           ),
@@ -170,8 +178,15 @@ class _ChatPageState extends State<ChatPage> {
         PermissionStatus status = permissionResults[PermissionGroup.location];
         switch (status) {
           case PermissionStatus.granted:
+            LocationData currentLocation = await new Location().getLocation();
+            CameraPosition position = CameraPosition(
+                target: LatLng(currentLocation.latitude, currentLocation.longitude),
+                zoom: 16
+            );
+            ChsMapStateManager.saveMapState(position, LatLng(currentLocation.latitude, currentLocation.longitude));
             setState(() {
               permissionState = true;
+              _initialCamera = position;
             });
             initPlatformState();
             break;
@@ -189,8 +204,15 @@ class _ChatPageState extends State<ChatPage> {
         resolvePermission();
         break;
       case PermissionStatus.granted:
+        LocationData currentLocation = await new Location().getLocation();
+        CameraPosition position = CameraPosition(
+            target: LatLng(currentLocation.latitude, currentLocation.longitude),
+            zoom: 16
+        );
+        ChsMapStateManager.saveMapState(position, LatLng(currentLocation.latitude, currentLocation.longitude));
         setState(() {
           permissionState = true;
+          _initialCamera = position;
         });
     }
   }
@@ -200,8 +222,15 @@ class _ChatPageState extends State<ChatPage> {
     PermissionStatus status = permissionResults[PermissionGroup.location];
     switch (status) {
       case PermissionStatus.granted:
+        LocationData currentLocation = await new Location().getLocation();
+        CameraPosition position = CameraPosition(
+            target: LatLng(currentLocation.latitude, currentLocation.longitude),
+            zoom: 16
+        );
+        ChsMapStateManager.saveMapState(position, LatLng(currentLocation.latitude, currentLocation.longitude));
         setState(() {
           permissionState = true;
+          _initialCamera = position;
         });
         initPlatformState();
         break;
@@ -253,8 +282,15 @@ class _ChatPageState extends State<ChatPage> {
                   PermissionStatus status = permissionResults[PermissionGroup.location];
                   switch (status) {
                     case PermissionStatus.granted:
+                      LocationData currentLocation = await new Location().getLocation();
+                      CameraPosition position = CameraPosition(
+                          target: LatLng(currentLocation.latitude, currentLocation.longitude),
+                          zoom: 16
+                      );
+                      ChsMapStateManager.saveMapState(position, LatLng(currentLocation.latitude, currentLocation.longitude));
                       setState(() {
                         permissionState = true;
+                        _initialCamera = position;
                       });
                       initPlatformState();
                       break;
@@ -311,7 +347,11 @@ class _ChatPageState extends State<ChatPage> {
         if (permissionState) {
           location = await _locationService.getLocation();
           final GoogleMapController controller = await _controller.future;
-          controller.animateCamera(CameraUpdate.newLatLng(LatLng(location.latitude, location.longitude)));
+          CameraPosition position = CameraPosition(
+              target: LatLng(location.latitude, location.longitude),
+              zoom: 16
+          );
+          controller.animateCamera(CameraUpdate.newCameraPosition(position));
           _locationSubscription = _locationService.onLocationChanged().listen((LocationData result) async {
             _currentCameraPosition = CameraPosition(
                 target: LatLng(result.latitude, result.longitude),
@@ -322,7 +362,7 @@ class _ChatPageState extends State<ChatPage> {
             print(location.speed);
             ChsMapStateManager.saveMapState(_currentCameraPosition, savedLocation);
             final GoogleMapController controller = await _controller.future;
-            if (location.speed > 2.0) {
+            if (location.speed > 0.5) {
               controller.animateCamera(CameraUpdate.newCameraPosition(_currentCameraPosition));
             }
             if (mounted) {

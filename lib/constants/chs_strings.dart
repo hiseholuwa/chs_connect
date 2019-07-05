@@ -91,8 +91,8 @@ class ChsStrings {
   static const map_alert_text3 = "Press \"Cancel\" to stop and receive a tinfoil hat.";
   static const map_alert_btn1 = "Cancel ⛔";
   static const map_alert_btn2 = "Continue 😎";
-  static const map_ask_text = "This page is only for the elite 😛. Click the button below to join";
-  static const map_ask_btn = "I want Access 😩!";
+  static const map_ask_text = "This page is only for the elite 😛. Click the button below to join.";
+  static const map_ask_btn = "I WANT ACCESS 😩!";
 
 
 
