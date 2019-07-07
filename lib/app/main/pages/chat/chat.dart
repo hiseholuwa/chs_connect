@@ -21,7 +21,7 @@ class ChatPage extends StatefulWidget {
   }
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatPageState extends State<ChatPage> with AutomaticKeepAliveClientMixin {
   ChsThemeModel theme;
   ChsUserCache userCache;
   bool permissionState = true;
@@ -38,8 +38,7 @@ class _ChatPageState extends State<ChatPage> {
   CameraPosition savedCameraPosition;
   bool exist = false;
   static CameraPosition _initialCamera = CameraPosition(
-    target: LatLng(0, 0),
-    zoom: 4,
+      target: LatLng(0.0, 0.0)
   );
 
   Widget buildError(Size size) {
@@ -141,7 +140,7 @@ class _ChatPageState extends State<ChatPage> {
     changeStatusBar();
     checkPermission();
     initMapState();
-    initPlatformState();
+//    initPlatformState();
   }
 
   @override
@@ -150,12 +149,11 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void changeStatusBar() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Color(0x03FFFFFF), statusBarIconBrightness: Brightness.dark));
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Color(0x1A000000), statusBarIconBrightness: Brightness.dark));
   }
 
   void initMapState() async {
     savedCameraPosition = await ChsMapStateManager.getSavedCameraPosition();
-    print(savedCameraPosition.toString());
     if (savedCameraPosition
         .toString()
         .isEmpty) {
@@ -165,6 +163,7 @@ class _ChatPageState extends State<ChatPage> {
     } else {
       setState(() {
         exist = true;
+        _initialCamera = savedCameraPosition;
       });
     }
   }
@@ -186,6 +185,7 @@ class _ChatPageState extends State<ChatPage> {
             ChsMapStateManager.saveMapState(position, LatLng(currentLocation.latitude, currentLocation.longitude));
             setState(() {
               permissionState = true;
+              savedCameraPosition = position;
               _initialCamera = position;
             });
             initPlatformState();
@@ -212,8 +212,10 @@ class _ChatPageState extends State<ChatPage> {
         ChsMapStateManager.saveMapState(position, LatLng(currentLocation.latitude, currentLocation.longitude));
         setState(() {
           permissionState = true;
+          savedCameraPosition = position;
           _initialCamera = position;
         });
+        initPlatformState();
     }
   }
 
@@ -230,6 +232,7 @@ class _ChatPageState extends State<ChatPage> {
         ChsMapStateManager.saveMapState(position, LatLng(currentLocation.latitude, currentLocation.longitude));
         setState(() {
           permissionState = true;
+          savedCameraPosition = position;
           _initialCamera = position;
         });
         initPlatformState();
@@ -290,6 +293,7 @@ class _ChatPageState extends State<ChatPage> {
                       ChsMapStateManager.saveMapState(position, LatLng(currentLocation.latitude, currentLocation.longitude));
                       setState(() {
                         permissionState = true;
+                        savedCameraPosition = position;
                         _initialCamera = position;
                       });
                       initPlatformState();
@@ -358,8 +362,6 @@ class _ChatPageState extends State<ChatPage> {
                 zoom: 16
             );
             LatLng savedLocation = LatLng(result.latitude, result.longitude);
-            print(savedLocation);
-            print(location.speed);
             ChsMapStateManager.saveMapState(_currentCameraPosition, savedLocation);
             final GoogleMapController controller = await _controller.future;
             if (location.speed > 0.5) {
@@ -393,5 +395,7 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
+  @override
+  bool get wantKeepAlive => true;
 
 }

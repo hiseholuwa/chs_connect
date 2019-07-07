@@ -20,8 +20,8 @@ dependencies:
   google_sign_in: ^4.0.2
   rxdart: ^0.18.1
   http: ^0.12.0+2
-  tel_input: ^0.2.2
   country_pickers: ^1.1.0
+  flutter_statusbar_manager : ^1.0.2
   wave: ^0.0.8
   flutter_lottie: ^0.2.0
   flutter_spinkit: ^3.1.0

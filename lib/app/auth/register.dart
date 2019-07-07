@@ -1,6 +1,7 @@
 import 'package:chs_connect/app/auth/components/register_widget.dart';
 import 'package:chs_connect/constants/chs_colors.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -40,6 +41,7 @@ class _RegisterPageState extends State<RegisterPage> {
   void changeStatusBar() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
+        statusBarBrightness: Brightness.light,
         statusBarIconBrightness: Brightness.light));
   }
 }

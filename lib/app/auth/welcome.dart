@@ -25,7 +25,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Welcome extends StatefulWidget {
-
   const Welcome({Key key}) : super(key: key);
 
   @override
@@ -69,13 +68,14 @@ class _WelcomeState extends State<Welcome> {
           Center(
             child: ChsSettings.getVersion() != null
                 ? Text(
-              "v" + ChsSettings.getVersion(),
-              style: TextStyle(color: Colors.grey, fontSize: 17),
-            )
+                    "v" + ChsSettings.getVersion(),
+                    style: TextStyle(color: Colors.grey, fontSize: 17),
+                  )
                 : const SizedBox(),
           ),
           Center(
-            child: Text(ChsStrings.me, style: TextStyle(color: Colors.grey, fontSize: 17)),
+            child: Text(ChsStrings.me,
+                style: TextStyle(color: Colors.grey, fontSize: 17)),
           ),
         ],
       ),
@@ -118,7 +118,8 @@ class _WelcomeState extends State<Welcome> {
             Padding(
               padding: EdgeInsets.only(left: width * 0.1),
             ),
-            Text(ChsStrings.login_email, style: TextStyle(color: Colors.white, fontSize: 17)),
+            Text(ChsStrings.login_email,
+                style: TextStyle(color: Colors.white, fontSize: 17)),
           ],
         ),
       ),
@@ -166,7 +167,8 @@ class _WelcomeState extends State<Welcome> {
             Padding(
               padding: EdgeInsets.only(left: width * 0.1),
             ),
-            Text(ChsStrings.login_google, style: TextStyle(color: Colors.white, fontSize: 17)),
+            Text(ChsStrings.login_google,
+                style: TextStyle(color: Colors.white, fontSize: 17)),
           ],
         ),
       ),
@@ -192,11 +194,15 @@ class _WelcomeState extends State<Welcome> {
   }
 
   Future<void> _analyticsSetup() async {
-    await analytics.setCurrentScreen(screenName: 'Welcome Screen', screenClassOverride: 'WelcomeScreenClass');
+    await analytics.setCurrentScreen(
+        screenName: 'Welcome Screen',
+        screenClassOverride: 'WelcomeScreenClass');
   }
 
   void changeStatusBar() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.transparent, statusBarIconBrightness: Brightness.dark));
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark));
   }
 
   void resolveTokenConflict(Size size) {
@@ -206,7 +212,11 @@ class _WelcomeState extends State<Welcome> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text(ChsStrings.auth_alert_title),
-            titleTextStyle: TextStyle(color: ChsColors.default_accent, fontFamily: ChsStrings.work_sans, fontSize: 25, fontWeight: FontWeight.w500),
+            titleTextStyle: TextStyle(
+                color: ChsColors.default_accent,
+                fontFamily: ChsStrings.work_sans,
+                fontSize: 25,
+                fontWeight: FontWeight.w500),
             content: SizedBox(
               height: size.height * 0.2,
               child: Column(
@@ -239,7 +249,9 @@ class _WelcomeState extends State<Welcome> {
                           type: SpinKitWaveType.start,
                         );
                       });
-                  ChsFirestore.token.updateData(ChsFCM.tokenToMap()).whenComplete(() {
+                  ChsFirestore.token
+                      .updateData(ChsFCM.tokenToMap())
+                      .whenComplete(() {
                     RoutePredicate predicate = (Route<dynamic> route) => false;
                     Navigator.pushAndRemoveUntil(
                         context,
@@ -260,8 +272,7 @@ class _WelcomeState extends State<Welcome> {
               ),
             ],
           );
-        }
-    );
+        });
   }
 
   Future<void> _login(Size size) async {
@@ -282,7 +293,10 @@ class _WelcomeState extends State<Welcome> {
     try {
       user = await ChsAuth.signInWithGoogle();
       newUser = ChsAuth.newUser();
-      ts = await Firestore.instance.collection(ChsStrings.database_app_token).document(user.uid).get();
+      ts = await Firestore.instance
+          .collection(ChsStrings.database_app_token)
+          .document(user.uid)
+          .get();
       verified = user.isEmailVerified;
     } catch (e) {
       Navigator.pop(context);
@@ -314,19 +328,22 @@ class _WelcomeState extends State<Welcome> {
             ChsPageRoute.fadeIn<void>(
               AuthProvider(
                   child: ListenableProvider(
-                    builder: (_) => userCache..init(),
-                    child: Consumer<ChsUserCache>(
-                      builder: (context, user, child) {
-                        return ExtraPage();
-                      },
-                    ),
-                  )
-              ),
+                builder: (_) => userCache..init(),
+                child: Consumer<ChsUserCache>(
+                  builder: (context, user, child) {
+                    return ExtraPage();
+                  },
+                ),
+              )),
             ),
             predicate);
       } else {
         if (userCache.userName.isEmpty) {
-          Firestore.instance.collection(ChsStrings.database_app_user).document(user.uid).get().then((ds) {
+          Firestore.instance
+              .collection(ChsStrings.database_app_user)
+              .document(user.uid)
+              .get()
+              .then((ds) {
             if (ds.exists) {
               ChsUser cacheUser = ChsUser.fromDoc(ds);
               userCache.changeUsername(cacheUser.username);
@@ -379,14 +396,13 @@ class _WelcomeState extends State<Welcome> {
                   ChsPageRoute.fadeIn<void>(
                     AuthProvider(
                         child: ListenableProvider(
-                          builder: (_) => userCache..init(),
-                          child: Consumer<ChsUserCache>(
-                            builder: (context, user, child) {
-                              return ExtraPage();
-                            },
-                          ),
-                        )
-                    ),
+                      builder: (_) => userCache..init(),
+                      child: Consumer<ChsUserCache>(
+                        builder: (context, user, child) {
+                          return ExtraPage();
+                        },
+                      ),
+                    )),
                   ),
                   predicate);
             }
