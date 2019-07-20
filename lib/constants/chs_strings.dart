@@ -105,11 +105,11 @@ class ChsStrings {
   static const avatarRef = "User Avatar";
 
   //MainPages
-  static const feedPage = "Feed";
+  static const feedsPage = "Feeds";
   static const no_feed = "Follow someone to see their posts on your feed";
-  static const chatPage = "Chat";
-  static const statusPage = "Status";
-  static const accountPage = "Account";
+  static const chatsPage = "Chat";
+  static const eventsPage = "Events";
+  static const alertsPage = "Alerts";
 
   //errors
   static const connection_error = "Connection error - Check your internet";
@@ -125,14 +125,6 @@ class ChsStrings {
   static const g_invalid_msg = "Account name specified is invalid";
   static const g_auth_req = "SIGN_IN_REQUIRED";
   static const g_auth_req_msg = "Sign In to connect to the service";
-//  static const f_invalid_token = "SIGN_IN_REQUIRED";
-//  static const f_invalid_token_msg = "Sign In to connect to the service";
-//  static const g_auth_req = "SIGN_IN_REQUIRED";
-//  static const g_auth_req_msg = "Sign In to connect to the service";
-//  static const g_auth_req = "SIGN_IN_REQUIRED";
-//  static const g_auth_req_msg = "Sign In to connect to the service";
-//  static const g_auth_req = "SIGN_IN_REQUIRED";
-//  static const g_auth_req_msg = "Sign In to connect to the service";
 
 
   //Themes

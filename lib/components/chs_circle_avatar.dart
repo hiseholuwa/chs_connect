@@ -22,14 +22,15 @@ class ChsCircleAvatar extends StatelessWidget {
       shape: BoxShape.circle,
       borderRadius: BorderRadius.all(Radius.circular(30.0)),
       loadStateChanged: (ExtendedImageState state) {
+        Widget widget;
         switch (state.extendedImageLoadState) {
           case LoadState.loading:
             controller.reset();
-            return CircularProgressIndicator();
+            widget = CircularProgressIndicator();
             break;
           case LoadState.completed:
             controller.forward();
-            return FadeTransition(
+            widget = FadeTransition(
               opacity: controller,
               child: ExtendedRawImage(
                 image: state.extendedImageInfo?.image,
@@ -42,7 +43,7 @@ class ChsCircleAvatar extends StatelessWidget {
           case LoadState.failed:
             controller.reset();
             state.imageProvider.evict();
-            return GestureDetector(
+            widget = GestureDetector(
               onTap: () {
                 state.reLoadImage();
               },
@@ -53,6 +54,7 @@ class ChsCircleAvatar extends StatelessWidget {
             );
             break;
         }
+        return widget;
       },
     );
   }

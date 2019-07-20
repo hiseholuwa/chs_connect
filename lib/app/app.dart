@@ -29,6 +29,7 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   final FirebaseAnalytics analytics;
   final FirebaseAnalyticsObserver observer;
+  static ChsThemeModel theme = ChsThemeModel();
   final _cache = ChsUserCache();
 
   _AppState(this.analytics, this.observer);
@@ -41,6 +42,8 @@ class _AppState extends State<App> {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           navigatorObservers: [observer],
+          theme: ThemeData(brightness: Brightness.dark),
+          darkTheme: ThemeData(brightness: Brightness.light),
           onGenerateRoute: (settings) {
             return ChsNavigateRoute<dynamic>(
                 builder: (_) {

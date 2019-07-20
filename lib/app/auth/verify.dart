@@ -1,6 +1,6 @@
 import 'package:chs_connect/app/main/main.dart';
+import 'package:chs_connect/constants/chs_assets.dart';
 import 'package:chs_connect/constants/chs_colors.dart';
-import 'package:chs_connect/constants/chs_images.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
 import 'package:chs_connect/services/chs_auth.dart';
 import 'package:chs_connect/theme/model/chs_theme_model.dart';
@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_lottie/flutter_lottie.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 
 class Verify extends StatefulWidget {
   final ChsUserCache userCache;
@@ -48,7 +49,7 @@ class _VerifyState extends State<Verify> with WidgetsBindingObserver {
             height: deviceSize.height * 0.4,
             child: LottieView.fromFile(
               loop: true,
-              filePath: ChsImages.mail_anim,
+              filePath: ChsAssets.mail_anim,
               autoPlay: true,
               onViewCreated: onViewCreatedFile,
             ),
@@ -266,8 +267,11 @@ class _VerifyState extends State<Verify> with WidgetsBindingObserver {
     }
   }
 
-  void changeStatusBar() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.transparent, statusBarIconBrightness: Brightness.dark));
+  void changeStatusBar() async {
+    await FlutterStatusbarcolor.setStatusBarColor(Colors.white);
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+    await FlutterStatusbarcolor.setNavigationBarColor(Colors.white);
+    FlutterStatusbarcolor.setNavigationBarWhiteForeground(false);
   }
 
   @override

@@ -50,7 +50,7 @@ class Splash extends StatelessWidget {
   void resolveTokenConflict(BuildContext context, Size size) {
     showDialog(
         context: context,
-        barrierDismissible: true,
+        barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text(ChsStrings.auth_alert_title),

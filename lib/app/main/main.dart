@@ -1,56 +1,37 @@
-import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:chs_connect/app/auth/welcome.dart';
 import 'package:chs_connect/app/main/pages/chat/chat.dart';
+import 'package:chs_connect/app/main/pages/event/event.dart';
 import 'package:chs_connect/app/main/pages/feed/feedPage.dart';
-import 'package:chs_connect/app/main/pages/status/status.dart';
-import 'package:chs_connect/constants/chs_constants.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
 import 'package:chs_connect/services/chs_auth.dart';
 import 'package:chs_connect/theme/model/chs_theme_model.dart';
 import 'package:chs_connect/utils/chs_page_transitions.dart';
-import 'package:chs_connect/utils/chs_preferences.dart';
-import 'package:chs_connect/utils/chs_user_cache.dart';
 import 'package:community_material_icon/community_material_icon.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 
 class MainPage extends StatefulWidget {
-
-  const MainPage({Key key}) : super(key: key);
-
-  static _MainPageState of(BuildContext context) =>
-      context.ancestorStateOfType(const TypeMatcher<MainPage>());
-
   @override
   State<StatefulWidget> createState() {
     return _MainPageState();
   }
 }
 
-class _MainPageState extends State<MainPage> {
-  final FirebaseAnalytics analytics = FirebaseAnalytics();
+class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   ChsThemeModel theme;
-  ChsUserCache userCache;
   PageController pageController;
-  Icon fabIcon;
-  int currentIndex;
-
-  _MainPageState();
+  int currentIndex = 0;
 
   Widget body(Size size) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      extendBody: true,
-        body: PageView(
+      body: SafeArea(
+        child: PageView(
           children: <Widget>[
             FeedPage(),
             ChatPage(),
-            StatusPage(),
+            EventPage(),
             Container(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -69,66 +50,23 @@ class _MainPageState extends State<MainPage> {
           controller: pageController,
           physics: NeverScrollableScrollPhysics(),
         ),
-        floatingActionButton: _fab(),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      resizeToAvoidBottomPadding: false,
-        bottomNavigationBar: BubbleBottomBar(
-          opacity: .2,
-          backgroundColor: theme.theme.primaryColor,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-          elevation: 6,
-          fabLocation: BubbleBottomBarFabLocation.end,
-          currentIndex: currentIndex,
-          hasNotch: true,
-          hasInk: true,
-          onTap: _onTap,
-          items: <BubbleBottomBarItem>[
-            BubbleBottomBarItem(
-                backgroundColor: theme.accentColor,
-                icon: Icon(
-                  CommunityMaterialIcons.home_variant,
-                  color: theme.iconColor,
-                ),
-                activeIcon: Icon(
-                  CommunityMaterialIcons.home_variant,
-                  color: theme.accentColor,
-                ),
-                title: Text(ChsStrings.feedPage)),
-            BubbleBottomBarItem(
-                backgroundColor: theme.accentColor,
-                icon: Icon(
-                  CommunityMaterialIcons.chat,
-                  color: theme.iconColor,
-                ),
-                activeIcon: Icon(
-                  CommunityMaterialIcons.chat,
-                  color: theme.accentColor,
-                ),
-                title: Text(ChsStrings.chatPage)),
-            BubbleBottomBarItem(
-                backgroundColor: theme.accentColor,
-                icon: Icon(
-                  CommunityMaterialIcons.hexagon_slice_4,
-                  color: theme.iconColor,
-                ),
-                activeIcon: Icon(
-                  CommunityMaterialIcons.hexagon_slice_4,
-                  color: theme.accentColor,
-                ),
-                title: Text(ChsStrings.statusPage)),
-            BubbleBottomBarItem(
-                backgroundColor: theme.accentColor,
-                icon: Icon(
-                  CommunityMaterialIcons.account_circle,
-                  color: theme.iconColor,
-                ),
-                activeIcon: Icon(
-                  CommunityMaterialIcons.account_circle,
-                  color: theme.accentColor,
-                ),
-                title: Text(ChsStrings.accountPage)),
-          ],
-        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(CommunityMaterialIcons.home_variant_outline), title: Text(ChsStrings.feedsPage)),
+          BottomNavigationBarItem(icon: Icon(CommunityMaterialIcons.chat), title: Text(ChsStrings.chatsPage)),
+          BottomNavigationBarItem(icon: Icon(CommunityMaterialIcons.ticket), title: Text(ChsStrings.eventsPage)),
+          BottomNavigationBarItem(icon: Icon(CommunityMaterialIcons.bell_outline), title: Text(ChsStrings.alertsPage))
+        ],
+        onTap: _onTap,
+        currentIndex: currentIndex,
+        selectedItemColor: theme.accentColor,
+        selectedLabelStyle: TextStyle(fontFamily: ChsStrings.work_sans),
+        unselectedIconTheme: IconThemeData(color: theme.iconColor),
+        selectedIconTheme: IconThemeData(color: theme.accentColor),
+        elevation: 8,
+      ),
+      extendBody: true,
     );
   }
 
@@ -181,111 +119,61 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery
+    theme = Provider.of<ChsThemeModel>(context);
+    Size size = MediaQuery
         .of(context)
         .size;
-    theme = Provider.of<ChsThemeModel>(context);
-    userCache = Provider.of<ChsUserCache>(context);
-    changeStatusBar();
     return body(size);
   }
 
   @override
   void initState() {
     super.initState();
-    _analyticsSetup();
     pageController = PageController();
-    currentIndex = 0;
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     super.dispose();
-    pageController.dispose();
   }
 
-  void changeStatusBar() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarColor: Colors.white,
-        statusBarBrightness: Brightness.dark,
-        systemNavigationBarColor: Colors.white,
-        systemNavigationBarIconBrightness: Brightness.dark,
-        statusBarIconBrightness: Brightness.dark));
-  }
-
-  Future<void> _analyticsSetup() async {
-    FirebaseUser user = ChsAuth.getUser;
-    String email = user.email;
-    bool newUser = await ChsPreferences.getBool(IS_FIRST_TIME_LOGIN);
-    if (newUser ?? false) {
-      ChsPreferences.setBool(IS_FIRST_TIME_LOGIN, false);
-      await analytics.logEvent(
-        name: 'new_user',
-        parameters: <String, dynamic>{
-          'id': user.uid,
-          'name': user.displayName,
-          'email': user.email,
-        },
-      );
-      Flushbar(
-        message: "Welcome 😃! \nYou're signed in as $email",
-        icon: Icon(
-          Icons.check_circle_outline,
-          color: Colors.green,
-        ),
-        aroundPadding: EdgeInsets.all(8),
-        borderRadius: 8,
-        duration: Duration(seconds: 3),
-      )
-        ..show(context);
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.suspending:
+        print("Suspending");
+        break;
+      case AppLifecycleState.paused:
+        print("Paused");
+        break;
+      case AppLifecycleState.inactive:
+        print("Inactive");
+        break;
+      case AppLifecycleState.resumed:
+        statusBarBrightness();
+        print("Resumed");
+        break;
     }
-
-
-    await analytics.setCurrentScreen(
-        screenName: 'Main Screen', screenClassOverride: 'MainScreenClass');
   }
 
-  _fab() {
-    switch (currentIndex) {
-      case 0:
-        fabIcon = Icon(
-          Icons.add,
-          color: theme.lightMode ? Colors.white : theme.iconColor,
-        );
-        break;
-      case 1:
-        fabIcon = Icon(
-          CommunityMaterialIcons.chat,
-          color: theme.lightMode ? Colors.white : theme.iconColor,
-        );
-        break;
-      case 2:
-        fabIcon = Icon(
-          Icons.add,
-          color: theme.lightMode ? Colors.white : theme.iconColor,
-        );
-        break;
-      case 3:
-        fabIcon = Icon(
-          Icons.edit,
-          color: theme.lightMode ? Colors.white : theme.iconColor,
-        );
+  _onTap(int index) {
+    setState(() {
+      currentIndex = index;
+      pageController.jumpToPage(index);
+    });
+  }
+
+  void statusBarBrightness() async {
+    Color color = await FlutterStatusbarcolor.getStatusBarColor();
+    if (useWhiteForeground(color)) {
+      FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
+      FlutterStatusbarcolor.setNavigationBarWhiteForeground(true);
+    } else {
+      FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+      FlutterStatusbarcolor.setNavigationBarWhiteForeground(false);
     }
-    return FloatingActionButton(
-      onPressed: () {},
-      backgroundColor: theme.accentColor,
-      child: fabIcon,
-      elevation: 2.0,
-    );
   }
 
-  _onTap(int position) {
-    setState(
-          () {
-        pageController.jumpToPage(position);
-        currentIndex = position;
-      },
-    );
-  }
-
+  bool useWhiteForeground(color) => 1.05 / (color.computeLuminance() + 0.05) > 4.5;
 }

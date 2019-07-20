@@ -21,8 +21,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 
 class Welcome extends StatefulWidget {
   const Welcome({Key key}) : super(key: key);
@@ -42,8 +42,8 @@ class _WelcomeState extends State<Welcome> {
 
   Widget welcomeScreen(BuildContext context) {
     var deviceSize = MediaQuery.of(context).size;
+    changeStatusBar();
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       backgroundColor: ChsColors.default_scaffold,
       body: Column(
         children: <Widget>[
@@ -184,8 +184,8 @@ class _WelcomeState extends State<Welcome> {
   @override
   void initState() {
     super.initState();
-    _analyticsSetup();
     changeStatusBar();
+    _analyticsSetup();
   }
 
   @override
@@ -199,10 +199,11 @@ class _WelcomeState extends State<Welcome> {
         screenClassOverride: 'WelcomeScreenClass');
   }
 
-  void changeStatusBar() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark));
+  void changeStatusBar() async {
+    await FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+    await FlutterStatusbarcolor.setNavigationBarColor(Colors.white);
+    FlutterStatusbarcolor.setNavigationBarWhiteForeground(false);
   }
 
   void resolveTokenConflict(Size size) {

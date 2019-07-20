@@ -1,5 +1,4 @@
 import 'package:chs_connect/components/chs_circle_avatar.dart';
-import 'package:chs_connect/constants/chs_images.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
 import 'package:chs_connect/theme/model/chs_theme_model.dart';
 import 'package:chs_connect/utils/chs_user_cache.dart';
@@ -16,27 +15,40 @@ class FeedPage extends StatefulWidget {
 class _FeedPageState extends State<FeedPage> with TickerProviderStateMixin {
   ChsThemeModel theme;
   ChsUserCache userCache;
-  AnimationController controller;
+  AnimationController animationController;
+  ScrollController scrollController;
+  bool scroll = false;
+  bool top = true;
 
   Widget feedBody(Size size) {
-    return SafeArea(
-      top: true,
-      child: Scaffold(
-        appBar: appBar(size),
-        body: buildFeed(size),
-        extendBody: true,
+    return Scaffold(
+      body: NotificationListener<ScrollNotification>(
+        onNotification: scrollNotification,
+        child: NestedScrollView(
+          controller: scrollController,
+          headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
+            return <Widget>[
+              appBar(size, boxIsScrolled),
+            ];
+          },
+          body: buildFeed(size),
+        ),
       ),
+      extendBody: true,
+      floatingActionButton: fab(size),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );
   }
 
-  Widget appBar(Size size) {
-    return AppBar(
-      backgroundColor: theme.theme.appBarTheme.color,
+  Widget appBar(Size size, bool boxIsScrolled) {
+    return SliverAppBar(
+      pinned: true,
+      floating: true,
+      forceElevated: boxIsScrolled,
       title: Text(
         ChsStrings.appName,
         style: theme.theme.textTheme.display1,
       ),
-      elevation: theme.theme.appBarTheme.elevation,
       brightness: theme.theme.appBarTheme.brightness,
       actions: <Widget>[
         Padding(
@@ -52,7 +64,7 @@ class _FeedPageState extends State<FeedPage> with TickerProviderStateMixin {
               Padding(padding: EdgeInsets.only(right: size.width * 0.05),),
               GestureDetector(
                 onTap: () {},
-                child: ChsCircleAvatar(src: userCache.photoUrl, radius: size.width * 0.1, controller: controller,),
+                child: ChsCircleAvatar(src: userCache.photoUrl, radius: size.width * 0.1, controller: animationController,),
               ),
             ],
           ),
@@ -62,24 +74,39 @@ class _FeedPageState extends State<FeedPage> with TickerProviderStateMixin {
   }
 
   Widget buildFeed(Size size) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          CircleAvatar(
-            backgroundColor: Colors.transparent,
-            radius: size.height * 0.15,
-            child: Image.asset(ChsImages.no_content),
-          ),
-          SizedBox(
-            height: size.height * 0.02,
-          ),
-          Text(
-            ChsStrings.no_feed,
-            style: theme.theme.textTheme.body1,
-          )
-        ],
-      ),
+    return ListView.builder(
+      itemCount: 30,
+      itemBuilder: (context, index) {
+        return ListTile(title: Text("Index : $index", style: theme.theme.textTheme.body1,));
+      },
+    );
+  }
+
+  Widget fab(Size size) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        top ?
+        FloatingActionButton.extended(
+          icon: Icon(Icons.add, color: theme.lightMode ? Colors.white : theme.iconColor,),
+          label: Text('Add Post', style: TextStyle(color: theme.lightMode ? Colors.white : theme.iconColor,)),
+          backgroundColor: theme.accentColor,
+          isExtended: top,
+          heroTag: 'fab',
+          onPressed: () {},
+        )
+            : FloatingActionButton(
+          child: Icon(Icons.add, color: theme.lightMode ? Colors.white : theme.iconColor,),
+          backgroundColor: theme.accentColor,
+          isExtended: top,
+          heroTag: 'fab',
+          onPressed: () {},
+        ),
+        Padding(
+          padding: EdgeInsets.only(top: size.height * 0.025),
+        ),
+
+      ],
     );
   }
 
@@ -96,11 +123,50 @@ class _FeedPageState extends State<FeedPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    controller = AnimationController(vsync: this, duration: Duration(milliseconds: 100), lowerBound: 0.0, upperBound: 1.0);
+    animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 100), lowerBound: 0.0, upperBound: 1.0);
+    scrollController = ScrollController();
+    scrollController.addListener(scrollListener);
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  void scrollListener() {
+    if (scrollController.offset <= scrollController.position.minScrollExtent &&
+        !scrollController.position.outOfRange) {
+      setState(() {
+        top = true;
+      });
+    } else {
+      setState(() {
+        top = false;
+      });
+    }
+  }
+
+  bool scrollNotification(ScrollNotification notification) {
+    if (notification is ScrollUpdateNotification) {
+      if (top) {
+        setState(() {
+          scroll = false;
+        });
+      } else {
+        setState(() {
+          scroll = true;
+        });
+      }
+    } else if (notification is ScrollEndNotification) {
+      if (top) {
+        setState(() {
+          scroll = false;
+        });
+      } else {
+        setState(() {
+          scroll = true;
+        });
+      }
+    }
   }
 }

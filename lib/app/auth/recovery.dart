@@ -4,7 +4,7 @@ import 'package:chs_connect/app/auth/components/recovery_widget.dart';
 import 'package:chs_connect/constants/chs_colors.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 
 class RecoveryPage extends StatefulWidget {
   const RecoveryPage({Key key}) : super(key: key);
@@ -40,9 +40,11 @@ class _RecoveryPageState extends State<RecoveryPage> {
         screenName: 'Recovery Screen', screenClassOverride: 'RecoveryScreenClass');
   }
 
-  void changeStatusBar() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light));
+  void changeStatusBar() async {
+    await FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+    await FlutterStatusbarcolor.setNavigationBarColor(Colors.white);
+    FlutterStatusbarcolor.setNavigationBarWhiteForeground(false);
+
   }
 }

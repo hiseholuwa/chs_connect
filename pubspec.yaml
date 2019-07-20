@@ -8,8 +8,6 @@ environment:
 dependencies:
   shared_preferences: ^0.5.2+1
   permission_handler: ^3.1.0
-  google_maps_flutter: ^0.5.19
-  location: ^2.3.5
   firebase_auth: ^0.11.1+7
   cloud_firestore: ^0.12.5+2
   firebase_storage: ^3.0.2
@@ -21,7 +19,6 @@ dependencies:
   rxdart: ^0.18.1
   http: ^0.12.0+2
   country_pickers: ^1.1.0
-  flutter_statusbar_manager : ^1.0.2
   wave: ^0.0.8
   flutter_lottie: ^0.2.0
   flutter_spinkit: ^3.1.0
@@ -30,18 +27,20 @@ dependencies:
   multi_image_picker: ^4.3.4
   image_cropper: ^1.0.2
   flutter_image_compress: ^0.6.0
-  extended_image: ^0.5.1
+  extended_image: ^0.5.3
+  sqflite: ^1.1.6+1
   uuid: ^2.0.2
   path_provider: ^1.1.0
   get_version: ^0.1.0
   version: ^1.0.3
   timeago: ^2.0.16
-  flushbar: ^1.5.3
+  flushbar: ^1.7.1+1
   flutter_colorpicker: ^0.2.5
   provider: ^2.0.1+1
   localstorage: ^2.0.0
   flutter_mobx: ^0.2.1+2
   bubble_bottom_bar: ^1.2.0
+  flutter_statusbarcolor: ^0.2.1
   flutter:
     sdk: flutter
 
@@ -62,6 +61,7 @@ flutter:
     - assets/images/icons/
     - assets/images/drawables/
     - assets/animations/
+    - assets/
 
   fonts:
     - family: Work Sans

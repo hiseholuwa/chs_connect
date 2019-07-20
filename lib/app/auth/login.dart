@@ -4,7 +4,7 @@ import 'package:chs_connect/app/auth/components/login_widget.dart';
 import 'package:chs_connect/constants/chs_colors.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key key}) : super(key: key);
@@ -25,7 +25,8 @@ class _LoginPageState extends State<LoginPage> {
     changeStatusBar();
     return WillPopScope(
       onWillPop: () {
-        _revertStatusBarColor();
+        revertStatusBarColor();
+        return null;
       },
       child: Scaffold(
         backgroundColor: ChsColors.default_scaffold,
@@ -51,18 +52,19 @@ class _LoginPageState extends State<LoginPage> {
         screenName: 'Login Screen', screenClassOverride: 'LoginScreenClass');
   }
 
-  void changeStatusBar() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light));
+  void changeStatusBar() async {
+    await FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
+    await FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
+    await FlutterStatusbarcolor.setNavigationBarColor(Colors.white);
+    await FlutterStatusbarcolor.setNavigationBarWhiteForeground(false);
   }
 
-  void _revertStatusBarColor() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark));
+  void revertStatusBarColor() async {
+    await FlutterStatusbarcolor.setStatusBarColor(ChsColors.default_scaffold);
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+    await FlutterStatusbarcolor.setNavigationBarColor(Colors.white);
+    FlutterStatusbarcolor.setNavigationBarWhiteForeground(false);
     Navigator.pop(context);
   }
-
 
 }
