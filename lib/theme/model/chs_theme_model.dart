@@ -606,7 +606,7 @@ class ChsThemeModel extends ChangeNotifier {
   }
 
   void darkStatusbar() async {
-    await FlutterStatusbarcolor.setStatusBarColor(Colors.black);
+    await FlutterStatusbarcolor.setStatusBarColor(ChsColors.dark_primary);
     FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
     await FlutterStatusbarcolor.setNavigationBarColor(Colors.black);
     FlutterStatusbarcolor.setNavigationBarWhiteForeground(true);

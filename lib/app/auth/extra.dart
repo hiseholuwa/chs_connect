@@ -65,7 +65,7 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
               ChsStrings.extraScreenAppbarName(name),
               style: TextStyle(color: ChsColors.default_text_high, fontFamily: ChsStrings.rochester, fontSize: 34, fontWeight: FontWeight.w400),
             ),
-            elevation: 8,
+            elevation: 0,
           ),
           backgroundColor: ChsColors.default_scaffold,
           body: Column(
@@ -93,7 +93,8 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
                       Padding(
                         padding: EdgeInsets.all(width * 0.02),
                       ),
-                      Text(ChsStrings.extra_screen_username),
+                      Text(ChsStrings.extra_screen_username,
+                        style: TextStyle(color: Colors.black),),
                       Padding(
                         padding: EdgeInsets.all(width * 0.02),
                       ),
@@ -113,6 +114,7 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
                                 onChanged: bloc.changeUserName,
                                 decoration: InputDecoration(
                                   hintText: ChsStrings.extra_screen_username_hint,
+                                  hintStyle: TextStyle(color: Colors.black54),
                                   contentPadding: EdgeInsets.fromLTRB(height * 0.025, height * 0.010, height * 0.025, height * 0.010),
                                   border: OutlineInputBorder(
                                     borderSide: BorderSide.none,
@@ -142,7 +144,8 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
                           top: height * 0.08,
                         ),
                       ),
-                      Text(ChsStrings.extra_screen_phone),
+                      Text(ChsStrings.extra_screen_phone,
+                          style: TextStyle(color: Colors.black)),
                       Padding(
                         padding: EdgeInsets.all(width * 0.02),
                       ),
@@ -155,9 +158,9 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
                           });
                         },
                       ),
-                      Padding(
-                        padding: EdgeInsets.all(width * 0.02),
-                      ),
+//                      Padding(
+//                        padding: EdgeInsets.all(width * 0.01),
+//                      ),
                       Container(
                         constraints: BoxConstraints(
                           maxWidth: width * 0.55,
@@ -185,6 +188,8 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
                                         onChanged: bloc.changePhone,
                                         decoration: InputDecoration(
                                           hintText: ChsStrings.extra_screen_phone_hint,
+                                          hintStyle: TextStyle(
+                                              color: Colors.black54),
                                           border: OutlineInputBorder(
                                             borderSide: BorderSide.none,
                                             borderRadius: BorderRadius.circular(height * 0.05),
@@ -218,7 +223,8 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
                           top: height * 0.08,
                         ),
                       ),
-                      Text(ChsStrings.extra_screen_bd),
+                      Text(ChsStrings.extra_screen_bd,
+                          style: TextStyle(color: Colors.black)),
                       Padding(
                         padding: EdgeInsets.all(width * 0.02),
                       ),
@@ -279,7 +285,8 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
                           top: height * 0.08,
                         ),
                       ),
-                      Text(ChsStrings.extra_screen_bio),
+                      Text(ChsStrings.extra_screen_bio,
+                          style: TextStyle(color: Colors.black)),
                       Padding(
                         padding: EdgeInsets.all(width * 0.02),
                       ),
@@ -303,6 +310,8 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
                                       onChanged: bloc.changeBio,
                                       decoration: InputDecoration(
                                         hintText: ChsStrings.extra_screen_bio_hint,
+                                        hintStyle: TextStyle(
+                                            color: Colors.black54),
                                         border: OutlineInputBorder(
                                           borderSide: BorderSide.none,
                                           borderRadius: BorderRadius.circular(height * 0.05),
@@ -326,7 +335,7 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
               ),
               SizedBox(
                 width: width,
-                height: height * 0.4,
+                height: height * 0.35,
                 child: LottieView.fromFile(
                   loop: true,
                   filePath: ChsAssets.dino_anim,
@@ -383,6 +392,7 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
+    changeStatusBar();
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     final bloc = AuthProvider.of(context);
@@ -395,7 +405,6 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
   void initState() {
     super.initState();
     _analyticsSetup();
-    changeStatusBar();
     usernameController = TextEditingController();
     phoneController = TextEditingController();
     bioController = TextEditingController();
@@ -414,12 +423,9 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
 
   void changeStatusBar() async {
     await FlutterStatusbarcolor.setStatusBarColor(Colors.white);
-    await FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
     await FlutterStatusbarcolor.setNavigationBarColor(Colors.white);
-    await FlutterStatusbarcolor.setNavigationBarWhiteForeground(false);
-//    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-//      systemNavigationBarColor: Colors.white,
-//      systemNavigationBarIconBrightness: Brightness.dark,));
+    FlutterStatusbarcolor.setNavigationBarWhiteForeground(false);
   }
 
   void onViewCreatedFile(LottieController controller) {

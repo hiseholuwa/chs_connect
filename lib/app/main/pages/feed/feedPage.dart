@@ -50,6 +50,7 @@ class _FeedPageState extends State<FeedPage> with TickerProviderStateMixin {
         style: theme.theme.textTheme.display1,
       ),
       brightness: theme.theme.appBarTheme.brightness,
+      centerTitle: true,
       actions: <Widget>[
         Padding(
           padding: EdgeInsets.only(right: size.width * 0.05),
@@ -61,15 +62,23 @@ class _FeedPageState extends State<FeedPage> with TickerProviderStateMixin {
                 },
                 child: Icon(Icons.person_add),
               ),
-              Padding(padding: EdgeInsets.only(right: size.width * 0.05),),
-              GestureDetector(
-                onTap: () {},
-                child: ChsCircleAvatar(src: userCache.photoUrl, radius: size.width * 0.1, controller: animationController,),
-              ),
+
+
             ],
           ),
         )
       ],
+      leading: Row(
+        children: <Widget>[
+          Padding(padding: EdgeInsets.only(right: size.width * 0.02),),
+          GestureDetector(
+            onTap: () {},
+            child: ChsCircleAvatar(src: userCache.photoUrl,
+              radius: size.width * 0.1,
+              controller: animationController,),
+          ),
+        ],
+      ),
     );
   }
 

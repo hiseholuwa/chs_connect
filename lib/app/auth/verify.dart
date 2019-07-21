@@ -54,12 +54,15 @@ class _VerifyState extends State<Verify> with WidgetsBindingObserver {
               onViewCreated: onViewCreatedFile,
             ),
           ),
-          Text(ChsStrings.verifyScreenText1(name)),
-          Text(ChsStrings.verify_screen_text2),
+          Text(ChsStrings.verifyScreenText1(name),
+              style: TextStyle(color: Colors.black)),
+          Text(ChsStrings.verify_screen_text2,
+              style: TextStyle(color: Colors.black)),
           Padding(
             padding: EdgeInsets.only(bottom: deviceSize.height * 0.05),
           ),
-          Text(ChsStrings.verify_screen_text3),
+          Text(ChsStrings.verify_screen_text3,
+              style: TextStyle(color: Colors.black)),
           Padding(
             padding: EdgeInsets.only(bottom: deviceSize.height * 0.01),
           ),
@@ -67,7 +70,8 @@ class _VerifyState extends State<Verify> with WidgetsBindingObserver {
           Padding(
             padding: EdgeInsets.only(bottom: deviceSize.height * 0.02),
           ),
-          Text(ChsStrings.verify_screen_text4),
+          Text(ChsStrings.verify_screen_text4,
+              style: TextStyle(color: Colors.black)),
           verifiedBtn(deviceSize),
         ],
       ),
