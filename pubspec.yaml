@@ -22,13 +22,20 @@ dependencies:
   wave: ^0.0.8
   flutter_lottie: ^0.2.0
   flutter_spinkit: ^3.1.0
-  community_material_icon: ^3.5.95
+  feather_icons_flutter: ^4.7.4
   datetime_picker_formfield: ^0.2.0
   multi_image_picker: ^4.3.4
-  image_cropper: ^1.0.2
+  image_cropper:
+    git:
+      url: git://github.com/devslane/flutter_image_cropper
+      ref: master
   flutter_image_compress: ^0.6.0
   extended_image: ^0.5.3
   sqflite: ^1.1.6+1
+  liquid_pull_to_refresh: ^1.1.1
+  unicorndial: ^1.1.5
+  photofilters: ^1.0.5
+  image: ^2.1.4
   uuid: ^2.0.2
   path_provider: ^1.1.0
   get_version: ^0.1.0

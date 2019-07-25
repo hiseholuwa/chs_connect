@@ -18,6 +18,8 @@ class ChsFirestore {
 
   static DocumentReference get token => instance.document('token/$authUserId');
 
+  static CollectionReference get posts => instance.collection('posts');
+
   static Map<String, dynamic> idToMap(String id) {
     return <String, dynamic>{
       'id': id,

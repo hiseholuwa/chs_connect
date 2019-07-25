@@ -7,17 +7,22 @@ class ChsUserCache extends ChangeNotifier {
   ChsUserCache({Key key}) : _storage = LocalStorage("default");
 
   LocalStorage _storage;
-  String _userName;
+  String _username;
   String _name;
   String _email;
   String _phone;
   String _photoUrl;
   String _birthday;
+  String _gradYear;
   String _bio;
+  int _posts;
+  int _followers;
+  int _following;
+  bool _private;
 
   void changeUsername(String value) {
-    _userName = value;
-    _storage.setItem("username", _userName);
+    _username = value;
+    _storage.setItem("username", _username);
     notifyListeners();
   }
 
@@ -51,40 +56,80 @@ class ChsUserCache extends ChangeNotifier {
     notifyListeners();
   }
 
+  void changeGradYear(String value) {
+    _gradYear = value;
+    _storage.setItem("gradYear", _gradYear);
+    notifyListeners();
+  }
+
   void changeBio(String value) {
     _bio = value;
     _storage.setItem("bio", _bio);
     notifyListeners();
   }
 
+  void changePosts(int value) {
+    _posts = value;
+    _storage.setItem("posts", _posts);
+    notifyListeners();
+  }
+
+  void changeFollowers(int value) {
+    _followers = value;
+    _storage.setItem("followers", _followers);
+    notifyListeners();
+  }
+
+  void changeFollowing(int value) {
+    _following = value;
+    _storage.setItem("following", _following);
+    notifyListeners();
+  }
+
+  void changePrivate(bool value) {
+    _private = value;
+    _storage.setItem("private", _private);
+    notifyListeners();
+  }
+
   void reset() {
     _storage.clear();
-    _userName = "";
+    _username = "";
     _name = "";
     _email = "";
     _phone = "";
     _photoUrl = "";
     _birthday = "";
+    _gradYear = "";
     _bio = "";
+    _posts = 0;
+    _followers = 0;
+    _following = 0;
+    _private = false;
   }
 
   Future init() async {
     if (await _storage.ready) {
-      _userName = _storage.getItem("username");
+      _username = _storage.getItem("username");
       _name = _storage.getItem("name");
       _email = _storage.getItem("email");
       _phone = _storage.getItem("phone");
       _photoUrl = _storage.getItem("photourl");
       _birthday = _storage.getItem("birthday");
+      _gradYear = _storage.getItem("gradYear");
       _bio = _storage.getItem("bio");
+      _posts = _storage.getItem("posts");
+      _followers = _storage.getItem("followers");
+      _following = _storage.getItem("following");
+      _private = _storage.getItem("private");
     }
   }
 
-  String get userName {
-    if (_userName == null) {
+  String get username {
+    if (_username == null) {
       return "";
     }
-    return _userName;
+    return _username;
   }
 
   String get name {
@@ -122,10 +167,45 @@ class ChsUserCache extends ChangeNotifier {
     return _birthday;
   }
 
+  String get gradYear {
+    if (_gradYear == null) {
+      return "";
+    }
+    return _gradYear;
+  }
+
   String get bio {
     if (_bio == null) {
       return "";
     }
     return _bio;
+  }
+
+  int get posts {
+    if (_posts == null) {
+      return 0;
+    }
+    return _posts;
+  }
+
+  int get followers {
+    if (_followers == null) {
+      return 0;
+    }
+    return _followers;
+  }
+
+  int get following {
+    if (_following == null) {
+      return 0;
+    }
+    return _following;
+  }
+
+  bool get private {
+    if (_private == null) {
+      return false;
+    }
+    return _private;
   }
 }

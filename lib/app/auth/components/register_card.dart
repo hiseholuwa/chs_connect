@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -305,6 +306,13 @@ class _RegisterCardState extends State<RegisterCard> with TickerProviderStateMix
     controller.dispose();
     photoController.dispose();
     super.dispose();
+  }
+
+  void changeStatusBar() async {
+    await FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
+    await FlutterStatusbarcolor.setNavigationBarColor(Colors.white);
+    FlutterStatusbarcolor.setNavigationBarWhiteForeground(false);
   }
 
   void setupControllers() {

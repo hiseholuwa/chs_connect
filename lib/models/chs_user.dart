@@ -7,11 +7,16 @@ class ChsUser extends ChsBaseModel {
   final String email;
   final String phone;
   final String bio;
+  final int posts;
+  final int followers;
+  final int following;
+  final bool private;
   final String photoUrl;
   final DateTime birthday;
+  final String gradYear;
   final Timestamp createdAt;
 
-  ChsUser({this.username, this.name, this.email, this.phone, this.bio, this.photoUrl, this.birthday, this.createdAt});
+  ChsUser({this.username, this.name, this.email, this.phone, this.bio, this.posts, this.followers, this.following, this.private, this.photoUrl, this.birthday, this.gradYear, this.createdAt});
 
   factory ChsUser.fromJson(Map<String, dynamic> json) {
     assert(json != null);
@@ -21,8 +26,13 @@ class ChsUser extends ChsBaseModel {
       email: json['email'],
       phone: json['phone'],
       bio: json['bio'],
+      posts: json['posts'],
+      followers: json['followers'],
+      following: json['following'],
+      private: json['private'],
       photoUrl: json['photoUrl'],
       birthday: DateTime.tryParse(json['birthday'].toString()),
+      gradYear: json['gradYear'],
       createdAt: Timestamp.fromMillisecondsSinceEpoch(json['createdAt']),
     );
   }
@@ -35,8 +45,13 @@ class ChsUser extends ChsBaseModel {
     String email,
     String phone,
     String bio,
+    int posts,
+    int followers,
+    int following,
+    bool private,
     String photoUrl,
     DateTime birthday,
+    String gradYear,
   }) {
     return ChsUser(
       username: username ?? this.username,
@@ -44,8 +59,13 @@ class ChsUser extends ChsBaseModel {
       email: email ?? this.email,
       phone: phone ?? this.phone,
       bio: bio ?? this.bio,
+      posts: posts ?? this.posts,
+      followers: followers ?? this.followers,
+      following: following ?? this.following,
+      private: private ?? this.private,
       photoUrl: photoUrl ?? this.photoUrl,
       birthday: birthday ?? this.birthday,
+      gradYear: gradYear ?? this.gradYear,
     )..reference = this.reference;
   }
 
@@ -57,8 +77,13 @@ class ChsUser extends ChsBaseModel {
       'email': email,
       'phone': phone,
       'bio': bio,
+      'posts': posts,
+      'followers': followers,
+      'following': following,
+      'private': private,
       'photoUrl': photoUrl,
       'birthday': birthday.toString(),
+      'gradYear': gradYear,
       'createdAt': createdAt.millisecondsSinceEpoch,
     };
   }

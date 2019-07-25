@@ -18,6 +18,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 
 class Splash extends StatelessWidget {
   final FirebaseAnalytics analytics = FirebaseAnalytics();
@@ -28,12 +29,14 @@ class Splash extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    changeStatusBar();
     userCache = Provider.of<ChsUserCache>(context);
     Future.delayed(Duration(milliseconds: 500), () {
       authState(context);
     });
     var height = MediaQuery.of(context).size.height;
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
         child: CircleAvatar(
           backgroundColor: Colors.transparent,
@@ -47,6 +50,13 @@ class Splash extends StatelessWidget {
     );
   }
 
+  void changeStatusBar() async {
+    await FlutterStatusbarcolor.setStatusBarColor(Colors.white);
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+    await FlutterStatusbarcolor.setNavigationBarColor(Colors.white);
+    FlutterStatusbarcolor.setNavigationBarWhiteForeground(false);
+  }
+
   void resolveTokenConflict(BuildContext context, Size size) {
     showDialog(
         context: context,
@@ -55,21 +65,22 @@ class Splash extends StatelessWidget {
           return AlertDialog(
             title: Text(ChsStrings.auth_alert_title),
             titleTextStyle: TextStyle(color: ChsColors.default_accent, fontFamily: ChsStrings.work_sans, fontSize: 25, fontWeight: FontWeight.w500),
+            backgroundColor: Colors.white,
             content: SizedBox(
               height: size.height * 0.2,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(ChsStrings.auth_alert_text1),
-                  Text(ChsStrings.auth_alert_text2),
-                  Text(ChsStrings.auth_alert_text3),
+                  Text(ChsStrings.auth_alert_text1, style: TextStyle(color: Colors.black),),
+                  Text(ChsStrings.auth_alert_text2, style: TextStyle(color: Colors.black),),
+                  Text(ChsStrings.auth_alert_text3, style: TextStyle(color: Colors.black),),
                 ],
               ),
             ),
             actions: <Widget>[
               FlatButton(
-                child: Text(ChsStrings.auth_alert_btn1),
+                child: Text(ChsStrings.auth_alert_btn1, style: TextStyle(color: ChsColors.default_accent),),
                 onPressed: () {
                   ChsAuth.logOut();
                   Future.delayed(Duration(milliseconds: 1000)).then((_) {
@@ -82,7 +93,7 @@ class Splash extends StatelessWidget {
                 },
               ),
               FlatButton(
-                child: Text(ChsStrings.auth_alert_btn2),
+                child: Text(ChsStrings.auth_alert_btn2, style: TextStyle(color: ChsColors.default_accent),),
                 onPressed: () {
                   showDialog(
                       context: context,
@@ -135,7 +146,6 @@ class Splash extends StatelessWidget {
     FirebaseUser user = await auth.currentUser();
     bool verified = user?.isEmailVerified;
     if (user != null) {
-      Navigator.pop(context);
       ChsAuth.setUser(user);
       Firestore.instance.collection(ChsStrings.database_app_token).document(user.uid).get().then((ts) {
         String token = ChsFCM.token;
@@ -144,7 +154,7 @@ class Splash extends StatelessWidget {
           Navigator.pop(context);
           resolveTokenConflict(context, size);
         } else {
-          if (userCache.userName.isEmpty) {
+          if (userCache.username.isEmpty) {
             Firestore.instance.collection(ChsStrings.database_app_user).document(user.uid).get().then((ds) {
               if (ds.exists) {
                 ChsUser cacheUser = ChsUser.fromDoc(ds);
@@ -154,7 +164,13 @@ class Splash extends StatelessWidget {
                 userCache.changePhone(cacheUser.phone);
                 userCache.changeBio(cacheUser.bio);
                 userCache.changePhotoUrl(cacheUser.photoUrl);
+                userCache.changePosts(cacheUser.posts);
+                userCache.changeFollowers(cacheUser.followers);
+                userCache.changeFollowing(cacheUser.following);
+                userCache.changePrivate(cacheUser.private);
                 userCache.changeBirthday(cacheUser.birthday.toUtc().toString());
+                userCache.changeGradYear(cacheUser.gradYear);
+                Navigator.pop(context);
                 if (verified) {
                   RoutePredicate predicate = (Route<dynamic> route) => false;
                   Navigator.pushAndRemoveUntil(
@@ -172,7 +188,7 @@ class Splash extends StatelessWidget {
                       )),
                       predicate);
                 } else {
-                  Future.delayed(Duration(milliseconds: 1000)).then((_) {
+                  Future.delayed(Duration(milliseconds: 1500)).then((_) {
                     RoutePredicate predicate = (Route<dynamic> route) => false;
                     Navigator.pushAndRemoveUntil(
                         context,
@@ -185,7 +201,7 @@ class Splash extends StatelessWidget {
                   });
                 }
               } else {
-                Future.delayed(Duration(milliseconds: 1000)).then((_) {
+                Future.delayed(Duration(milliseconds: 1500)).then((_) {
                   RoutePredicate predicate = (Route<dynamic> route) => false;
                   Navigator.pushAndRemoveUntil(
                       context,
@@ -207,23 +223,25 @@ class Splash extends StatelessWidget {
             });
           } else {
             if (verified) {
-              RoutePredicate predicate = (Route<dynamic> route) => false;
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  ChsPageRoute.slideIn<void>(ListenableProvider(
-                    builder: (_) => theme..init(),
-                    child: Consumer<ChsThemeModel>(
-                      builder: (context, model, child) {
-                        return Theme(
-                          data: model.theme,
-                          child: MainPage(),
-                        );
-                      },
-                    ),
-                  )),
-                  predicate);
+              Future.delayed(Duration(milliseconds: 1500)).then((_) {
+                RoutePredicate predicate = (Route<dynamic> route) => false;
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    ChsPageRoute.slideIn<void>(ListenableProvider(
+                      builder: (_) => theme..init(),
+                      child: Consumer<ChsThemeModel>(
+                        builder: (context, model, child) {
+                          return Theme(
+                            data: model.theme,
+                            child: MainPage(),
+                          );
+                        },
+                      ),
+                    )),
+                    predicate);
+              });
             } else {
-              Future.delayed(Duration(milliseconds: 1000)).then((_) {
+              Future.delayed(Duration(milliseconds: 1500)).then((_) {
                 RoutePredicate predicate = (Route<dynamic> route) => false;
                 Navigator.pushAndRemoveUntil(
                     context,
@@ -239,7 +257,7 @@ class Splash extends StatelessWidget {
         }
       });
     } else {
-      Future.delayed(Duration(milliseconds: 1000)).then((_) {
+      Future.delayed(Duration(milliseconds: 1500)).then((_) {
         RoutePredicate predicate = (Route<dynamic> route) => false;
         Navigator.pushAndRemoveUntil(
             context,

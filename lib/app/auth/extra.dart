@@ -36,15 +36,17 @@ class ExtraPage extends StatefulWidget {
   }
 }
 
-class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMixin {
+class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   final FirebaseAnalytics analytics = FirebaseAnalytics();
   final ChsThemeModel theme = ChsThemeModel();
-  AnimationController _controller;
+  AnimationController animationController;
+  ScrollController scrollController;
   ChsUserCache userCache;
   String name;
   String avatar;
   String prefix = ChsStrings.extra_screen_prefix_init;
   String bd = ChsStrings.extra_screen_bd_init;
+  String gradYear = ChsStrings.extra_screen_gy_init;
   DateTime birthday;
   TextEditingController usernameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
@@ -60,134 +62,256 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
         child: Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: AppBar(
-            backgroundColor: ChsColors.default_primary,
+            backgroundColor: Color(0xFFFAFAFA),
+            brightness: Brightness.light,
             title: Text(
               ChsStrings.extraScreenAppbarName(name),
               style: TextStyle(color: ChsColors.default_text_high, fontFamily: ChsStrings.rochester, fontSize: 34, fontWeight: FontWeight.w400),
             ),
             elevation: 0,
           ),
-          backgroundColor: ChsColors.default_scaffold,
-          body: Column(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.all(height * 0.02),
-              ),
-              Flex(
-                direction: Axis.horizontal,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.all(width * 0.02),
-                      ),
-                      Container(
-                        height: height * 0.08,
-                        width: height * 0.08,
-                        child: ChsCircleAvatar(
-                          src: userCache.photoUrl,
-                          radius: height * 0.08,
-                          controller: _controller,
+          backgroundColor: Color(0xFFFAFAFA),
+          body: SingleChildScrollView(
+            controller: scrollController,
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.all(height * 0.02),
+                ),
+                Flex(
+                  direction: Axis.horizontal,
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.all(width * 0.02),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(width * 0.02),
-                      ),
-                      Text(ChsStrings.extra_screen_username,
-                        style: TextStyle(color: Colors.black),),
-                      Padding(
-                        padding: EdgeInsets.all(width * 0.02),
-                      ),
-                      Container(
-                        constraints: BoxConstraints(
-                          maxWidth: width * 0.45,
+                        Container(
+                          height: height * 0.08,
+                          width: height * 0.08,
+                          child: ChsCircleAvatar(
+                            src: userCache.photoUrl,
+                            radius: height * 0.08,
+                            controller: animationController,
+                          ),
                         ),
-                        child: StreamBuilder(
-                            stream: bloc.username,
-                            builder: (context, snapshot) {
-                              return TextField(
-                                style: new TextStyle(
-                                  fontSize: 18.0,
-                                  color: Colors.black,
-                                ),
-                                keyboardType: TextInputType.text,
-                                onChanged: bloc.changeUserName,
-                                decoration: InputDecoration(
-                                  hintText: ChsStrings.extra_screen_username_hint,
-                                  hintStyle: TextStyle(color: Colors.black54),
-                                  contentPadding: EdgeInsets.fromLTRB(height * 0.025, height * 0.010, height * 0.025, height * 0.010),
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                    borderRadius: BorderRadius.circular(height * 0.05),
+                        Padding(
+                          padding: EdgeInsets.all(width * 0.02),
+                        ),
+                        Text(ChsStrings.extra_screen_username,
+                          style: TextStyle(color: Colors.black),),
+                        Padding(
+                          padding: EdgeInsets.all(width * 0.02),
+                        ),
+                        Container(
+                          constraints: BoxConstraints(
+                            maxWidth: width * 0.52,
+                          ),
+                          child: StreamBuilder(
+                              stream: bloc.username,
+                              builder: (context, snapshot) {
+                                return TextField(
+                                  style: new TextStyle(
+                                    fontSize: 18.0,
+                                    color: Colors.black,
                                   ),
-                                  fillColor: Colors.grey[200],
-                                  filled: true,
-                                  errorText: snapshot.error,
+                                  keyboardType: TextInputType.text,
+                                  onChanged: bloc.changeUserName,
+                                  decoration: InputDecoration(
+                                    hintText: ChsStrings.extra_screen_username_hint,
+                                    hintStyle: TextStyle(color: Colors.black54),
+                                    contentPadding: EdgeInsets.fromLTRB(height * 0.025, height * 0.010, height * 0.025, height * 0.010),
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.circular(height * 0.05),
+                                    ),
+                                    fillColor: Colors.grey[200],
+                                    filled: true,
+                                    errorText: snapshot.error,
+                                  ),
+                                  cursorColor: ChsColors.default_accent,
+                                  controller: usernameController,
+                                );
+                              }),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Flex(
+                  direction: Axis.horizontal,
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(
+                            right: ((width * 0.04)),
+                            top: height * 0.08,
+                          ),
+                        ),
+                        Text(ChsStrings.extra_screen_phone,
+                            style: TextStyle(color: Colors.black)),
+                        Padding(
+                          padding: EdgeInsets.all(width * 0.02),
+                        ),
+                        CountryPickerDropdown(
+                          initialValue: ChsStrings.extra_screen_phone_init,
+                          itemBuilder: _buildDropdownItem,
+                          onValuePicked: (Country country) {
+                            setState(() {
+                              prefix = country.phoneCode;
+                            });
+                          },
+                        ),
+                        Container(
+                          constraints: BoxConstraints(
+                            maxWidth: width * 0.65,
+                          ),
+                          child: Row(
+                            children: <Widget>[
+                              Text(
+                                '+' + prefix,
+                                style: TextStyle(color: ChsColors.default_accent, fontSize: 16),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(width * 0.01),
+                              ),
+                              Container(
+                                  constraints: BoxConstraints(maxWidth: width * 0.45),
+                                  child: StreamBuilder(
+                                      stream: bloc.phone,
+                                      builder: (context, snapshot) {
+                                        return TextField(
+                                          style: new TextStyle(
+                                            fontSize: 16.0,
+                                            color: Colors.black,
+                                          ),
+                                          keyboardType: TextInputType.phone,
+                                          onChanged: bloc.changePhone,
+                                          decoration: InputDecoration(
+                                            hintText: ChsStrings.extra_screen_phone_hint,
+                                            hintStyle: TextStyle(
+                                                color: Colors.black54),
+                                            border: OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                              borderRadius: BorderRadius.circular(height * 0.05),
+                                            ),
+                                            contentPadding: EdgeInsets.fromLTRB(height * 0.01, height * 0.025, height * 0.025, 0),
+                                            fillColor: Colors.grey[200],
+                                            filled: true,
+                                            errorText: snapshot.error,
+                                          ),
+                                          cursorColor: ChsColors.default_accent,
+                                          controller: phoneController,
+                                          inputFormatters: [ChsPhone()],
+                                        );
+                                      }))
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Flex(
+                  direction: Axis.horizontal,
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(
+                            right: ((width * 0.04)),
+                            top: height * 0.08,
+                          ),
+                        ),
+                        Text(ChsStrings.extra_screen_bd,
+                            style: TextStyle(color: Colors.black)),
+                        Padding(
+                          padding: EdgeInsets.all(width * 0.02),
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            DateTime date = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(1900),
+                              lastDate: DateTime(9999),
+                              builder: (BuildContext context, Widget child) {
+                                return Theme(
+                                  data: ThemeData(
+                                    primaryColor: ChsColors.default_accent,
+                                  ),
+                                  child: child,
+                                );
+                              },
+                            );
+                            setState(() {
+                              if (date != null) {
+                                birthday = date;
+                                bd = month(date.month) + ' ' + date.day.toString();
+                              }
+                            });
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            constraints: BoxConstraints(
+                              maxWidth: width * 0.3,
+                              minHeight: height * 0.05,
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border.all(width: 0, color: Colors.grey[200]), shape: BoxShape.rectangle, borderRadius: BorderRadius.circular(height * 0.05), color: Colors.grey[200]),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  bd,
+                                  style: TextStyle(color: ChsColors.default_accent, fontSize: 18),
                                 ),
-                                cursorColor: ChsColors.default_accent,
-                                controller: usernameController,
-                              );
-                            }),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Flex(
-                direction: Axis.horizontal,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(
-                          right: ((width * 0.04)),
-                          top: height * 0.08,
-                        ),
-                      ),
-                      Text(ChsStrings.extra_screen_phone,
-                          style: TextStyle(color: Colors.black)),
-                      Padding(
-                        padding: EdgeInsets.all(width * 0.02),
-                      ),
-                      CountryPickerDropdown(
-                        initialValue: ChsStrings.extra_screen_phone_init,
-                        itemBuilder: _buildDropdownItem,
-                        onValuePicked: (Country country) {
-                          setState(() {
-                            prefix = country.phoneCode;
-                          });
-                        },
-                      ),
-//                      Padding(
-//                        padding: EdgeInsets.all(width * 0.01),
-//                      ),
-                      Container(
-                        constraints: BoxConstraints(
-                          maxWidth: width * 0.55,
-                        ),
-                        child: Row(
-                          children: <Widget>[
-                            Text(
-                              '+' + prefix,
-                              style: TextStyle(color: ChsColors.default_accent, fontSize: 16),
+                              ],
                             ),
-                            Padding(
-                              padding: EdgeInsets.all(width * 0.01),
-                            ),
-                            Container(
-                                constraints: BoxConstraints(maxWidth: width * 0.42),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Flex(
+                  direction: Axis.horizontal,
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(
+                            right: ((width * 0.04)),
+                            top: height * 0.08,
+                          ),
+                        ),
+                        Text(ChsStrings.extra_screen_bio,
+                            style: TextStyle(color: Colors.black)),
+                        Padding(
+                          padding: EdgeInsets.all(width * 0.02),
+                        ),
+                        Container(
+                          constraints: BoxConstraints(
+                            maxWidth: width * 0.8,
+                          ),
+                          child: Row(
+                            children: <Widget>[
+                              Container(
+                                constraints: BoxConstraints(maxWidth: width * 0.75),
                                 child: StreamBuilder(
-                                    stream: bloc.phone,
+                                    stream: bloc.bio,
                                     builder: (context, snapshot) {
                                       return TextField(
                                         style: new TextStyle(
                                           fontSize: 16.0,
                                           color: Colors.black,
                                         ),
-                                        keyboardType: TextInputType.phone,
-                                        onChanged: bloc.changePhone,
+                                        keyboardType: TextInputType.multiline,
+                                        onChanged: bloc.changeBio,
                                         decoration: InputDecoration(
-                                          hintText: ChsStrings.extra_screen_phone_hint,
+                                          hintText: ChsStrings.extra_screen_bio_hint,
                                           hintStyle: TextStyle(
                                               color: Colors.black54),
                                           border: OutlineInputBorder(
@@ -200,156 +324,97 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
                                           errorText: snapshot.error,
                                         ),
                                         cursorColor: ChsColors.default_accent,
-                                        controller: phoneController,
-                                        inputFormatters: [ChsPhone()],
+                                        controller: bioController,
                                       );
-                                    }))
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Flex(
-                direction: Axis.horizontal,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(
-                          right: ((width * 0.04)),
-                          top: height * 0.08,
-                        ),
-                      ),
-                      Text(ChsStrings.extra_screen_bd,
-                          style: TextStyle(color: Colors.black)),
-                      Padding(
-                        padding: EdgeInsets.all(width * 0.02),
-                      ),
-                      GestureDetector(
-                        onTap: () async {
-                          DateTime date = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(1900),
-                            lastDate: DateTime(9999),
-                            builder: (BuildContext context, Widget child) {
-                              return Theme(
-                                data: ThemeData(
-                                  primaryColor: ChsColors.default_accent,
-                                ),
-                                child: child,
-                              );
-                            },
-                          );
-                          setState(() {
-                            if (date != null) {
-                              birthday = date;
-                              bd = month(date.month) + ' ' + date.day.toString();
-                            }
-                          });
-                        },
-                        child: Container(
-                          alignment: Alignment.center,
-                          constraints: BoxConstraints(
-                            maxWidth: width * 0.3,
-                            minHeight: height * 0.05,
-                          ),
-                          decoration: BoxDecoration(
-                              border: Border.all(width: 0, color: Colors.grey[200]), shape: BoxShape.rectangle, borderRadius: BorderRadius.circular(height * 0.05), color: Colors.grey[200]),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text(
-                                bd,
-                                style: TextStyle(color: ChsColors.default_accent, fontSize: 18),
-                              ),
+                                    }),
+                              )
                             ],
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Flex(
-                direction: Axis.horizontal,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(
-                          right: ((width * 0.04)),
-                          top: height * 0.08,
-                        ),
-                      ),
-                      Text(ChsStrings.extra_screen_bio,
-                          style: TextStyle(color: Colors.black)),
-                      Padding(
-                        padding: EdgeInsets.all(width * 0.02),
-                      ),
-                      Container(
-                        constraints: BoxConstraints(
-                          maxWidth: width * 0.8,
-                        ),
-                        child: Row(
-                          children: <Widget>[
-                            Container(
-                              constraints: BoxConstraints(maxWidth: width * 0.75),
-                              child: StreamBuilder(
-                                  stream: bloc.bio,
-                                  builder: (context, snapshot) {
-                                    return TextField(
-                                      style: new TextStyle(
-                                        fontSize: 16.0,
-                                        color: Colors.black,
-                                      ),
-                                      keyboardType: TextInputType.multiline,
-                                      onChanged: bloc.changeBio,
-                                      decoration: InputDecoration(
-                                        hintText: ChsStrings.extra_screen_bio_hint,
-                                        hintStyle: TextStyle(
-                                            color: Colors.black54),
-                                        border: OutlineInputBorder(
-                                          borderSide: BorderSide.none,
-                                          borderRadius: BorderRadius.circular(height * 0.05),
-                                        ),
-                                        contentPadding: EdgeInsets.fromLTRB(height * 0.01, height * 0.025, height * 0.025, 0),
-                                        fillColor: Colors.grey[200],
-                                        filled: true,
-                                        errorText: snapshot.error,
-                                      ),
-                                      cursorColor: ChsColors.default_accent,
-                                      controller: bioController,
-                                    );
-                                  }),
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(
-                width: width,
-                height: height * 0.35,
-                child: LottieView.fromFile(
-                  loop: true,
-                  filePath: ChsAssets.dino_anim,
-                  autoPlay: true,
-                  onViewCreated: onViewCreatedFile,
+                      ],
+                    ),
+                  ],
                 ),
-              ),
-              Center(
-                child: Text(
-                  ChsStrings.extra_screen_text,
-                  style: TextStyle(color: Colors.black, fontSize: 18),
+                Flex(
+                  direction: Axis.horizontal,
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(
+                            right: ((width * 0.04)),
+                            top: height * 0.08,
+                          ),
+                        ),
+                        Text(ChsStrings.extra_screen_gy,
+                            style: TextStyle(color: Colors.black)),
+                        Padding(
+                          padding: EdgeInsets.all(width * 0.02),
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            DateTime date = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(1900),
+                              lastDate: DateTime(9999),
+                              builder: (BuildContext context, Widget child) {
+                                return Theme(
+                                  data: ThemeData(
+                                    primaryColor: ChsColors.default_accent,
+                                  ),
+                                  child: child,
+                                );
+                              },
+                            );
+                            setState(() {
+                              if (date != null) {
+                                gradYear = date.year.toString();
+                              }
+                            });
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            constraints: BoxConstraints(
+                              maxWidth: width * 0.3,
+                              minHeight: height * 0.05,
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border.all(width: 0, color: Colors.grey[200]), shape: BoxShape.rectangle, borderRadius: BorderRadius.circular(height * 0.05), color: Colors.grey[200]),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  gradYear,
+                                  style: TextStyle(color: ChsColors.default_accent, fontSize: 18),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ),
-            ],
+                SizedBox(
+                  width: width,
+                  height: height * 0.5,
+                  child: LottieView.fromFile(
+                    loop: true,
+                    filePath: ChsAssets.dino_anim,
+                    autoPlay: true,
+                    onViewCreated: onViewCreatedFile,
+                  ),
+                ),
+                Center(
+                  child: Text(
+                    ChsStrings.extra_screen_text,
+                    style: TextStyle(color: Colors.black, fontSize: 18),
+                  ),
+                ),
+              ],
+            ),
           ),
           bottomNavigationBar: new BottomAppBar(
             color: ChsColors.default_accent,
@@ -379,7 +444,8 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
                   }),
             ),
           ),
-        ));
+        ),
+    );
   }
 
   Widget _buildDropdownItem(Country country) => Container(
@@ -405,16 +471,35 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
   void initState() {
     super.initState();
     _analyticsSetup();
+    changeStatusBar();
     usernameController = TextEditingController();
     phoneController = TextEditingController();
     bioController = TextEditingController();
-    _controller = AnimationController(vsync: this, duration: Duration(seconds: 3), lowerBound: 0.0, upperBound: 1.0);
+    scrollController = ScrollController();
+    animationController = AnimationController(vsync: this, duration: Duration(seconds: 3), lowerBound: 0.0, upperBound: 1.0);
+    WidgetsBinding.instance.addObserver(this);
+
   }
 
   @override
   void dispose() {
     super.dispose();
-    _controller.dispose();
+    animationController.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.suspending:
+        break;
+      case AppLifecycleState.paused:
+        break;
+      case AppLifecycleState.inactive:
+        break;
+      case AppLifecycleState.resumed:
+        changeStatusBar();
+        break;
+    }
   }
 
   Future<void> _analyticsSetup() async {
@@ -514,6 +599,7 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
             type: SpinKitWaveType.start,
           );
         });
+
     try {
       Firestore.instance.collection(ChsStrings.database_app_username).document(userName).get().then((ds) {
         if (ds.exists) {
@@ -526,8 +612,13 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
             email: authUser.email,
             phone: phone,
             bio: bio,
+            posts: 0,
+            followers: 0,
+            following: 0,
             photoUrl: userCache.photoUrl,
             birthday: birthday ?? DateTime.now().toUtc(),
+            gradYear: gradYear ?? DateTime.now().toUtc(),
+            private: false,
             createdAt: Timestamp.fromMillisecondsSinceEpoch(authUser.metadata.creationTimestamp),
           );
           userCache.changeUsername(userName);
@@ -535,6 +626,11 @@ class _ExtraPageState extends State<ExtraPage> with SingleTickerProviderStateMix
           userCache.changePhone(phone);
           userCache.changeBio(bio);
           userCache.changeBirthday(birthday.toUtc().toString());
+          userCache.changeGradYear(gradYear);
+          userCache.changePosts(0);
+          userCache.changeFollowers(0);
+          userCache.changeFollowing(0);
+          userCache.changePrivate(false);
           ChsFirestore.userName(userName).setData(ChsFirestore.idToMap(authUser.uid));
           ChsAuth.setUser(authUser);
 

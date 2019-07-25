@@ -16,11 +16,12 @@ import 'package:chs_connect/theme/model/chs_theme_model.dart';
 import 'package:chs_connect/utils/chs_page_transitions.dart';
 import 'package:chs_connect/utils/chs_preferences.dart';
 import 'package:chs_connect/utils/chs_user_cache.dart';
-import 'package:community_material_icon/community_material_icon.dart';
+import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 
 class LoginCard extends StatefulWidget {
   const LoginCard({Key key}) : super(key: key);
@@ -46,11 +47,11 @@ class _LoginCardState extends State<LoginCard> with SingleTickerProviderStateMix
   ChsUserCache userCache;
   static ChsThemeModel theme = ChsThemeModel();
   static Icon eye = Icon(
-    CommunityMaterialIcons.eye,
+    FeatherIcons.eye,
     color: ChsColors.default_accent,
   );
   static Icon eyeOff = Icon(
-    CommunityMaterialIcons.eye_off,
+    FeatherIcons.eyeOff,
     color: ChsColors.default_accent,
   );
   Icon suffix = eye;
@@ -261,6 +262,7 @@ class _LoginCardState extends State<LoginCard> with SingleTickerProviderStateMix
     width = deviceSize.width;
     final bloc = AuthProvider.of(context);
     userCache = Provider.of<ChsUserCache>(context);
+    changeStatusBar();
     return loginCard(bloc);
   }
 
@@ -281,6 +283,13 @@ class _LoginCardState extends State<LoginCard> with SingleTickerProviderStateMix
       obscure = !obscure;
       suffix == eye ? suffix = eyeOff : suffix = eye;
     });
+  }
+
+  void changeStatusBar() async {
+    await FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
+    await FlutterStatusbarcolor.setNavigationBarColor(Colors.white);
+    FlutterStatusbarcolor.setNavigationBarWhiteForeground(false);
   }
 
   void setupControllers() {
@@ -334,7 +343,7 @@ class _LoginCardState extends State<LoginCard> with SingleTickerProviderStateMix
 
     showDialog(
         context: context,
-        barrierDismissible: true,
+        barrierDismissible: false,
         builder: (context) {
           return SpinKitWave(
             color: Colors.white,
@@ -346,7 +355,8 @@ class _LoginCardState extends State<LoginCard> with SingleTickerProviderStateMix
       bool verified = await ChsAuth.userVerified(authUser);
       if (authUser != null) {
         ChsAuth.setUser(authUser);
-        if (userCache.userName.isEmpty) {
+        Navigator.pop(context);
+        if (userCache.username.isEmpty) {
           Firestore.instance.collection('user').document(authUser.uid).get().then((ds) {
             if (ds.exists) {
               ChsUser cacheUser = ChsUser.fromDoc(ds);
@@ -356,18 +366,20 @@ class _LoginCardState extends State<LoginCard> with SingleTickerProviderStateMix
               userCache.changePhone(cacheUser.phone);
               userCache.changeBio(cacheUser.bio);
               userCache.changePhotoUrl(cacheUser.photoUrl);
+              userCache.changePosts(cacheUser.posts);
+              userCache.changeFollowers(cacheUser.followers);
+              userCache.changeFollowing(cacheUser.following);
+              userCache.changePrivate(cacheUser.private);
               userCache.changeBirthday(cacheUser.birthday.toUtc().toString());
+              userCache.changeGradYear(cacheUser.gradYear);
               if (verified) {
                 RoutePredicate predicate = (Route<dynamic> route) => false;
                 Navigator.pushAndRemoveUntil(
                     context,
-                    ChsPageRoute.slideIn<void>(MultiProvider(
-                      providers: [
-                        Provider<ChsThemeModel>(builder: (_) => theme..init(),),
-                        Provider<ChsUserCache>(builder: (_) => userCache..init(),)
-                      ],
-                      child: Consumer2<ChsThemeModel, ChsUserCache>(
-                        builder: (context, model, user, child) {
+                    ChsPageRoute.slideIn<void>(ListenableProvider(
+                      builder: (_) => theme..init(),
+                      child: Consumer<ChsThemeModel>(
+                        builder: (context, model, child) {
                           return Theme(
                             data: model.theme,
                             child: MainPage(),
@@ -408,8 +420,23 @@ class _LoginCardState extends State<LoginCard> with SingleTickerProviderStateMix
                   predicate);
             }
           });
+        } else {
+          RoutePredicate predicate = (Route<dynamic> route) => false;
+          Navigator.pushAndRemoveUntil(
+              context,
+              ChsPageRoute.slideIn<void>(ListenableProvider(
+                builder: (_) => theme..init(),
+                child: Consumer<ChsThemeModel>(
+                  builder: (context, model, child) {
+                    return Theme(
+                      data: model.theme,
+                      child: MainPage(),
+                    );
+                  },
+                ),
+              )),
+              predicate);
         }
-
       }
     } catch (e) {
       print(e);

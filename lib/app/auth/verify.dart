@@ -29,8 +29,9 @@ class Verify extends StatefulWidget {
 class _VerifyState extends State<Verify> with WidgetsBindingObserver {
   final FirebaseAnalytics analytics = FirebaseAnalytics();
   final ChsUserCache userCache;
-  static ChsThemeModel theme = ChsThemeModel();
+  final ChsThemeModel theme = ChsThemeModel();
   LottieController controller;
+  ScrollController scrollController;
   String name;
 
   _VerifyState(this.userCache);
@@ -38,42 +39,45 @@ class _VerifyState extends State<Verify> with WidgetsBindingObserver {
   Widget verifyScreen(BuildContext context) {
     var deviceSize = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: ChsColors.default_scaffold,
-      body: Column(
-        children: <Widget>[
-          Container(
-            height: deviceSize.height / 8,
-          ),
-          SizedBox(
-            width: deviceSize.width,
-            height: deviceSize.height * 0.4,
-            child: LottieView.fromFile(
-              loop: true,
-              filePath: ChsAssets.mail_anim,
-              autoPlay: true,
-              onViewCreated: onViewCreatedFile,
+      backgroundColor: Color(0xFFFAFAFA),
+      body: SingleChildScrollView(
+        controller: scrollController,
+        child: Column(
+          children: <Widget>[
+            Container(
+              height: deviceSize.height / 8,
             ),
-          ),
-          Text(ChsStrings.verifyScreenText1(name),
-              style: TextStyle(color: Colors.black)),
-          Text(ChsStrings.verify_screen_text2,
-              style: TextStyle(color: Colors.black)),
-          Padding(
-            padding: EdgeInsets.only(bottom: deviceSize.height * 0.05),
-          ),
-          Text(ChsStrings.verify_screen_text3,
-              style: TextStyle(color: Colors.black)),
-          Padding(
-            padding: EdgeInsets.only(bottom: deviceSize.height * 0.01),
-          ),
-          verifyBtn(deviceSize),
-          Padding(
-            padding: EdgeInsets.only(bottom: deviceSize.height * 0.02),
-          ),
-          Text(ChsStrings.verify_screen_text4,
-              style: TextStyle(color: Colors.black)),
-          verifiedBtn(deviceSize),
-        ],
+            SizedBox(
+              width: deviceSize.width,
+              height: deviceSize.height * 0.4,
+              child: LottieView.fromFile(
+                loop: true,
+                filePath: ChsAssets.mail_anim,
+                autoPlay: true,
+                onViewCreated: onViewCreatedFile,
+              ),
+            ),
+            Text(ChsStrings.verifyScreenText1(name),
+                style: TextStyle(color: Colors.black)),
+            Text(ChsStrings.verify_screen_text2,
+                style: TextStyle(color: Colors.black)),
+            Padding(
+              padding: EdgeInsets.only(bottom: deviceSize.height * 0.05),
+            ),
+            Text(ChsStrings.verify_screen_text3,
+                style: TextStyle(color: Colors.black)),
+            Padding(
+              padding: EdgeInsets.only(bottom: deviceSize.height * 0.01),
+            ),
+            verifyBtn(deviceSize),
+            Padding(
+              padding: EdgeInsets.only(bottom: deviceSize.height * 0.02),
+            ),
+            Text(ChsStrings.verify_screen_text4,
+                style: TextStyle(color: Colors.black)),
+            verifiedBtn(deviceSize),
+          ],
+        ),
       ),
     );
   }
@@ -151,6 +155,7 @@ class _VerifyState extends State<Verify> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    scrollController = ScrollController();
     _analyticsSetup();
     changeStatusBar();
     reloadUser();
@@ -230,7 +235,7 @@ class _VerifyState extends State<Verify> with WidgetsBindingObserver {
   void checkVerification() async {
     showDialog(
         context: context,
-        barrierDismissible: true,
+        barrierDismissible: false,
         builder: (context) {
           return SpinKitWave(
             color: Colors.white,

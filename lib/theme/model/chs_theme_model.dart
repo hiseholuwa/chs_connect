@@ -195,6 +195,8 @@ class ChsThemeModel extends ChangeNotifier {
                 ),
               ),
               errorColor: ChsColors.default_error,
+              textSelectionColor: ChsColors.default_accent,
+              textSelectionHandleColor: ChsColors.default_accent,
               tabBarTheme: TabBarTheme(
                 indicator: UnderlineTabIndicator(borderSide: BorderSide(color: ChsColors.default_accent, width: 2.0)),
                 labelColor: ChsColors.default_accent,
@@ -275,6 +277,9 @@ class ChsThemeModel extends ChangeNotifier {
                 ),
               ),
               errorColor: ChsColors.dark_error,
+              textSelectionColor: darkAccentColor ?? ChsColors.default_accent,
+              textSelectionHandleColor: darkAccentColor ?? ChsColors.default_accent,
+              floatingActionButtonTheme: FloatingActionButtonThemeData(),
               tabBarTheme: TabBarTheme(
                 indicator: UnderlineTabIndicator(borderSide: BorderSide(color: darkAccentColor ?? ChsColors.default_accent, width: 2.0)),
                 labelColor: darkAccentColor ?? ChsColors.default_accent,
@@ -357,6 +362,8 @@ class ChsThemeModel extends ChangeNotifier {
                   ),
                 ),
                 errorColor: ChsColors.default_error,
+          textSelectionColor: accentColor ?? ChsColors.default_accent,
+          textSelectionHandleColor: accentColor ?? ChsColors.default_accent,
           tabBarTheme: TabBarTheme(
             indicator: UnderlineTabIndicator(borderSide: BorderSide(color: accentColor ?? ChsColors.default_accent, width: 2.0)),
             labelColor: accentColor ?? ChsColors.default_accent,
@@ -437,6 +444,8 @@ class ChsThemeModel extends ChangeNotifier {
                   ),
                 ),
                 errorColor: ChsColors.default_error,
+          textSelectionColor: accentColor ?? ChsColors.default_accent,
+          textSelectionHandleColor: accentColor ?? ChsColors.default_accent,
           tabBarTheme: TabBarTheme(
             indicator: UnderlineTabIndicator(borderSide: BorderSide(color: accentColor ?? ChsColors.default_accent, width: 2.0)),
             labelColor: accentColor ?? ChsColors.default_accent,
@@ -469,19 +478,19 @@ class ChsThemeModel extends ChangeNotifier {
   Color get textColorHigh {
     if (customTheme) return textHigh;
     if (darkMode) return ChsColors.dark_text_high;
-    return Colors.black;
+    return ChsColors.default_text_high;
   }
 
   Color get textColorMedium {
     if (customTheme) return textMedium;
     if (darkMode) return ChsColors.dark_text_medium;
-    return Colors.black;
+    return ChsColors.default_text_medium;
   }
 
   Color get textColorDisabled {
     if (customTheme) return textDisabled;
     if (darkMode) return ChsColors.dark_text_disabled;
-    return Colors.black;
+    return ChsColors.default_text_disabled;
   }
 
   Future init() async {

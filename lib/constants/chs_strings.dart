@@ -65,7 +65,9 @@ class ChsStrings {
   static const extra_screen_phone_hint = "(123) 456-7890";
   static const extra_screen_phone_init = "ng";
   static const extra_screen_bd = "Birthday:";
+  static const extra_screen_gy = "Grad Year:";
   static const extra_screen_bd_init = "May 28";
+  static const extra_screen_gy_init = "2013";
   static const extra_screen_bio = "Bio:";
   static const extra_screen_bio_hint = "Psalms 19:1";
   static const extra_screen_text = "Almost there.... 😎";
@@ -84,15 +86,17 @@ class ChsStrings {
   static const december = "December";
   static const extra_screen_username_snackbar = "Username exists already 😭! Choose another.";
 
-  //MapScreen
-  static const map_alert_title = "Ummm... 😬";
-  static const map_alert_text1 = "Your location is needed to show this page.";
-  static const map_alert_text2 = "Press \"Continue\" to give the NSA..sorry CHS Connect access to your location.";
-  static const map_alert_text3 = "Press \"Cancel\" to stop and receive a tinfoil hat.";
-  static const map_alert_btn1 = "Cancel ⛔";
-  static const map_alert_btn2 = "Continue 😎";
-  static const map_ask_text = "This page is only for the elite 😛. Click the button below to join.";
-  static const map_ask_btn = "I WANT ACCESS 😩!";
+  //Add Post Page
+  static const new_post = "New Post";
+  static const share = "Share";
+  static const tap_to_add_photo = "Tap to add photo";
+  static const description = "Description";
+  static const tag = "Tags: #Blessed #Thankful #Romans8:32";
+  static const disable_comments = "Disable Comments";
+  static const disable_sharing = "Disable Sharing";
+  static const crop = "Crop Photo";
+  static const filter = "Add Filter";
+  static const default_accent = "#FF007ECB";
 
 
 

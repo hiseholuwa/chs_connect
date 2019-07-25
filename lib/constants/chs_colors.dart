@@ -5,7 +5,9 @@ class ChsColors {
   ChsColors._();
 
   static const Color auth_bkg = const Color(0xFF212121);
-  static const Color default_accent = const Color(0xFF185ABB);
+
+//  static const Color default_accent = const Color(0xFF185ABB);
+  static const Color default_accent = const Color(0xFF007ECB);
   static const Color default_bkg = const Color(0xFFFFFFFF);
   static const Color default_primary = const Color(0xFFFFFFFF);
   static const Color default_scaffold = const Color(0xFFFFFFFF);

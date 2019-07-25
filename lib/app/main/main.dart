@@ -1,12 +1,12 @@
 import 'package:chs_connect/app/auth/welcome.dart';
 import 'package:chs_connect/app/main/pages/chat/chat.dart';
 import 'package:chs_connect/app/main/pages/event/event.dart';
-import 'package:chs_connect/app/main/pages/feed/feedPage.dart';
+import 'package:chs_connect/app/main/pages/feed/feed_page.dart';
 import 'package:chs_connect/constants/chs_strings.dart';
 import 'package:chs_connect/services/chs_auth.dart';
 import 'package:chs_connect/theme/model/chs_theme_model.dart';
 import 'package:chs_connect/utils/chs_page_transitions.dart';
-import 'package:community_material_icon/community_material_icon.dart';
+import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -53,10 +53,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(CommunityMaterialIcons.home_variant_outline), title: Text(ChsStrings.feedsPage)),
-          BottomNavigationBarItem(icon: Icon(CommunityMaterialIcons.chat), title: Text(ChsStrings.chatsPage)),
-          BottomNavigationBarItem(icon: Icon(CommunityMaterialIcons.ticket), title: Text(ChsStrings.eventsPage)),
-          BottomNavigationBarItem(icon: Icon(CommunityMaterialIcons.bell_outline), title: Text(ChsStrings.alertsPage))
+          BottomNavigationBarItem(icon: Icon(FeatherIcons.activity), title: Text(ChsStrings.feedsPage)),
+          BottomNavigationBarItem(icon: Icon(FeatherIcons.messageCircle), title: Text(ChsStrings.chatsPage)),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_today), title: Text(ChsStrings.eventsPage)),
+          BottomNavigationBarItem(icon: Icon(FeatherIcons.bell), title: Text(ChsStrings.alertsPage))
         ],
         onTap: _onTap,
         currentIndex: currentIndex,
@@ -142,17 +142,13 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.suspending:
-        print("Suspending");
         break;
       case AppLifecycleState.paused:
-        print("Paused");
         break;
       case AppLifecycleState.inactive:
-        print("Inactive");
         break;
       case AppLifecycleState.resumed:
         statusBarBrightness();
-        print("Resumed");
         break;
     }
   }
@@ -169,9 +165,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     if (useWhiteForeground(color)) {
       FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
       FlutterStatusbarcolor.setNavigationBarWhiteForeground(true);
+      await FlutterStatusbarcolor.setNavigationBarColor(color);
     } else {
       FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
       FlutterStatusbarcolor.setNavigationBarWhiteForeground(false);
+      await FlutterStatusbarcolor.setNavigationBarColor(color);
     }
   }
 

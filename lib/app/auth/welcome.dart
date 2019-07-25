@@ -33,7 +33,7 @@ class Welcome extends StatefulWidget {
   }
 }
 
-class _WelcomeState extends State<Welcome> {
+class _WelcomeState extends State<Welcome> with WidgetsBindingObserver {
   final FirebaseAnalytics analytics = FirebaseAnalytics();
   static ChsThemeModel theme = ChsThemeModel();
   ChsUserCache userCache;
@@ -186,6 +186,7 @@ class _WelcomeState extends State<Welcome> {
     super.initState();
     changeStatusBar();
     _analyticsSetup();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -193,8 +194,23 @@ class _WelcomeState extends State<Welcome> {
     super.dispose();
   }
 
-  Future<void> _analyticsSetup() async {
-    await analytics.setCurrentScreen(
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.suspending:
+        break;
+      case AppLifecycleState.paused:
+        break;
+      case AppLifecycleState.inactive:
+        break;
+      case AppLifecycleState.resumed:
+        changeStatusBar();
+        break;
+    }
+  }
+
+  void _analyticsSetup() {
+    analytics.setCurrentScreen(
         screenName: 'Welcome Screen',
         screenClassOverride: 'WelcomeScreenClass');
   }
@@ -321,7 +337,7 @@ class _WelcomeState extends State<Welcome> {
       ChsAuth.setUser(user);
       if (newUser) {
         ChsPreferences.setBool(IS_FIRST_TIME_LOGIN, true);
-        await analytics.logSignUp(signUpMethod: 'Google');
+        analytics.logSignUp(signUpMethod: 'Google');
         ChsFirestore.token.setData(ChsFCM.tokenToMap());
         RoutePredicate predicate = (Route<dynamic> route) => false;
         Navigator.pushAndRemoveUntil(
@@ -339,7 +355,7 @@ class _WelcomeState extends State<Welcome> {
             ),
             predicate);
       } else {
-        if (userCache.userName.isEmpty) {
+        if (userCache.username.isEmpty) {
           Firestore.instance
               .collection(ChsStrings.database_app_user)
               .document(user.uid)
@@ -353,7 +369,12 @@ class _WelcomeState extends State<Welcome> {
               userCache.changePhone(cacheUser.phone);
               userCache.changeBio(cacheUser.bio);
               userCache.changePhotoUrl(cacheUser.photoUrl);
+              userCache.changePosts(cacheUser.posts);
+              userCache.changeFollowers(cacheUser.followers);
+              userCache.changeFollowing(cacheUser.following);
+              userCache.changePrivate(cacheUser.private);
               userCache.changeBirthday(cacheUser.birthday.toUtc().toString());
+              userCache.changeGradYear(cacheUser.gradYear);
 
               if (verified) {
                 String token = ChsFCM.token;
